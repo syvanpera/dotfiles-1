@@ -83,9 +83,19 @@ defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
 
 
 ###############################################################################
+# iTerm2                                                                      #
+###############################################################################
+
+# Specify the preferences directory
+defaults write com.googlecode.iterm2.plist PrefsCustomFolder -string "~/.dotfiles/iterm2"
+# Tell iTerm2 to use the custom preferences in the directory
+defaults write com.googlecode.iterm2.plist LoadPrefsFromCustomFolder -bool true
+
+
+###############################################################################
 # Kill affected applications                                                  #
 ###############################################################################
 
-for app in "Dock" "Finder" "Safari"; do
+for app in "Dock" "Finder" "Safari" "iTerm2"; do
     killall "${app}" > /dev/null 2>&1
 done

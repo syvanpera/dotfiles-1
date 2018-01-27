@@ -1,0 +1,77 @@
+# Status -----------------------------------------------------------------
+set -g status on
+set -g status-justify left
+set -g status-bg colour238
+# ------------------------------------------------------------------------
+
+# Messages ---------------------------------------------------------------
+set -g message-fg black
+set -g message-bg yellow
+set -g message-command-fg blue
+set -g message-command-bg black
+# ------------------------------------------------------------------------
+
+# Window mode ------------------------------------------------------------
+setw -g mode-bg colour6
+setw -g mode-fg colour0
+# ------------------------------------------------------------------------
+
+# Window status ----------------------------------------------------------
+setw -g window-status-current-bg colour0
+setw -g window-status-current-fg colour11
+setw -g window-status-current-attr dim
+setw -g window-status-bg green
+setw -g window-status-fg black
+setw -g window-status-attr reverse
+setw -g window-status-activity-attr none
+setw -g window-status-activity-bg colour238
+setw -g window-status-activity-fg green
+# ------------------------------------------------------------------------
+
+# Modes ------------------------------------------------------------------
+setw -g clock-mode-colour colour135
+setw -g mode-attr bold
+setw -g mode-fg colour196
+setw -g mode-bg colour238
+# ------------------------------------------------------------------------
+
+# Panes ------------------------------------------------------------------
+set -g pane-border-bg default
+set -g pane-border-fg colour239
+set -g pane-active-border-bg colour236
+set -g pane-active-border-fg green
+# ------------------------------------------------------------------------
+
+# Status bar -------------------------------------------------------------
+set -g status-position bottom
+set -g status-bg colour237
+set -g status-fg colour137
+set -g status-attr none
+set -g status-left "#[fg=colour236,bg=green]  #S #[fg=green,bg=colour237,nobold,nounderscore,noitalics]"
+set -g status-left-attr none
+
+set -g status-right "#[fg=green,bg=colour237]: #(~/dotfiles/bin/tmux-now-playing)#[fg=green,bg=colour237] : #[fg=colour249,bg=colour237]#(~/dotfiles/bin/tmux-battery) #[fg=green,bg=colour237,nobold,nounderscore,noitalics]:#[fg=colour249,bg=colour237] %d.%m.%Y #[fg=green]: #[fg=colour249]%H:%M #[fg=colour237,bg=yellow,nobold,nounderscore,noitalics]   #h "
+set -g status-right-length 100
+set -g status-left-length 30
+
+setw -g window-status-current-fg green
+setw -g window-status-current-bg colour237
+setw -g window-status-current-attr bold
+setw -g window-status-current-format "#[fg=colour237,bg=blue]#[fg=colour232] ► #I ◄  #[nobold]: #W #[fg=blue,bg=colour237]"
+
+setw -g window-status-fg colour74
+setw -g window-status-bg colour235
+setw -g window-status-attr none
+setw -g window-status-separator ""
+setw -g window-status-format "#[fg=colour237,bg=colour238]#[fg=green,bg=colour238] #I :#[fg=green,bg=colour238] #W #[fg=colour238,bg=colour237]"
+
+setw -g window-status-bell-attr bold
+setw -g window-status-bell-fg colour255
+setw -g window-status-bell-bg colour1
+# ------------------------------------------------------------------------
+
+# Messages ---------------------------------------------------------------
+set -g message-attr bold
+set -g message-fg colour236
+set -g message-bg blue
+# ------------------------------------------------------------------------

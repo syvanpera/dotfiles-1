@@ -1,0 +1,37 @@
+#!/bin/bash
+
+CHARGE5=' '
+CHARGE4=' '
+CHARGE3=' '
+CHARGE2=' '
+CHARGE1=' '
+
+CHARGING=''
+
+battery_info=`pmset -g batt`
+is_charging=`ioreg -l|grep -i ExternalConnected |awk '{print $5}'`
+current_charge=$(echo $battery_info | grep -o '[0-9]\+%' | awk '{sub (/%/, "", $1); print $1}')
+
+if [[ $is_charging == "Yes" ]]; then
+  echo -n "#[fg=colour11]$CHARGING "
+fi
+
+if [[ $current_charge -lt 20 ]]; then
+  echo -n "#[fg=colour196]$CHARGE1 "
+elif [[ $current_charge -lt 30 ]]; then
+  echo -n "#[fg=colour202]$CHARGE2 "
+elif [[ $current_charge -lt 40 ]]; then
+  echo -n "#[fg=colour208]$CHARGE2 "
+elif [[ $current_charge -lt 50 ]]; then
+  echo -n "#[fg=colour214]$CHARGE3 "
+elif [[ $current_charge -lt 60 ]]; then
+  echo -n "#[fg=colour220]$CHARGE3 "
+elif [[ $current_charge -lt 70 ]]; then
+  echo -n "#[fg=colour190]$CHARGE4 "
+elif [[ $current_charge -lt 90 ]]; then
+  echo -n "#[fg=colour82]$CHARGE4 "
+else
+  echo -n "#[fg=colour46]$CHARGE5 "
+fi
+
+echo -n "$current_charge%"

@@ -5,6 +5,7 @@ tap 'caskroom/fonts'
 brew 'yarn'
 brew 'neovim'
 brew 'fzf'
+brew 'tmux'
 
 cask 'iterm2'
 cask 'google-chrome'

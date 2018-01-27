@@ -1,0 +1,64 @@
+# Plugins -------------------------------------------------------------------{{{
+
+  set -g @plugin 'tmux-plugins/tpm'
+  set -g @plugin 'tmux-plugins/tmux-sensible'
+
+# }}}
+
+# Misc settings -------------------------------------------------------------{{{
+
+  # Vi copypaste mode
+  set-window-option -g mode-keys vi
+
+  # Copy-paste integration
+  set-option -g default-command "reattach-to-user-namespace -l zsh"
+
+  # 256 color support
+  set -g default-terminal "xterm-256color"
+
+  # Make escape behave in Vim
+  set -g escape-time 1
+
+  # Mouse support
+  set-option -g mouse on
+
+  # Show activity in background windows
+  setw -g monitor-activity on
+  set -g visual-activity on
+
+  # Start window numbers from 1
+  set -g base-index 1
+  # Make pane numbering consistent with window numbering
+  setw -g pane-base-index 1
+
+  # So you don't end up with window numbers like: 0 1 4 5 6
+  set-option -g renumber-windows on
+
+  # rename window to reflect current program
+  setw -g automatic-rename on
+
+  # set terminal title
+  set -g set-titles on
+  set -g set-titles-string '#h ❐ #S ● #I #W'
+
+  # status line redraw frequency in seconds
+  set -g status-interval 2
+
+# }}}
+
+# Key bindings --------------------------------------------------------------{{{
+
+  source-file ~/.tmux/tmux.binds.conf
+
+# }}}
+
+# UI ------------------------------------------------------------------------{{{
+
+  source-file ~/.tmux/themes/tinimini.theme
+
+# }}}
+
+#source-file ~/.tmux/tmux.theme
+
+# Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)
+run '~/.tmux/plugins/tpm/tpm'

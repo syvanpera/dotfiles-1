@@ -689,7 +689,7 @@
 	<key>NSColorPanelMode</key>
 	<string>7</string>
 	<key>NSNavLastRootDirectory</key>
-	<string>~/projects/personal/dotfiles/iterm2</string>
+	<string>~/.iterm2</string>
 	<key>NSNavPanelExpandedSizeForOpenMode</key>
 	<string>{712, 448}</string>
 	<key>NSQuotedKeystrokeBinding</key>
@@ -1681,7 +1681,7 @@
 		</dict>
 	</dict>
 	<key>PrefsCustomFolder</key>
-	<string>/Users/tinimini/projects/personal/dotfiles/iterm2</string>
+	<string>~/.iterm2</string>
 	<key>Print In Black And White</key>
 	<true/>
 	<key>PromptOnQuit</key>

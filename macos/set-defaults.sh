@@ -48,9 +48,6 @@ defaults write NSGlobalDomain WebKitDeveloperExtras -bool true
 defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
 defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode2 -bool true
 
-# Automatically quit printer app once the print jobs complete
-defaults write com.apple.print PrintingPrefs "Quit When Finished" -bool true
-
 # Trackpad: enable tap to click for this user and for the login screen
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
 defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1

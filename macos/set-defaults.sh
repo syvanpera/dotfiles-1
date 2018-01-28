@@ -93,6 +93,6 @@ defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
 # Kill affected applications                                                  #
 ###############################################################################
 
-for app in "Dock" "Finder" "Safari" "iTerm2"; do
+for app in "Dock" "Finder" "Safari"; do
     killall "${app}" > /dev/null 2>&1
 done

@@ -1,5 +1,7 @@
 cask_args appdir: '/Applications'
 
+tap 'caskroom/cask'
+tap 'caskroom/versions'
 tap 'caskroom/fonts'
 
 brew 'yarn'
@@ -13,6 +15,7 @@ brew 'reattach-to-user-namespace'
 
 cask 'iterm2'
 cask 'google-chrome'
+cask 'google-chrome-canary'
 cask 'slack'
 cask 'flowdock'
 cask 'font-hasklig-nerd-font'

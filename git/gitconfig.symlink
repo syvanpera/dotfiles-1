@@ -4,11 +4,16 @@
 [hub]
         protocol = https
 [alias]
+        st = status
         co = checkout
         promote = !$ZSH/bin/git-promote
         wtf     = !$ZSH/bin/git-wtf
         rank-contributors = !$ZSH/bin/git-rank-contributors
         count   = !git shortlog -sn
+        undo = !git reset --soft HEAD^1 && git reset && git co -- .
+        branchdate = !git for-each-ref --sort='authordate' --format='%(authordate:iso8601)%09%(objectname:short)%09%(refname)' refs/heads | sed -e 's-refs/heads/--'
+        lol = log --graph --decorate --pretty=oneline --abbrev-commit --all
+        bd = !git for-each-ref --sort='authordate:iso8601' --format=' %(authordate:relative)%09%(refname:short)' refs/heads
 [color]
         diff = auto
         status = auto
@@ -25,6 +30,10 @@
         prompt = false
 [help]
         autocorrect = 1
+[remote "origin"]
+        push = HEAD
+[merge]
+        ff = only
 [push]
         # See `git help config` (search for push.default)
         # for more information on different options of the below setting.

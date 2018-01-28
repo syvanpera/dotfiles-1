@@ -7,6 +7,8 @@ brew 'neovim'
 brew 'fzf'
 brew 'tmux'
 brew 'tig'
+brew 'python'
+brew 'python3'
 
 cask 'iterm2'
 cask 'google-chrome'

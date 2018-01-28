@@ -1,0 +1,41 @@
+var windowStates = {};
+
+var leftBar1 = S.op("push", {"direction": "left", "style": "bar-resize:screenSizeX/2"});
+var leftBar2 = S.op("push", {"direction": "left", "style": "bar-resize:screenSizeX/3*2"});
+
+var rightBar1 = S.op("push", {"direction": "right", "style": "bar-resize:screenSizeX/2"});
+var rightBar2 = S.op("push", {"direction": "right", "style": "bar-resize:screenSizeX/3*2"});
+
+var fullscreen = S.op("move", {
+  "x": "screenOriginX",
+  "y": "screenOriginY",
+  "width": "screenSizeX",
+  "height": "screenSizeY"
+});
+
+function getCycleStates(states) {
+  return function(win) {
+    if (win.pid in windowStates &&
+      windowStates[win.pid] !== undefined &&
+      states.indexOf(windowStates[win.pid]) !== -1) {
+      var nextIndex = (states.indexOf(windowStates[win.pid]) + 1) % 2;
+      var nextState = states[nextIndex];
+      windowStates[win.pid] = nextState;
+    } else {
+      windowStates[win.pid] = states[0];
+    }
+
+    eval(windowStates[win.pid] + '.run()');
+  };
+}
+
+// Window cycling functions.
+var leftCycleOp = getCycleStates(['leftBar2',
+                                  'leftBar1']);
+var rightCycleOp = getCycleStates(['rightBar2',
+                                   'rightBar1']);
+
+// Bind the window cycling functions.
+S.bind('h:cmd,shift', leftCycleOp);
+S.bind('l:cmd,shift', rightCycleOp);
+S.bind('x:cmd,shift', (win) => win.doOperation(fullscreen));

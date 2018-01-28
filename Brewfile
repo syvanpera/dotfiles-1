@@ -6,6 +6,7 @@ brew 'yarn'
 brew 'neovim'
 brew 'fzf'
 brew 'tmux'
+brew 'tig'
 
 cask 'iterm2'
 cask 'google-chrome'

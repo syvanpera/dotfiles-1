@@ -4,7 +4,6 @@ tap 'caskroom/cask'
 tap 'caskroom/versions'
 tap 'caskroom/fonts'
 
-brew 'yarn'
 brew 'neovim'
 brew 'fzf'
 brew 'tmux'

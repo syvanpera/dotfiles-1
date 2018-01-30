@@ -2,6 +2,7 @@ alias reload!='. ~/.zshrc'
 alias cls='clear' # Good 'ol Clear Screen command
 alias l='ls -lah'
 alias vi='nvim'
+alias ag='ag --color-path 32 --color-line-number 34'
 alias pubkey="more ~/.ssh/id_rsa.pub | pbcopy | echo '=> Public key copied to pasteboard.'"
 
 # grc overides for ls

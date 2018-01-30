@@ -13,7 +13,7 @@ brew 'python'
 brew 'python3'
 brew 'reattach-to-user-namespace'
 brew 'nvm'
-brew 'the_silver_searcher'
+brew 'ripgrep'
 
 cask 'iterm2'
 cask 'google-chrome'

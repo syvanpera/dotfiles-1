@@ -188,6 +188,7 @@
   nnoremap ˘ :bprevious<CR>
   nnoremap <leader>bp :bprevious<CR>
   nnoremap <leader>bd :bdelete<CR>
+  nnoremap <leader>q :bdelete<CR>
   nnoremap <leader>bf :Buffers<CR>
   nnoremap <leader>bo :call CloseAllBuffersButCurrent()<CR>
   " Switch between the last two buffers
@@ -203,8 +204,6 @@
   " Zoom windows
   nnoremap <leader>- :wincmd _<CR>:wincmd \|<CR>
   nnoremap <leader>= :wincmd =<CR>
-
-  nnoremap <leader>q :bdelete<CR>
 
   " vim-move (Alt + jk)
   vnoremap √ <Plug>MoveBlockDown
@@ -236,8 +235,6 @@
 
   nmap <c-p> :Files<CR>
   nmap <leader>f :GitFiles<CR>
-  nmap <leader>fg :GitFiles<CR>
-  nmap <leader>fb :Buffers<CR>
   nmap π :Files<CR>
   nmap <leader>F :call CustomFind()<CR>
   vmap ƒ <Plug>CtrlSFVwordPath
@@ -572,7 +569,7 @@ EOF
 
 " CtrlSF --------------------------------------------------------------------{{{
 
-  let g:ctrlsf_ackprg = 'rg'
+  let g:ctrlsf_ackprg = 'ag'
   let g:ctrlsf_mapping = {
       \ "next": "",
       \ "prev": "",

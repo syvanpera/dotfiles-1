@@ -183,16 +183,17 @@
   " nnoremap k gk
 
   " buffer operations
-  nnoremap <leader>bn :bnext<CR>
   nnoremap ﬂ :bnext<CR>
   nnoremap ˘ :bprevious<CR>
-  nnoremap <leader>bp :bprevious<CR>
-  nnoremap <leader>bd :bdelete<CR>
   nnoremap <leader>q :bdelete<CR>
-  nnoremap <leader>bf :Buffers<CR>
-  nnoremap <leader>bo :call CloseAllBuffersButCurrent()<CR>
+  nnoremap <leader>b :Buffers<CR>
+  " nnoremap <leader>bn :bnext<CR>
+  " nnoremap <leader>bp :bprevious<CR>
+  " nnoremap <leader>bd :bdelete<CR>
+  " nnoremap <leader>bf :Buffers<CR>
+  " nnoremap <leader>bo :call CloseAllBuffersButCurrent()<CR>
   " Switch between the last two buffers
-  nnoremap <leader>bb <c-^>
+  " nnoremap <leader>bb <c-^>
   nnoremap <leader><tab> <c-^>
 
   " window movement
@@ -234,7 +235,7 @@
   nmap <leader>gL :GV!<CR>
 
   nmap <c-p> :Files<CR>
-  nmap <leader>f :GitFiles<CR>
+  nmap <leader>f :Files<CR>
   nmap π :Files<CR>
   nmap <leader>F :call CustomFind()<CR>
   vmap ƒ <Plug>CtrlSFVwordPath
@@ -242,6 +243,7 @@
   nmap ƒƒ :CtrlSFToggle<CR>
   nmap ∫ <Plug>CtrlSFPrompt
   nmap ∏ :Commands<CR>
+  nmap <leader>c :Commands<CR>
   nmap é :History<CR>
 
   imap <c-x><c-f> <plug>(fzf-complete-path)

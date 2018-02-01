@@ -192,6 +192,7 @@
   nnoremap <leader>bo :call CloseAllBuffersButCurrent()<CR>
   " Switch between the last two buffers
   nnoremap <leader>bb <c-^>
+  nnoremap <leader><tab> <c-^>
 
   " window movement
   " nmap <c-j> <c-w>j
@@ -211,9 +212,9 @@
   nnoremap √ <Plug>MoveLineDown
   nnoremap ª <Plug>MoveLineUp
 
-  " bind K to search for word under cursor using Ag
-  nnoremap K :Ag <C-R><C-W><CR>
-  vnoremap K :Ag <C-R><C-W><CR>
+  " bind K to search for word under cursor
+  nnoremap K :Find <C-R><C-W><CR>
+  vnoremap K :Find <C-R><C-W><CR>
 
   nnoremap <c-s> :w<CR>
   nnoremap <leader>h :nohl<CR>
@@ -234,9 +235,11 @@
   nmap <leader>gL :GV!<CR>
 
   nmap <c-p> :Files<CR>
-  nmap <leader>f :Files<CR>
+  nmap <leader>f :GitFiles<CR>
+  nmap <leader>fg :GitFiles<CR>
+  nmap <leader>fb :Buffers<CR>
   nmap π :Files<CR>
-  nmap <leader>F :call CustomAg()<CR>
+  nmap <leader>F :call CustomFind()<CR>
   vmap ƒ <Plug>CtrlSFVwordPath
   nmap ƒ <Plug>CtrlSFCwordPath
   nmap ƒƒ :CtrlSFToggle<CR>
@@ -308,8 +311,8 @@
 
 " Custom Functions ----------------------------------------------------------{{{
 
-  function! CustomAg() " {{{
-    execute 'Ag' input('Whaddya want? ')
+  function! CustomFind() " {{{
+    execute 'Find' input('Whaddya want? ')
   endfunction " }}}
 
   function! CloseAllBuffersButCurrent() " {{{
@@ -437,12 +440,27 @@
         \ 'spinner': ['fg', 'Label'],
         \ 'header':  ['fg', 'Comment'] }
 
+  command! -bang -nargs=* Find
+        \ call fzf#vim#grep(
+        \   'rg --column --line-number --no-heading --fixed-strings --ignore-case --no-ignore --hidden --follow --glob "!.git/*" --color "always" '.shellescape(<q-args>).'| tr -d "\017"', 1,
+        \   <bang>0)
+
   command! -bang -nargs=* Ag
-        \ call fzf#vim#ag(<q-args>,
+        \ call fzf#vim#grep(<q-args>,
         \   '--color-path 32 --color-line-number 34',
         \   <bang>0 ? fzf#vim#with_preview('up:60%')
         \           : fzf#vim#with_preview('right:50%:hidden', '?'),
         \   <bang>0)
+
+  command! -bang -nargs=* Rg
+        \ call fzf#vim#grep(
+        \   'rg --column --line-number --no-heading --color=always '.shellescape(<q-args>), 1,
+        \   <bang>0 ? fzf#vim#with_preview('up:60%')
+        \           : fzf#vim#with_preview('right:50%:hidden', '?'),
+        \   <bang>0)
+
+  command! -bang -nargs=? -complete=dir Files
+        \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
 
 "}}}
 
@@ -554,6 +572,7 @@ EOF
 
 " CtrlSF --------------------------------------------------------------------{{{
 
+  let g:ctrlsf_ackprg = 'rg'
   let g:ctrlsf_mapping = {
       \ "next": "",
       \ "prev": "",

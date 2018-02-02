@@ -109,6 +109,7 @@
   set inccommand=nosplit
   set shortmess=atIc
   set isfname-==
+  set suffixesadd=.js,.coffee
 
   " Clear trailing whitespace when saving buffer
   autocmd BufWritePre * %s/\s\+$//e

@@ -14,6 +14,7 @@ brew 'python3'
 brew 'reattach-to-user-namespace'
 brew 'nvm'
 brew 'ripgrep'
+brew 'yarn', args: ['without-node']
 
 cask 'iterm2'
 cask 'google-chrome'

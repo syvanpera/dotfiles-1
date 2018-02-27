@@ -27,8 +27,9 @@
   call dein#add('Shougo/neco-vim')
   call dein#add('Shougo/neco-syntax')
   call dein#add('ternjs/tern_for_vim', {'build': 'npm install'})
-  call dein#add('zchee/deoplete-jedi')
   call dein#add('carlitux/deoplete-ternjs', {'build': 'npm install -g tern'})
+  call dein#add('othree/jspc.vim')
+  " call dein#add('zchee/deoplete-jedi')
 
   call dein#add('neoclide/vim-jsx-improve')
   " call dein#add('pangloss/vim-javascript')
@@ -109,7 +110,7 @@
   set inccommand=nosplit
   set shortmess=atIc
   set isfname-==
-  set suffixesadd=.js,.coffee
+  set suffixesadd=.js,.coffee,.jsx
 
   " Clear trailing whitespace when saving buffer
   autocmd BufWritePre * %s/\s\+$//e
@@ -234,6 +235,8 @@
   nmap <leader>ge :Gedit<CR>
   nmap <leader>gl :GV<CR>
   nmap <leader>gL :GV!<CR>
+  nmap <leader>gp :Gpush<CR>
+  nmap <leader>gpf :Gpush --force-with-lease<CR>
 
   nmap <c-p> :Files<CR>
   nmap <leader>f :Files<CR>
@@ -293,7 +296,7 @@
   let g:doorboy_nomap_quotations = {
     \ 'javascript': ['/']
     \ }
-  let g:localvimrc_whitelist='/Users/tinimini/projects/.*'
+  let g:localvimrc_whitelist=['/Users/tinimini/projects/', '/Users/tinimini/work/']
   let g:localvimrc_sandbox=0
   let g:indentLine_enabled=0
   " let g:indentLine_char='┆'
@@ -302,7 +305,7 @@
   autocmd FileType typescript JsPreTmpl html
   " autocmd FileType typescript syn clear foldBraces
   autocmd FileType qf,fzf setlocal nonumber norelativenumber
-  autocmd FileType html,css,scss,javascript,typescript,coffee :IndentLinesEnable
+  autocmd FileType html,css,scss,javascript,typescript,coffee,jsx :IndentLinesEnable
   " autocmd FileType coffee setlocal suffixesadd=.js,.coffee,.ejs
   " autocmd FileType javascript setlocal suffixesadd=.js,.coffee,.ejs
   " autocmd FileType javascript.jsx setlocal suffixesadd=.js,.coffee,.ejs
@@ -525,7 +528,7 @@ EOF
 
   let g:deoplete#enable_at_startup = 1
   let g:echodoc_enable_at_startup=1
-  set completeopt-=preview
+  " set completeopt-=preview
   autocmd CompleteDone * pclose
 
   call deoplete#custom#set('buffer', 'mark', 'ℬ')

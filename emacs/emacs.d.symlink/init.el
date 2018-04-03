@@ -169,8 +169,8 @@
   :ensure t
   :config
   (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
-  ;; (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
-  ;; (add-hook 'js2-mode-hook 'rainbow-delimiters-mode))
+;; (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
+;; (add-hook 'js2-mode-hook 'rainbow-delimiters-mode))
 
 (use-package all-the-icons
   :ensure t)
@@ -190,7 +190,6 @@
 (use-package oceanic-theme
   :ensure t)
 (load-theme 'oceanic)
-(load-theme 'ts-overrides)
 
 ;; (use-package dracula-theme
 ;;   :ensure t)
@@ -297,19 +296,19 @@
     (spaceline-spacemacs-theme)
     (spaceline-helm-mode 1)
 
-  ;;   (spaceline-install
-  ;;     'main
-  ;;     '((buffer-modified)
-  ;;       ((remote-host buffer-id) :face highlight-face)
-  ;;       (process :when active))
-  ;;     '((selection-info :face region :when mark-active)
-  ;;       ((flycheck-error flycheck-warning flycheck-info) :when active)
-  ;;       (which-function)
-  ;;       (version-control :when active)
-  ;;       (line-column)
-  ;;       (global :when active)
-  ;;       (major-mode))))
-  ))
+    ;;   (spaceline-install
+    ;;     'main
+    ;;     '((buffer-modified)
+    ;;       ((remote-host buffer-id) :face highlight-face)
+    ;;       (process :when active))
+    ;;     '((selection-info :face region :when mark-active)
+    ;;       ((flycheck-error flycheck-warning flycheck-info) :when active)
+    ;;       (which-function)
+    ;;       (version-control :when active)
+    ;;       (line-column)
+    ;;       (global :when active)
+    ;;       (major-mode))))
+    ))
 
 ;; end ts-interface
 

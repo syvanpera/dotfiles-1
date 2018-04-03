@@ -36,7 +36,5 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   "Hide the cursor in helm buffers."
   (with-helm-buffer
     (setq cursor-in-non-selected-windows nil)))
-(add-hook 'helm-after-initialize-hook
-          'spacemacs//hide-cursor-in-helm-buffer)
 
 (provide 'ts-funcs)

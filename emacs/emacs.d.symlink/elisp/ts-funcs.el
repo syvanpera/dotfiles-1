@@ -47,4 +47,11 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (interactive)
   (load-file user-init-file))
 
+(defun ts/contextual-helm-ag (args)
+  "Does helm-ag or helm-projectile-ag depending on whether we are in a project or not."
+  (interactive "P")
+  (if (projectile-project-p)
+      (helm-projectile-ag args)
+    (helm-ag args)))
+
 (provide 'ts-funcs)

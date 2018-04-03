@@ -5,6 +5,8 @@
 (when (fboundp 'blink-cursor-mode) (blink-cursor-mode -1))
 (when (fboundp 'mouse-wheel-mode) (mouse-wheel-mode 1))
 
+(setq exec-path (append exec-path '("~/.dotfiles/bin/")))
+
 (require 'package)
 (setq package-enable-at-startup nil
       package-archives
@@ -83,7 +85,6 @@
 (show-paren-mode t)
 (electric-pair-mode t)
 (electric-indent-mode t)
-;; (display-time-mode t)
 
 (use-package evil
   :ensure t
@@ -91,36 +92,7 @@
   (setq evil-want-integration nil)
 
   :config
-  (evil-mode 1)
-
-  (use-package evil-leader
-    :ensure t
-    :config
-    (global-evil-leader-mode)
-    (evil-leader/set-leader ",")
-
-    (evil-leader/set-key
-      "TAB"    'ts/alternate-buffer
-      "'"      'shell-pop
-      "q"      'ts/kill-window-or-buffer
-      "h k"    'describe-key
-      "h v"    'describe-variable
-      "f f"    'helm-find-files
-      "f r"    'helm-recentf
-      "r"      'helm-recentf
-      "b"      'helm-mini
-      "p p"    'helm-projectile-switch-project
-      "p f"    'helm-projectile-find-file
-      "p r"    'helm-projectile-recentf
-      "v"      'ts/edit-configuration
-      "u"      'ts/load-configuration
-      "e"      'neotree-toggle))
-
-  ;;(use-package evil-collection
-  ;;  :ensure t
-  ;;  :defer t
-  ;;  :config
-  ;;  (evil-collection-init))
+  (evil-mode t)
 
   (define-key evil-normal-state-map (kbd "M-s") #'save-buffer)
   (define-key evil-normal-state-map (kbd "M-a") #'mark-whole-buffer)
@@ -128,11 +100,14 @@
   (define-key evil-normal-state-map (kbd "M-c") #'evil-yank)
   (define-key evil-normal-state-map (kbd "M-v") #'clipboard-yank)
   (define-key evil-insert-state-map (kbd "M-v") #'clipboard-yank)
+  (define-key evil-normal-state-map (kbd "M-y") #'helm-show-kill-ring)
+  (define-key evil-insert-state-map (kbd "M-y") #'helm-show-kill-ring)
   (define-key evil-normal-state-map (kbd "C-h") #'evil-window-left)
   (define-key evil-normal-state-map (kbd "C-j") #'evil-window-down)
   (define-key evil-normal-state-map (kbd "C-k") #'evil-window-up)
   (define-key evil-normal-state-map (kbd "C-l") #'evil-window-right)
   (define-key evil-normal-state-map (kbd "u")   #'undo-tree-undo)
+  (define-key evil-normal-state-map (kbd "M-u") #'undo-tree-visualize)
   (define-key evil-normal-state-map (kbd "C-r") #'undo-tree-redo)
   (define-key evil-normal-state-map (kbd "g f") #'helm-projectile-find-file-dwim)
   (define-key evil-normal-state-map (kbd "g c") #'comment-line)
@@ -155,6 +130,37 @@
   (evil-define-key 'normal neotree-mode-map (kbd "H") 'neotree-hidden-file-toggle)
   (evil-define-key 'normal neotree-mode-map (kbd "RET") 'neotree-enter))
 
+(use-package evil-leader
+  :ensure t
+  :after evil
+  :init
+  (setq evil-leader/in-all-states t)
+
+  :config
+  (evil-leader/set-leader ",")
+  (evil-mode nil)
+  (global-evil-leader-mode)
+  (evil-mode t)
+
+  (evil-leader/set-key
+    "TAB"    'ts/alternate-buffer
+    "'"      'shell-pop
+    "q"      'ts/kill-window-or-buffer
+    "h k"    'describe-key
+    "h v"    'describe-variable
+    "h f"    'describe-function
+    "h w"    'where-is
+    "f f"    'helm-find-files
+    "f r"    'helm-recentf
+    "r"      'helm-recentf
+    "b"      'helm-mini
+    "p p"    'helm-projectile-switch-project
+    "p f"    'helm-projectile-find-file
+    "p r"    'helm-projectile-recentf
+    "v"      'ts/edit-configuration
+    "u"      'ts/load-configuration
+    "e"      'neotree-toggle))
+
 (use-package diminish
   :ensure t)
 
@@ -171,30 +177,14 @@
   :ensure t
   :config
   (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
-;; (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
-;; (add-hook 'js2-mode-hook 'rainbow-delimiters-mode))
 
 (use-package all-the-icons
   :ensure t)
-
-;; (use-package color-theme-sanityinc-tomorrow
-;;   :ensure t)
-;; (load-theme 'sanityinc-tomorrow-eighties)
-;; (load-theme 'ts-overrides)
 
 (use-package oceanic-theme
   :ensure t)
 (load-theme 'oceanic)
 (load-theme 'ts-overrides)
-
-;; (use-package dracula-theme
-;;   :ensure t)
-;; (load-theme 'dracula)
-;; (load-theme 'dracula-overrides)
-
-;; (use-package doom-themes
-;;   :ensure t)
-;; (load-theme 'doom-one)
 
 (use-package neotree
   :ensure t
@@ -208,6 +198,7 @@
   :bind (("M-x" . helm-M-x)
          ("M-P" . helm-M-x)
          ("M-p" . helm-find-files)
+         ("M-r" . helm-recentf)
          ("M-e" . helm-recentf))
   :init
   (setq helm-buffers-fuzzy-matching t
@@ -216,14 +207,19 @@
         helm-display-buffer-default-height 15)
 
   :config
-  (helm-mode 1)
+  (helm-mode t)
 
   (define-key helm-map (kbd "C-j") 'helm-next-line)
   (define-key helm-map (kbd "C-k") 'helm-previous-line)
+  (define-key helm-map (kbd "C-f") 'helm-next-page)
+  (define-key helm-map (kbd "C-b") 'helm-previous-page)
   (define-key helm-map (kbd "C-h") 'helm-next-source)
+  (define-key helm-map (kbd "C-v") 'helm-toggle-visible-mark)
+  (define-key helm-map (kbd "C-p") 'helm-copy-to-buffer)
   (define-key helm-map (kbd "C-S-h") 'describe-key)
   (define-key helm-map (kbd "C-l") (kbd "RET"))
   (define-key helm-map [escape] 'helm-keyboard-quit)
+
   (dolist (keymap (list helm-find-files-map helm-read-file-map))
     (define-key keymap (kbd "C-l") 'helm-execute-persistent-action)
     (define-key keymap (kbd "C-h") 'helm-find-files-up-one-level)
@@ -232,7 +228,8 @@
   (add-hook 'helm-after-initialize-hook 'ts/hide-cursor-in-helm-buffer))
 
 (use-package helm-ag
-  :ensure t)
+  :ensure t
+  :bind (("∫" . ts/contextual-helm-ag)))
 
 (use-package helm-projectile
   :ensure t)
@@ -265,32 +262,11 @@
 (use-package powerline
   :ensure t
   :init
-  (setq powerline-image-apple-rgb t)
-
-  :config
-  ;;  (use-package telephone-line
-  ;;    :ensure t
-  ;;    :init
-  ;;    (setq telephone-line-primary-left-separator 'telephone-line-cubed-left
-  ;;          telephone-line-secondary-left-separator 'telephone-line-cubed-hollow-left
-  ;;          telephone-line-primary-right-separator 'telephone-line-cubed-right
-  ;;          telephone-line-secondary-right-separator 'telephone-line-cubed-hollow-right)
-  ;;    (setq telephone-line-height 24
-  ;;          telephone-line-evil-use-short-tag t)
-  ;;    :config
-  ;;    (telephone-line-mode t)))
-  )
+  (setq powerline-image-apple-rgb t))
 
 (use-package spaceline
   :ensure t
   :after powerline)
-;; :init
-;; (setq-default
-;;  powerline-height 20
-;;  powerline-default-separator 'wave
-;;  spaceline-flycheck-bullet "❖ %s"
-;;  spaceline-separator-dir-left '(right . right)
-;;  spaceline-separator-dir-right '(left . left)))
 
 (use-package spaceline-config
   :ensure spaceline
@@ -298,9 +274,7 @@
   :init
   (setq spaceline-highlight-face-func 'spaceline-highlight-face-evil-state)
   :config
-  ;; (spaceline-spacemacs-theme)
-  (spaceline-helm-mode 1))
-;; (spaceline-toggle-minor-modes-off))
+  (spaceline-helm-mode t))
 
 (use-package spaceline-all-the-icons
   :after spaceline
@@ -309,9 +283,9 @@
         spaceline-all-the-icons-separator-type 'cup)
   :config
   (spaceline-all-the-icons-theme)
+  (spaceline-all-the-icons--setup-git-ahead)
   (spaceline-toggle-all-the-icons-buffer-position-on)
-  (spaceline-toggle-all-the-icons-region-info-on)
-  )
+  (spaceline-toggle-all-the-icons-region-info-on))
 
 (use-package company
   :ensure t
@@ -319,7 +293,7 @@
   :config
   ;;  (setq company-idle-delay nil)
 
-  (global-company-mode +1)
+  (global-company-mode t)
 
   (define-key company-active-map (kbd "C-j") 'company-select-next-or-abort)
   (define-key company-active-map (kbd "C-k") 'company-select-previous-or-abort)

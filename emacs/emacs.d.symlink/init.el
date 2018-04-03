@@ -159,7 +159,8 @@
     "p r"    'helm-projectile-recentf
     "v"      'ts/edit-configuration
     "u"      'ts/load-configuration
-    "e"      'neotree-toggle))
+    "e"      'neotree-toggle
+    "g s"    'magit-status))
 
 (use-package diminish
   :ensure t)
@@ -257,7 +258,8 @@
   (which-key-declare-prefixes ", h" "help")
   (which-key-declare-prefixes ", p" "project")
   (which-key-declare-prefixes ", f" "files")
-  (which-key-declare-prefixes ", b" "buffers"))
+  (which-key-declare-prefixes ", b" "buffers")
+  (which-key-declare-prefixes ", g" "git"))
 
 (use-package powerline
   :ensure t
@@ -343,6 +345,13 @@
   :ensure t
   :config
   (eshell-git-prompt-use-theme 'powerline))
+
+(use-package magit
+  :ensure t)
+
+(use-package evil-magit
+  :ensure t
+  :after magit)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.

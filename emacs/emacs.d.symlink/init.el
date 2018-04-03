@@ -23,20 +23,16 @@
 (eval-when-compile
   (require 'use-package))
 
-;; Emacs core settings
-;;(require 'ts-core)
-;;(require 'ts-evil)
-
-;;(require 'ts-ui)
-;;(require 'ts-interface)
-
-;; ts-core
 (require 'ts-funcs)
 
 (defvar ts/backup-directory (concat user-emacs-directory "backups"))
+(defvar ts/theme-directory (concat user-emacs-directory "themes"))
 
 (if (not (file-exists-p ts/backup-directory))
     (make-directory ts/backup-directory t))
+
+(if (not (file-exists-p ts/theme-directory))
+    (make-directory ts/theme-directory t))
 
 (setq backup-directory-alist `(("." . ,ts/backup-directory)))
 
@@ -54,15 +50,14 @@
       initial-scratch-message nil
       ring-bell-function 'ignore)
 
+(add-to-list 'custom-theme-load-path ts/theme-directory)
+
 (fset 'yes-or-no-p 'y-or-n-p)
 
 (setq mac-command-modifier 'meta
       mac-option-modifier  'alt
       mac-redisplay-dont-reset-vscroll t
       mac-mouse-wheel-smooth-scroll t
-      ;; mouse-wheel-scroll-amount '(5 ((shift) . 2))  ; one line at a time
-      ;; mouse-wheel-progressive-speed nil             ; don't accelerate scrolling
-      ;; ns-use-native-fullscreen nil
       ns-alternate-modifier 'none)
 
 (set-language-environment "UTF-8")
@@ -72,9 +67,24 @@
               show-trailing-whitespace t
               tab-width 4)
 
-;; end ts-core
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
 
-;; ts-evil
+(setq display-line-numbers-type 'relative
+      display-time-24hr-format t
+      custom-safe-themes t
+      show-paren-when-point-inside-paren t)
+
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+(add-hook 'text-mode-hook 'display-line-numbers-mode)
+(add-hook 'prog-mode-hook 'hl-line-mode)
+
+;; (global-display-line-numbers-mode)
+;; (global-hl-line-mode t)
+(show-paren-mode t)
+(electric-pair-mode t)
+(electric-indent-mode t)
+;; (display-time-mode t)
+
 (use-package evil
   :ensure t
   :init
@@ -89,17 +99,21 @@
     (global-evil-leader-mode)
     (evil-leader/set-leader ",")
 
-
     (evil-leader/set-key
       "TAB"    'ts/alternate-buffer
+      "'"      'shell-pop
       "q"      'ts/kill-window-or-buffer
       "h k"    'describe-key
       "h v"    'describe-variable
+      "f f"    'helm-find-files
+      "f r"    'helm-recentf
       "r"      'helm-recentf
-      "f"      'helm-find-files
       "b"      'helm-mini
       "p p"    'helm-projectile-switch-project
       "p f"    'helm-projectile-find-file
+      "p r"    'helm-projectile-recentf
+      "v"      'ts/edit-configuration
+      "u"      'ts/load-configuration
       "e"      'neotree-toggle))
 
   ;;(use-package evil-collection
@@ -133,32 +147,20 @@
   (define-key minibuffer-local-must-match-map [escape] 'ts/minibuffer-keyboard-quit)
   (define-key minibuffer-local-isearch-map [escape] 'ts/minibuffer-keyboard-quit)
 
-  ;; Make some keys shadowed by Evil work again in Neotree
   (evil-define-key 'normal neotree-mode-map (kbd "TAB") 'neotree-enter)
   (evil-define-key 'normal neotree-mode-map (kbd "SPC") 'neotree-quick-look)
   (evil-define-key 'normal neotree-mode-map (kbd "o") 'neotree-enter)
   (evil-define-key 'normal neotree-mode-map (kbd "q") 'neotree-hide)
+  (evil-define-key 'normal neotree-mode-map (kbd "c") 'neotree-create-node)
   (evil-define-key 'normal neotree-mode-map (kbd "H") 'neotree-hidden-file-toggle)
   (evil-define-key 'normal neotree-mode-map (kbd "RET") 'neotree-enter))
-;; end ts-evil
 
-;; ts-ui
-(setq display-line-numbers-type 'relative
-      display-time-24hr-format t
-      custom-safe-themes t
-      show-paren-when-point-inside-paren t)
-
-(add-hook 'prog-mode-hook 'display-line-numbers-mode)
-(add-hook 'text-mode-hook 'display-line-numbers-mode)
-
-;;(global-display-line-numbers-mode)
-(global-hl-line-mode t)
-(show-paren-mode t)
-(electric-pair-mode t)
-;;(display-time-mode t)
+(use-package diminish
+  :ensure t)
 
 (use-package rainbow-mode
   :ensure t
+  :diminish rainbow-mode
   :config
   (add-hook 'emacs-lisp-mode-hook 'rainbow-mode)
   (add-hook 'css-mode-hook 'rainbow-mode)
@@ -175,13 +177,6 @@
 (use-package all-the-icons
   :ensure t)
 
-(defvar ts/theme-directory (concat user-emacs-directory "themes"))
-
-(if (not (file-exists-p ts/theme-directory))
-    (make-directory ts/theme-directory t))
-
-(add-to-list 'custom-theme-load-path ts/theme-directory)
-
 ;; (use-package color-theme-sanityinc-tomorrow
 ;;   :ensure t)
 ;; (load-theme 'sanityinc-tomorrow-eighties)
@@ -190,6 +185,7 @@
 (use-package oceanic-theme
   :ensure t)
 (load-theme 'oceanic)
+(load-theme 'ts-overrides)
 
 ;; (use-package dracula-theme
 ;;   :ensure t)
@@ -200,9 +196,6 @@
 ;;   :ensure t)
 ;; (load-theme 'doom-one)
 
-;; end ts-ui
-
-;; ts-interface
 (use-package neotree
   :ensure t
   :init
@@ -211,6 +204,7 @@
 
 (use-package helm
   :ensure t
+  :diminish helm-mode
   :bind (("M-x" . helm-M-x)
          ("M-P" . helm-M-x)
          ("M-p" . helm-find-files)
@@ -218,7 +212,8 @@
   :init
   (setq helm-buffers-fuzzy-matching t
         helm-autoresize-mode t
-        helm-buffer-max-length 40)
+        helm-split-window-inside-p t
+        helm-display-buffer-default-height 15)
 
   :config
   (helm-mode 1)
@@ -244,11 +239,13 @@
 
 (use-package undo-tree
   :ensure t
+  :diminish undo-tree-mode
   :config
   (global-undo-tree-mode))
 
 (use-package projectile
   :ensure t
+  :diminish projectile-mode
   :init
   (setq projectile-enable-caching t)
 
@@ -257,8 +254,13 @@
 
 (use-package which-key
   :ensure t
+  :diminish which-key-mode
   :config
-  (which-key-mode))
+  (which-key-mode)
+  (which-key-declare-prefixes ", h" "help")
+  (which-key-declare-prefixes ", p" "project")
+  (which-key-declare-prefixes ", f" "files")
+  (which-key-declare-prefixes ", b" "buffers"))
 
 (use-package powerline
   :ensure t
@@ -277,43 +279,43 @@
   ;;          telephone-line-evil-use-short-tag t)
   ;;    :config
   ;;    (telephone-line-mode t)))
+  )
 
-  (use-package spaceline
-    :ensure t
-    :init
-    (setq-default
-     powerline-height 20
-     powerline-default-separator 'wave
-     spaceline-flycheck-bullet "❖ %s"
-     spaceline-separator-dir-left '(right . right)
-     spaceline-separator-dir-right '(left . left)))
+(use-package spaceline
+  :ensure t
+  :after powerline)
+;; :init
+;; (setq-default
+;;  powerline-height 20
+;;  powerline-default-separator 'wave
+;;  spaceline-flycheck-bullet "❖ %s"
+;;  spaceline-separator-dir-left '(right . right)
+;;  spaceline-separator-dir-right '(left . left)))
 
-  (use-package spaceline-config
-    :ensure spaceline
-    :init
-    (setq spaceline-highlight-face-func 'spaceline-highlight-face-evil-state)
-    :config
-    (spaceline-spacemacs-theme)
-    (spaceline-helm-mode 1)
+(use-package spaceline-config
+  :ensure spaceline
+  :after spaceline
+  :init
+  (setq spaceline-highlight-face-func 'spaceline-highlight-face-evil-state)
+  :config
+  ;; (spaceline-spacemacs-theme)
+  (spaceline-helm-mode 1))
+;; (spaceline-toggle-minor-modes-off))
 
-    ;;   (spaceline-install
-    ;;     'main
-    ;;     '((buffer-modified)
-    ;;       ((remote-host buffer-id) :face highlight-face)
-    ;;       (process :when active))
-    ;;     '((selection-info :face region :when mark-active)
-    ;;       ((flycheck-error flycheck-warning flycheck-info) :when active)
-    ;;       (which-function)
-    ;;       (version-control :when active)
-    ;;       (line-column)
-    ;;       (global :when active)
-    ;;       (major-mode))))
-    ))
-
-;; end ts-interface
+(use-package spaceline-all-the-icons
+  :after spaceline
+  :init
+  (setq spaceline-all-the-icons-highlight-file-name t
+        spaceline-all-the-icons-separator-type 'cup)
+  :config
+  (spaceline-all-the-icons-theme)
+  (spaceline-toggle-all-the-icons-buffer-position-on)
+  (spaceline-toggle-all-the-icons-region-info-on)
+  )
 
 (use-package company
   :ensure t
+  :diminish company-mode
   :config
   ;;  (setq company-idle-delay nil)
 
@@ -333,6 +335,40 @@
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
+
+(use-package web-mode
+  :ensure t
+  :config
+  (add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.ejs\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
+
+(use-package rjsx-mode
+  :ensure t
+  :config
+  (add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode))
+  (add-hook 'rjsx-mode-hook (lambda () (setq js2-strict-missing-semi-warning nil))))
+
+(use-package js2-refactor
+  :ensure t
+  :config
+  (add-hook 'rjsx-mode-hook #'js2-refactor-mode)
+  (js2r-add-keybindings-with-prefix "C-c C-m"))
+
+(use-package expand-region
+  :ensure t
+  :config
+  (define-key evil-normal-state-map (kbd "C-0") #'er/expand-region))
+
+(use-package shell-pop
+  :ensure t
+  :init
+  (setq shell-pop-shell-type (quote ("eshell" "*eshell*" (lambda nil (eshell shell-pop-term-shell))))))
+
+(use-package eshell-git-prompt
+  :ensure t
+  :config
+  (eshell-git-prompt-use-theme 'powerline))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.

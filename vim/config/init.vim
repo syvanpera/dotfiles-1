@@ -28,7 +28,7 @@
   call dein#add('Shougo/neco-syntax')
   call dein#add('ternjs/tern_for_vim', {'build': 'npm install'})
   call dein#add('carlitux/deoplete-ternjs', {'build': 'npm install -g tern'})
-  call dein#add('othree/jspc.vim')
+  " call dein#add('othree/jspc.vim')
   " call dein#add('zchee/deoplete-jedi')
 
   call dein#add('neoclide/vim-jsx-improve')
@@ -63,6 +63,8 @@
   call dein#add('vim-scripts/indentpython.vim')
 
   call dein#add('pelodelfuego/vim-swoop.git')
+
+  call dein#add('cespare/vim-toml')
 
   if dein#check_install()
     call dein#install()
@@ -188,11 +190,8 @@
   nnoremap ﬂ :bnext<CR>
   nnoremap ˘ :bprevious<CR>
   nnoremap <leader>q :bdelete<CR>
-  nnoremap <leader>b :Buffers<CR>
-  " nnoremap <leader>bn :bnext<CR>
-  " nnoremap <leader>bp :bprevious<CR>
-  " nnoremap <leader>bd :bdelete<CR>
-  " nnoremap <leader>bf :Buffers<CR>
+  nnoremap <leader>bd :bdelete<CR>
+  nnoremap <leader>bb :Buffers<CR>
   " nnoremap <leader>bo :call CloseAllBuffersButCurrent()<CR>
   " Switch between the last two buffers
   " nnoremap <leader>bb <c-^>
@@ -221,9 +220,9 @@
   nnoremap <c-s> :w<CR>
   nnoremap <leader>h :nohl<CR>
   nnoremap <leader>n :set rnu!<CR>
-  inoremap <c-d> <esc>ddi
 
   nnoremap <leader>td :TernDef<CR>zz
+  nnoremap <leader>tr :TernRename<CR>
 
   " autocmd FileType javascript nnoremap <leader>r :noautocmd vimgrep /\(function\)\? \?[^\( \|:\|(\)]\+:\? \?\(function\)\?([^(]*) \?{/j %<CR>:cw<CR>
   " autocmd FileType coffee nnoremap <leader>r :noautocmd vimgrep /^[^ ]\+ = \((.*)\)\? \?->/j %<CR>:cw<CR>
@@ -242,8 +241,8 @@
   nmap <leader>f :Files<CR>
   nmap π :Files<CR>
   nmap <leader>F :call CustomFind()<CR>
-  vmap ƒ <Plug>CtrlSFVwordPath
-  nmap ƒ <Plug>CtrlSFCwordPath
+  vmap ƒ <Plug>CtrlSFVwordPath<CR>
+  nmap ƒ <Plug>CtrlSFCwordPath<CR>
   nmap ƒƒ :CtrlSFToggle<CR>
   nmap ∫ <Plug>CtrlSFPrompt
   nmap ∏ :Commands<CR>
@@ -477,8 +476,6 @@
 
   let g:javascript_plugin_flow = 1
   let g:jsx_ext_required = 0
-  let g:tern#command = ["tern"]
-  let g:tern#arguments = ["--persistent"]
   " let g:ale_lint_on_save = 1
   " let g:ale_lint_on_text_changed = 0
 
@@ -524,11 +521,25 @@ EOF
 
 " }}}
 
-" Deoplete ------------------------------------------------------------------{{{
+" Completion/Deoplete -------------------------------------------------------{{{
+  set completeopt=longest,menuone,preview
 
   let g:deoplete#enable_at_startup = 1
+  if !exists('g:deoplete#omni#input_patterns')
+    let g:deoplete#omni#input_patterns = {}
+  endif
+  let g:tern#command = ["tern"]
+  let g:tern#arguments = ["--persistent"]
+  let g:tern_show_argument_hints = 'on_hold'
+  let g:tern_show_signature_in_pum = 1
   let g:echodoc_enable_at_startup=1
-  " set completeopt-=preview
+  let g:deoplete#omni#functions = {}
+  let g:deoplete#omni#functions.javascript = [
+    \ 'tern#Complete'
+  \]
+  let g:deoplete#sources = {}
+  let g:deoplete#sources['javascript.jsx'] = ['omni', 'buffer', 'member', 'ultisnips', 'ternjs', 'file']
+
   autocmd CompleteDone * pclose
 
   call deoplete#custom#set('buffer', 'mark', 'ℬ')
@@ -545,8 +556,8 @@ EOF
      endif
   endfunction
   autocmd WinEnter * call Preview_func()
-  let g:deoplete#ignore_sources = {}
-  let g:deoplete#ignore_sources._ = ['around']
+  " let g:deoplete#ignore_sources = {}
+  " let g:deoplete#ignore_sources._ = ['around']
 
   function! g:Multiple_cursors_before()
     let g:deoplete#disable_auto_complete = 1

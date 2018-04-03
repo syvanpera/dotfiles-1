@@ -37,4 +37,14 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (with-helm-buffer
     (setq cursor-in-non-selected-windows nil)))
 
+(defun ts/edit-configuration ()
+  "Opens Emacs configuration file."
+  (interactive)
+  (find-file user-init-file))
+
+(defun ts/load-configuration ()
+  "Loads the Emacs configuration file."
+  (interactive)
+  (load-file user-init-file))
+
 (provide 'ts-funcs)

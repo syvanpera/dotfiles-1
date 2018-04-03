@@ -5,3 +5,4 @@
 .tern-project
 jsconfig.json
 .lvimrc
+.agignore

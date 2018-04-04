@@ -5,7 +5,10 @@
 (when (fboundp 'blink-cursor-mode) (blink-cursor-mode -1))
 (when (fboundp 'mouse-wheel-mode) (mouse-wheel-mode 1))
 
-(setq exec-path (append exec-path '("~/.dotfiles/bin/")))
+(defvar ts/paths '("~/.dotfiles/bin/" "~/.nvm/versions/node/v9.4.0/bin/"))
+
+(setenv "PATH" (concat (getenv "PATH") (mapconcat 'identity ts/paths ":")))
+(setq exec-path (append exec-path ts/paths))
 
 (require 'package)
 (setq package-enable-at-startup nil
@@ -46,7 +49,12 @@
       delete-by-moving-to-trash nil
       create-lockfiles nil
       kept-old-versions 1
-      kept-new-versions 1)
+      kept-new-versions 1
+      ediff-window-setup-function 'ediff-setup-windows-plain
+      help-window-select t
+      eshell-scroll-to-bottom-on-input t
+      save-interprogram-paste-before-kill t
+      x-select-enable-clipboard nil)
 
 (setq inhibit-startup-message t
       inhibit-startup-echo-area-message user-login-name
@@ -83,7 +91,8 @@
 (setq display-line-numbers-type 'relative
       display-time-24hr-format t
       custom-safe-themes t
-      show-paren-when-point-inside-paren t)
+      show-paren-when-point-inside-paren t
+      prettify-symbols-unprettify-at-point t)
 
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 (add-hook 'text-mode-hook 'display-line-numbers-mode)
@@ -96,6 +105,23 @@
 (electric-indent-mode t)
 (global-prettify-symbols-mode t)
 
+(with-current-buffer "*scratch*"
+  (emacs-lock-mode 'kill))
+
+(with-current-buffer "*Messages*"
+  (emacs-lock-mode 'kill))
+
+(add-hook 'emacs-lisp-mode-hook (lambda ()
+                                  (push '("<=" . ?≤) prettify-symbols-alist)
+                                  (push '(">=" . ?≥) prettify-symbols-alist)
+                                  (push '("==" . ?≡) prettify-symbols-alist)
+                                  (push '("===" . ?≣) prettify-symbols-alist)
+                                  (push '("!=" . ?≠) prettify-symbols-alist)
+                                  (push '("!==" . ?≢) prettify-symbols-alist)
+                                  (push '("->" . ?→) prettify-symbols-alist)
+                                  (push '("<-" . ?←) prettify-symbols-alist)
+                                  (push '("=>" . ?⇒) prettify-symbols-alist)))
+
 (use-package evil
   :ensure t
   :init
@@ -103,6 +129,12 @@
 
   :config
   (evil-mode t)
+
+  (define-key evil-normal-state-map   (kbd "C-g") #'ts/evil-keyboard-quit)
+  (define-key evil-motion-state-map   (kbd "C-g") #'ts/evil-keyboard-quit)
+  (define-key evil-insert-state-map   (kbd "C-g") #'ts/evil-keyboard-quit)
+  (define-key evil-window-map         (kbd "C-g") #'ts/evil-keyboard-quit)
+  (define-key evil-operator-state-map (kbd "C-g") #'ts/evil-keyboard-quit)
 
   (define-key evil-normal-state-map (kbd "M-s") #'save-buffer)
   (define-key evil-normal-state-map (kbd "M-a") #'mark-whole-buffer)
@@ -119,8 +151,14 @@
   (define-key evil-normal-state-map (kbd "u")   #'undo-tree-undo)
   (define-key evil-normal-state-map (kbd "M-u") #'undo-tree-visualize)
   (define-key evil-normal-state-map (kbd "C-r") #'undo-tree-redo)
-  (define-key evil-normal-state-map (kbd "g f") #'helm-projectile-find-file-dwim)
+  (define-key evil-normal-state-map (kbd "g f") #'projectile-find-file-dwim)
+  (define-key evil-normal-state-map (kbd "g F") #'projectile-find-file-dwim-other-window)
   (define-key evil-normal-state-map (kbd "g c") #'comment-line)
+  (define-key evil-normal-state-map (kbd "M-√") (lambda () (interactive) (scroll-other-window 1)))
+  (define-key evil-normal-state-map (kbd "M-ª") (lambda () (interactive) (scroll-other-window-down 1)))
+  (define-key evil-normal-state-map (kbd "M-ƒ") 'scroll-other-window)
+  (define-key evil-normal-state-map (kbd "M-›") 'scroll-other-window-down)
+  ;; TODO Move these to js2 mode specific bindings
   (define-key evil-normal-state-map (kbd "M-k") #'js2r-move-line-up)
   (define-key evil-normal-state-map (kbd "M-j") #'js2r-move-line-down)
 
@@ -150,39 +188,58 @@
   (evil-define-key 'normal neotree-mode-map (kbd "q") 'neotree-hide)
   (evil-define-key 'normal neotree-mode-map (kbd "c") 'neotree-create-node)
   (evil-define-key 'normal neotree-mode-map (kbd "H") 'neotree-hidden-file-toggle)
-  (evil-define-key 'normal neotree-mode-map (kbd "RET") 'neotree-enter))
+  (evil-define-key 'normal neotree-mode-map (kbd "RET") 'neotree-enter)
 
-(use-package evil-leader
-  :ensure t
-  :after evil
-  :init
-  (setq evil-leader/in-all-states t)
+  (evil-define-key 'motion undo-tree-visualize-mode-map (kbd "j") 'undo-tree-visualize-redo)
+  (evil-define-key 'motion undo-tree-visualize-mode-map (kbd "k") 'undo-tree-visualize-undo)
+  (evil-define-key 'motion undo-tree-visualize-mode-map (kbd "l") 'undo-tree-visualize-switch-branch-right)
+  (evil-define-key 'motion undo-tree-visualize-mode-map (kbd "h") 'undo-tree-visualize-switch-branch-left)
+  (evil-define-key 'motion undo-tree-visualize-mode-map (kbd "C-h") 'evil-window-left)
+  (evil-define-key 'motion undo-tree-visualize-mode-map (kbd "C-j") 'evil-window-down)
+  (evil-define-key 'motion undo-tree-visualize-mode-map (kbd "C-k") 'evil-window-up)
+  (evil-define-key 'motion undo-tree-visualize-mode-map (kbd "C-l") 'evil-window-right)
 
-  :config
-  (evil-leader/set-leader ",")
-  (evil-mode nil)
-  (global-evil-leader-mode)
-  (evil-mode t)
+  ;; (evil-define-key 'normal eshell-mode-map (kbd "A") 'ts/eshell-next-prompt-input)
+  (evil-define-key 'normal eshell-mode-map (kbd "q") 'shell-pop)
+  (evil-define-key 'insert eshell-mode-map (kbd "C-p") 'eshell-previous-matching-input-from-input)
+  (evil-define-key 'insert eshell-mode-map (kbd "C-n") 'eshell-next-matching-input-from-input)
+  (evil-define-key 'insert eshell-mode-map (kbd "C-r") 'helm-eshell-history))
 
-  (evil-leader/set-key
-    "TAB"    'ts/alternate-buffer
-    "'"      'shell-pop
-    "q"      'ts/kill-window-or-buffer
-    "h k"    'describe-key
-    "h v"    'describe-variable
-    "h f"    'describe-function
-    "h w"    'where-is
-    "f f"    'helm-find-files
-    "f r"    'helm-recentf
-    "r"      'helm-recentf
-    "b"      'helm-mini
-    "p p"    'helm-projectile-switch-project
-    "p f"    'helm-projectile-find-file
-    "p r"    'helm-projectile-recentf
-    "v"      'ts/edit-configuration
-    "u"      'ts/load-configuration
-    "e"      'neotree-toggle
-    "g s"    'magit-status))
+  (use-package evil-leader
+    :ensure t
+    :after evil
+    :init
+    (setq evil-leader/in-all-states t)
+
+    :config
+    (evil-leader/set-leader ",")
+    (evil-mode nil)
+    (global-evil-leader-mode)
+    (evil-mode t)
+
+    (evil-leader/set-key
+      "TAB"    'ts/alternate-buffer
+      "'"      'shell-pop
+      "q"      'ts/kill-window-or-buffer
+      "h k"    'describe-key
+      "h v"    'describe-variable
+      "h f"    'describe-function
+      "h w"    'where-is
+      "f f"    'helm-find-files
+      "f r"    'helm-recentf
+      "r"      'helm-recentf
+      "b"      'helm-mini
+      "p p"    'helm-projectile-switch-project
+      "p f"    'helm-projectile-find-file
+      "p r"    'helm-projectile-recentf
+      "v"      'ts/edit-configuration
+      "u"      'ts/load-configuration
+      "e"      'neotree-toggle
+      "g s"    'magit-status
+      "o l"    'org-store-link
+      "o a"    'ts/org-agenda-show-agenda-and-todo
+      "o c"    'org-capture
+      "o b"    'org-switchb))
 
 (use-package evil-surround
   :ensure t
@@ -287,7 +344,9 @@
   (which-key-declare-prefixes ", p" "project")
   (which-key-declare-prefixes ", f" "files")
   (which-key-declare-prefixes ", b" "buffers")
-  (which-key-declare-prefixes ", g" "git"))
+  (which-key-declare-prefixes ", g" "git")
+  (which-key-declare-prefixes ", o" "org")
+  (which-key-declare-prefixes ", t" "toggle"))
 
 (use-package powerline
   :ensure t
@@ -406,6 +465,23 @@
 
   :config
   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+
+(use-package paredit
+  :ensure t
+  :config
+  (add-hook 'emacs-lisp-mode-hook                  'enable-paredit-mode)
+  (add-hook 'lisp-mode-hook                        'enable-paredit-mode)
+  (add-hook 'eval-expression-minibuffer-setup-hook 'enable-paredit-mode)
+  (add-hook 'ielm-mode-hook                        'enable-paredit-mode)
+  (add-hook 'lisp-mode-hook                        'enable-paredit-mode)
+  (add-hook 'lisp-interaction-mode-hook            'enable-paredit-mode)
+  (add-hook 'scheme-mode-hook                      'enable-paredit-mode)
+  (add-hook 'js-mode-hook                          'ts/paredit-nonlisp))
+
+(use-package persistent-scratch
+  :ensure t
+  :config
+  (persistent-scratch-setup-default))
 
 ;; (use-package evil-org
 ;;   :ensure t

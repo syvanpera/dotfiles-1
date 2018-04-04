@@ -8,12 +8,16 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
     (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
     (abort-recursive-edit)))
 
+(defvar ts/not-to-kill-buffer-list '("*scratch*" "*Messages*" "*Warnings*"))
+
 (defun ts/kill-window-or-buffer ()
-  "Kills the current window if more than one open, otherwise kills the buffer."
+  "Kills the current window if more than one with same buffer open, otherwise kills the buffer."
   (interactive)
-  (if (= 1 (length (get-buffer-window-list (current-buffer))))
-      (kill-buffer-and-window)
-    (delete-window)))
+  (if (member (buffer-name (current-buffer)) ts/not-to-kill-buffer-list)
+      (delete-window)
+    (if (= 1 (length (get-buffer-window-list (current-buffer))))
+        (kill-buffer-and-window)
+        (delete-window))))
 
 (defun ts/alternate-buffer (&optional window)
   "Switch back and forth between current and last buffer in the current window."
@@ -53,5 +57,27 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (if (projectile-project-p)
       (helm-projectile-ag args)
     (helm-ag args)))
+
+(defun ts/paredit-nonlisp ()
+  "Turn on paredit mode for non-lisps."
+  (interactive)
+  (set (make-local-variable 'paredit-space-for-delimiter-predicates)
+       '((lambda (endp delimiter) nil)))
+  (paredit-mode 1))
+
+(defun ts/evil-keyboard-quit ()
+  "Keyboard quit and force normal state."
+  (interactive)
+  (and evil-mode (evil-force-normal-state))
+  (keyboard-quit))
+
+(defun ts/org-agenda-show-agenda-and-todo (&optional arg)
+  (interactive "P")
+  (org-agenda arg "n"))
+
+(defun ts/eshell-next-prompt-input ()
+  (interactive)
+  (eshell-next-prompt 0)
+  (evil-append-line nil))
 
 (provide 'ts-funcs)

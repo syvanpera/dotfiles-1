@@ -36,7 +36,8 @@
 (if (not (file-exists-p ts/theme-directory))
     (make-directory ts/theme-directory t))
 
-(setq backup-directory-alist `(("." . ,ts/backup-directory)))
+(setq backup-directory-alist `((".*" . ,ts/backup-directory)))
+(setq auto-save-file-name-transforms `((".*" ,ts/backup-directory t)))
 
 (setq make-backup-files nil
       backup-by-copying t
@@ -67,7 +68,15 @@
 
 (setq-default indent-tabs-mode nil
               show-trailing-whitespace t
-              tab-width 4)
+              standard-indent 2
+              tab-width 2
+              indent-tabs-mode nil
+              js-indent-level 2
+              js2-basic-offset 2
+              web-mode-markup-indent-offset 2
+              web-mode-css-indent-offset 2
+              web-mode-code-indent-offset 2
+              web-mode-indent-style 2)
 
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
@@ -85,6 +94,7 @@
 (show-paren-mode t)
 (electric-pair-mode t)
 (electric-indent-mode t)
+(global-prettify-symbols-mode t)
 
 (use-package evil
   :ensure t
@@ -111,6 +121,18 @@
   (define-key evil-normal-state-map (kbd "C-r") #'undo-tree-redo)
   (define-key evil-normal-state-map (kbd "g f") #'helm-projectile-find-file-dwim)
   (define-key evil-normal-state-map (kbd "g c") #'comment-line)
+  (define-key evil-normal-state-map (kbd "M-k") #'js2r-move-line-up)
+  (define-key evil-normal-state-map (kbd "M-j") #'js2r-move-line-down)
+
+  ;; Evilified org mode
+  (evil-define-key 'normal org-mode-map (kbd "M-h") 'org-metaleft)
+  (evil-define-key 'normal org-mode-map (kbd "M-l") 'org-metaright)
+  (evil-define-key 'normal org-mode-map (kbd "M-k") 'org-metaup)
+  (evil-define-key 'normal org-mode-map (kbd "M-j") 'org-metadown)
+  (evil-define-key 'normal org-mode-map (kbd "g h") 'org-backward-element)
+  (evil-define-key 'normal org-mode-map (kbd "g l") 'org-forward-element)
+  (evil-define-key 'normal org-mode-map (kbd "g k") 'org-up-element)
+  (evil-define-key 'normal org-mode-map (kbd "g j") 'org-down-element)
 
   ;; Ensure ESC quits in all modes: http://stackoverflow.com/a/10166400/61435
   (global-set-key [escape] 'evil-exit-emacs-state)
@@ -161,6 +183,12 @@
     "u"      'ts/load-configuration
     "e"      'neotree-toggle
     "g s"    'magit-status))
+
+(use-package evil-surround
+  :ensure t
+  :after evil
+  :config
+  (global-evil-surround-mode 1))
 
 (use-package diminish
   :ensure t)
@@ -334,7 +362,8 @@
 (use-package expand-region
   :ensure t
   :config
-  (define-key evil-normal-state-map (kbd "C-0") #'er/expand-region))
+  (define-key evil-normal-state-map (kbd "M-+") #'er/expand-region)
+  (define-key evil-normal-state-map (kbd "M--") #'er/contract-region))
 
 (use-package shell-pop
   :ensure t
@@ -357,6 +386,37 @@
   :ensure t
   :config
   (yas-global-mode t))
+
+(use-package org
+  :ensure t
+  :init
+  (setq org-directory "~/Documents/org")
+  (setq org-src-fontify-natively t)
+  (setq org-src-tab-acts-natively t)
+  (setq org-todo-keywords '((sequence "☛ TODO(t)" "|" "✔ DONE(d)")
+                            (sequence "⚑ WAITING(w)" "|")
+                            (sequence "|" "✘ CANCELED(c)"))))
+
+(use-package org-bullets
+  :ensure t
+  :after org
+  :init
+  (setq org-bullets-bullet-list '("◉" "◎" "⚫" "○" "►" "◇"))
+  ;; (setq org-ellipsis "⤵")
+
+  :config
+  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+
+;; (use-package evil-org
+;;   :ensure t
+;;   :after (evil org)
+;;   :config
+;;   (add-hook 'org-mode-hook 'evil-org-mode)
+;;   (add-hook 'evil-org-mode-hook
+;;             (lambda ()
+;;               (evil-org-set-key-theme (evil-org-set-key-theme '(textobjects insert navigation additional shift todo heading)))))
+;;   (require 'evil-org-agenda)
+;;   (evil-org-agenda-set-keys))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.

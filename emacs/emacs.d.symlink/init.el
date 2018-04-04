@@ -1,14 +1,13 @@
+;;; init.el --- My magnificent Emacs configuration
+
+;;; Code:
+
 ;; Unclutter the interface immediately
 (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (when (fboundp 'blink-cursor-mode) (blink-cursor-mode -1))
 (when (fboundp 'mouse-wheel-mode) (mouse-wheel-mode 1))
-
-(defvar ts/paths '("~/.dotfiles/bin/" "~/.nvm/versions/node/v9.4.0/bin/"))
-
-(setenv "PATH" (concat (getenv "PATH") (mapconcat 'identity ts/paths ":")))
-(setq exec-path (append exec-path ts/paths))
 
 (require 'package)
 (setq package-enable-at-startup nil
@@ -19,6 +18,12 @@
         ("marmalade"    . "http://marmalade-repo.org/packages/")))
 
 (add-to-list 'load-path (expand-file-name "elisp" user-emacs-directory))
+
+(require 'sensible-defaults)
+(sensible-defaults/use-all-settings)
+(sensible-defaults/use-all-keybindings)
+(sensible-defaults/backup-to-temp-directory)
+
 (package-initialize)
 
 (unless (package-installed-p 'use-package)
@@ -30,17 +35,7 @@
 
 (require 'ts-funcs)
 
-(defvar ts/backup-directory (concat user-emacs-directory "backups"))
-(defvar ts/theme-directory (concat user-emacs-directory "themes"))
-
-(if (not (file-exists-p ts/backup-directory))
-    (make-directory ts/backup-directory t))
-
-(if (not (file-exists-p ts/theme-directory))
-    (make-directory ts/theme-directory t))
-
-(setq backup-directory-alist `((".*" . ,ts/backup-directory)))
-(setq auto-save-file-name-transforms `((".*" ,ts/backup-directory t)))
+(defconst ts/theme-directory (concat user-emacs-directory "themes"))
 
 (setq make-backup-files nil
       backup-by-copying t
@@ -56,14 +51,10 @@
       save-interprogram-paste-before-kill t
       x-select-enable-clipboard nil)
 
-(setq inhibit-startup-message t
-      inhibit-startup-echo-area-message user-login-name
-      initial-scratch-message nil
+(setq inhibit-startup-echo-area-message user-login-name
       ring-bell-function 'ignore)
 
 (add-to-list 'custom-theme-load-path ts/theme-directory)
-
-(fset 'yes-or-no-p 'y-or-n-p)
 
 (setq mac-command-modifier 'meta
       mac-option-modifier  'alt
@@ -75,7 +66,6 @@
 (set-default-coding-systems 'utf-8)
 
 (setq-default indent-tabs-mode nil
-              show-trailing-whitespace t
               standard-indent 2
               tab-width 2
               indent-tabs-mode nil
@@ -86,21 +76,20 @@
               web-mode-code-indent-offset 2
               web-mode-indent-style 2)
 
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
-
 (setq display-line-numbers-type 'relative
       display-time-24hr-format t
       custom-safe-themes t
       show-paren-when-point-inside-paren t
-      prettify-symbols-unprettify-at-point t)
+      prettify-symbols-unprettify-at-point t
+      default-frame-alist '((font . "Hack-12")))
 
+(add-hook 'prog-mode-hook (lambda () (setq-local show-trailing-whitespace t)))
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
-(add-hook 'text-mode-hook 'display-line-numbers-mode)
+;; (add-hook 'text-mode-hook 'display-line-numbers-mode)
 (add-hook 'prog-mode-hook 'hl-line-mode)
 
 ;; (global-display-line-numbers-mode)
 ;; (global-hl-line-mode t)
-(show-paren-mode t)
 (electric-pair-mode t)
 (electric-indent-mode t)
 (global-prettify-symbols-mode t)
@@ -122,6 +111,16 @@
                                   (push '("<-" . ?←) prettify-symbols-alist)
                                   (push '("=>" . ?⇒) prettify-symbols-alist)))
 
+(defun display-startup-echo-area-message ()
+  "Startup message."
+  (message "Another Visitor! Stay awhile! Stay FOREVER!!!!!!!!!!!!"))
+
+(use-package exec-path-from-shell
+  :ensure t
+  :config
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize)))
+
 (use-package evil
   :ensure t
   :init
@@ -130,47 +129,10 @@
   :config
   (evil-mode t)
 
-  (define-key evil-normal-state-map   (kbd "C-g") #'ts/evil-keyboard-quit)
-  (define-key evil-motion-state-map   (kbd "C-g") #'ts/evil-keyboard-quit)
-  (define-key evil-insert-state-map   (kbd "C-g") #'ts/evil-keyboard-quit)
-  (define-key evil-window-map         (kbd "C-g") #'ts/evil-keyboard-quit)
-  (define-key evil-operator-state-map (kbd "C-g") #'ts/evil-keyboard-quit)
-
-  (define-key evil-normal-state-map (kbd "M-s") #'save-buffer)
-  (define-key evil-normal-state-map (kbd "M-a") #'mark-whole-buffer)
-  (define-key evil-normal-state-map (kbd "M-q") #'evil-quit-all)
-  (define-key evil-normal-state-map (kbd "M-c") #'evil-yank)
-  (define-key evil-normal-state-map (kbd "M-v") #'clipboard-yank)
-  (define-key evil-insert-state-map (kbd "M-v") #'clipboard-yank)
-  (define-key evil-normal-state-map (kbd "M-y") #'helm-show-kill-ring)
-  (define-key evil-insert-state-map (kbd "M-y") #'helm-show-kill-ring)
-  (define-key evil-normal-state-map (kbd "C-h") #'evil-window-left)
-  (define-key evil-normal-state-map (kbd "C-j") #'evil-window-down)
-  (define-key evil-normal-state-map (kbd "C-k") #'evil-window-up)
-  (define-key evil-normal-state-map (kbd "C-l") #'evil-window-right)
-  (define-key evil-normal-state-map (kbd "u")   #'undo-tree-undo)
-  (define-key evil-normal-state-map (kbd "M-u") #'undo-tree-visualize)
-  (define-key evil-normal-state-map (kbd "C-r") #'undo-tree-redo)
-  (define-key evil-normal-state-map (kbd "g f") #'projectile-find-file-dwim)
-  (define-key evil-normal-state-map (kbd "g F") #'projectile-find-file-dwim-other-window)
-  (define-key evil-normal-state-map (kbd "g c") #'comment-line)
-  (define-key evil-normal-state-map (kbd "M-√") (lambda () (interactive) (scroll-other-window 1)))
-  (define-key evil-normal-state-map (kbd "M-ª") (lambda () (interactive) (scroll-other-window-down 1)))
-  (define-key evil-normal-state-map (kbd "M-ƒ") 'scroll-other-window)
-  (define-key evil-normal-state-map (kbd "M-›") 'scroll-other-window-down)
-  ;; TODO Move these to js2 mode specific bindings
-  (define-key evil-normal-state-map (kbd "M-k") #'js2r-move-line-up)
-  (define-key evil-normal-state-map (kbd "M-j") #'js2r-move-line-down)
-
-  ;; Evilified org mode
-  (evil-define-key 'normal org-mode-map (kbd "M-h") 'org-metaleft)
-  (evil-define-key 'normal org-mode-map (kbd "M-l") 'org-metaright)
-  (evil-define-key 'normal org-mode-map (kbd "M-k") 'org-metaup)
-  (evil-define-key 'normal org-mode-map (kbd "M-j") 'org-metadown)
-  (evil-define-key 'normal org-mode-map (kbd "g h") 'org-backward-element)
-  (evil-define-key 'normal org-mode-map (kbd "g l") 'org-forward-element)
-  (evil-define-key 'normal org-mode-map (kbd "g k") 'org-up-element)
-  (evil-define-key 'normal org-mode-map (kbd "g j") 'org-down-element)
+  ;; Some commands are just not meant to be repeated
+  (mapc 'evil-declare-not-repeat
+      '(undo-tree-undo
+        undo-tree-redo))
 
   ;; Ensure ESC quits in all modes: http://stackoverflow.com/a/10166400/61435
   (global-set-key [escape] 'evil-exit-emacs-state)
@@ -182,64 +144,137 @@
   (define-key minibuffer-local-must-match-map [escape] 'ts/minibuffer-keyboard-quit)
   (define-key minibuffer-local-isearch-map [escape] 'ts/minibuffer-keyboard-quit)
 
+  (define-key evil-normal-state-map   (kbd "C-g") 'ts/evil-keyboard-quit)
+  (define-key evil-motion-state-map   (kbd "C-g") 'ts/evil-keyboard-quit)
+  (define-key evil-insert-state-map   (kbd "C-g") 'ts/evil-keyboard-quit)
+  (define-key evil-window-map         (kbd "C-g") 'ts/evil-keyboard-quit)
+  (define-key evil-operator-state-map (kbd "C-g") 'ts/evil-keyboard-quit)
+
+  (define-key evil-normal-state-map (kbd "M-s") 'save-buffer)
+  (define-key evil-normal-state-map (kbd "M-a") 'mark-whole-buffer)
+  (define-key evil-normal-state-map (kbd "M-q") 'evil-quit-all)
+  (define-key evil-normal-state-map (kbd "M-c") 'evil-yank)
+  (define-key evil-normal-state-map (kbd "M-v") 'clipboard-yank)
+  (define-key evil-insert-state-map (kbd "M-v") 'clipboard-yank)
+  (define-key evil-normal-state-map (kbd "M-y") 'helm-show-kill-ring)
+  (define-key evil-insert-state-map (kbd "M-y") 'helm-show-kill-ring)
+  (define-key evil-normal-state-map (kbd "C-h") 'evil-window-left)
+  (define-key evil-normal-state-map (kbd "C-j") 'evil-window-down)
+  (define-key evil-normal-state-map (kbd "C-k") 'evil-window-up)
+  (define-key evil-normal-state-map (kbd "C-l") 'evil-window-right)
+  (define-key evil-normal-state-map (kbd "u")   'undo-tree-undo)
+  (define-key evil-normal-state-map (kbd "M-u") 'undo-tree-visualize)
+  (define-key evil-normal-state-map (kbd "C-r") 'undo-tree-redo)
+  (define-key evil-normal-state-map (kbd "gf") 'projectile-find-file-dwim)
+  (define-key evil-normal-state-map (kbd "gF") 'projectile-find-file-dwim-other-window)
+  (define-key evil-normal-state-map (kbd "gc") 'sensible-defaults/comment-or-uncomment-region-or-line)
+  (define-key evil-normal-state-map (kbd "M-√") (lambda () (interactive) (scroll-other-window 1)))
+  (define-key evil-normal-state-map (kbd "M-ª") (lambda () (interactive) (scroll-other-window-down 1)))
+  (define-key evil-normal-state-map (kbd "M-ƒ") 'scroll-other-window)
+  (define-key evil-normal-state-map (kbd "M-›") 'scroll-other-window-down)
+  (define-key evil-normal-state-map (kbd "M-k") 'move-line-up)
+  (define-key evil-normal-state-map (kbd "M-j") 'move-line-down)
+
+  (evil-define-key 'normal org-mode-map (kbd "M-h") 'org-metaleft)
+  (evil-define-key 'normal org-mode-map (kbd "M-l") 'org-metaright)
+  (evil-define-key 'normal org-mode-map (kbd "M-k") 'org-metaup)
+  (evil-define-key 'normal org-mode-map (kbd "M-j") 'org-metadown)
+  (evil-define-key 'normal org-mode-map (kbd "gh") 'org-backward-element)
+  (evil-define-key 'normal org-mode-map (kbd "gl") 'org-forward-element)
+  (evil-define-key 'normal org-mode-map (kbd "gk") 'org-up-element)
+  (evil-define-key 'normal org-mode-map (kbd "gj") 'org-down-element)
+  (evil-define-key 'normal org-mode-map (kbd "H")   'org-shiftleft)
+  (evil-define-key 'normal org-mode-map (kbd "L")   'org-shiftright)
+
+  (evil-define-key 'normal magit-status-mode-map (kbd "M-n") 'magit-section-forward-sibling)
+  (evil-define-key 'normal magit-status-mode-map (kbd "M-p") 'magit-section-backward-sibling)
+  (evil-define-key 'normal magit-status-mode-map (kbd "j")   'magit-section-forward)
+  (evil-define-key 'normal magit-status-mode-map (kbd "k")   'magit-section-backward)
+
+  (evil-define-key 'normal paredit-mode-map (kbd "M-{") 'paredit-wrap-curly)
+
+  (evil-define-key 'normal js-mode-map (kbd "M-k") 'js2r-move-line-up)
+  (evil-define-key 'normal js-mode-map (kbd "M-j") 'js2r-move-line-down)
+
   (evil-define-key 'normal neotree-mode-map (kbd "TAB") 'neotree-enter)
   (evil-define-key 'normal neotree-mode-map (kbd "SPC") 'neotree-quick-look)
-  (evil-define-key 'normal neotree-mode-map (kbd "o") 'neotree-enter)
-  (evil-define-key 'normal neotree-mode-map (kbd "q") 'neotree-hide)
-  (evil-define-key 'normal neotree-mode-map (kbd "c") 'neotree-create-node)
-  (evil-define-key 'normal neotree-mode-map (kbd "H") 'neotree-hidden-file-toggle)
+  (evil-define-key 'normal neotree-mode-map (kbd "o")   'neotree-enter)
+  (evil-define-key 'normal neotree-mode-map (kbd "q")   'neotree-hide)
+  (evil-define-key 'normal neotree-mode-map (kbd "c")   'neotree-create-node)
+  (evil-define-key 'normal neotree-mode-map (kbd "d")   'neotree-delete-node)
+  (evil-define-key 'normal neotree-mode-map (kbd "H")   'neotree-hidden-file-toggle)
   (evil-define-key 'normal neotree-mode-map (kbd "RET") 'neotree-enter)
 
-  (evil-define-key 'motion undo-tree-visualize-mode-map (kbd "j") 'undo-tree-visualize-redo)
-  (evil-define-key 'motion undo-tree-visualize-mode-map (kbd "k") 'undo-tree-visualize-undo)
-  (evil-define-key 'motion undo-tree-visualize-mode-map (kbd "l") 'undo-tree-visualize-switch-branch-right)
-  (evil-define-key 'motion undo-tree-visualize-mode-map (kbd "h") 'undo-tree-visualize-switch-branch-left)
-  (evil-define-key 'motion undo-tree-visualize-mode-map (kbd "C-h") 'evil-window-left)
-  (evil-define-key 'motion undo-tree-visualize-mode-map (kbd "C-j") 'evil-window-down)
-  (evil-define-key 'motion undo-tree-visualize-mode-map (kbd "C-k") 'evil-window-up)
-  (evil-define-key 'motion undo-tree-visualize-mode-map (kbd "C-l") 'evil-window-right)
+  (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "j")   'undo-tree-visualize-redo)
+  (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "k")   'undo-tree-visualize-undo)
+  (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "l")   'undo-tree-visualize-switch-branch-right)
+  (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "h")   'undo-tree-visualize-switch-branch-left)
+  (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "C-h") 'evil-window-left)
+  (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "C-j") 'evil-window-down)
+  (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "C-k") 'evil-window-up)
+  (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "C-l") 'evil-window-right)
 
-  ;; (evil-define-key 'normal eshell-mode-map (kbd "A") 'ts/eshell-next-prompt-input)
-  (evil-define-key 'normal eshell-mode-map (kbd "q") 'shell-pop)
+  (evil-define-key 'normal flycheck-error-list-mode-map (kbd "j")   'flycheck-error-list-next-error)
+  (evil-define-key 'normal flycheck-error-list-mode-map (kbd "k")   'flycheck-error-list-previous-error)
+  (evil-define-key 'normal flycheck-error-list-mode-map (kbd "RET") 'flycheck-error-list-goto-error)
+
+  (evil-define-key 'normal eshell-mode-map (kbd "i")   'ts/eshell-evil-input-mode)
+  (evil-define-key 'normal eshell-mode-map (kbd "q")   'shell-pop)
   (evil-define-key 'insert eshell-mode-map (kbd "C-p") 'eshell-previous-matching-input-from-input)
   (evil-define-key 'insert eshell-mode-map (kbd "C-n") 'eshell-next-matching-input-from-input)
   (evil-define-key 'insert eshell-mode-map (kbd "C-r") 'helm-eshell-history))
 
-  (use-package evil-leader
-    :ensure t
-    :after evil
-    :init
-    (setq evil-leader/in-all-states t)
 
-    :config
-    (evil-leader/set-leader ",")
-    (evil-mode nil)
-    (global-evil-leader-mode)
-    (evil-mode t)
 
-    (evil-leader/set-key
-      "TAB"    'ts/alternate-buffer
-      "'"      'shell-pop
-      "q"      'ts/kill-window-or-buffer
-      "h k"    'describe-key
-      "h v"    'describe-variable
-      "h f"    'describe-function
-      "h w"    'where-is
-      "f f"    'helm-find-files
-      "f r"    'helm-recentf
-      "r"      'helm-recentf
-      "b"      'helm-mini
-      "p p"    'helm-projectile-switch-project
-      "p f"    'helm-projectile-find-file
-      "p r"    'helm-projectile-recentf
-      "v"      'ts/edit-configuration
-      "u"      'ts/load-configuration
-      "e"      'neotree-toggle
-      "g s"    'magit-status
-      "o l"    'org-store-link
-      "o a"    'ts/org-agenda-show-agenda-and-todo
-      "o c"    'org-capture
-      "o b"    'org-switchb))
+
+(use-package evil-leader
+  :ensure t
+  :after evil
+  :init
+  (setq evil-leader/in-all-states t)
+
+  :config
+  (evil-leader/set-leader ",")
+  (evil-mode nil)
+  (global-evil-leader-mode)
+  (evil-mode t)
+
+  (evil-leader/set-key
+    "TAB"    'ts/alternate-buffer
+    "'"      'shell-pop
+    "s"      'ts/contextual-shell-pop
+    "q"      'ts/kill-window-or-buffer
+    "hk"    'describe-key
+    "hv"    'describe-variable
+    "hf"    'describe-function
+    "hw"    'where-is
+    "ff"    'helm-find-files
+    "fr"    'helm-recentf
+    "fb"    'helm-filtered-bookmarks
+    "fo"    'ts/helm-find-org-files
+    "fs"    'ts/open-create-scratch-buffer
+    "xl"    'flycheck-list-errors
+    "xv"    'flycheck-verify-setup
+    "r"      'helm-recentf
+    "b"      'helm-mini
+    "pp"    'helm-projectile-switch-project
+    "pf"    'helm-projectile-find-file
+    "pr"    'projectile-run-project
+    "pt"    'projectile-test-project
+    "ps"    'ts/projectile-shell-pop
+    "po"    (lambda () (interactive) (ts/load-project-org "veikkaus"))
+    "v"      'ts/edit-configuration
+    "u"      'ts/load-configuration
+    "e"      'neotree-toggle
+    "gs"    'magit-status
+    "gl"    'magit-log-current
+    "gb"    'magit-blame
+    "ol"    'org-store-link
+    "of"    'ts/helm-find-org-files
+    "oa"    'ts/org-agenda-show-agenda-and-todo
+    "oc"    'org-capture
+    "op"    (lambda () (interactive) (ts/load-project-org "veikkaus"))
+    "ob"    'org-switchb))
 
 (use-package evil-surround
   :ensure t
@@ -267,10 +302,20 @@
 (use-package all-the-icons
   :ensure t)
 
-(use-package oceanic-theme
-  :ensure t)
-(load-theme 'oceanic)
-(load-theme 'ts-overrides)
+;; (use-package color-theme-sanityinc-tomorrow
+;;   :ensure t
+;;   :config
+;;   (color-theme-sanityinc-tomorrow-eighties)
+;;   (load-theme 'tomorrow-overrides))
+
+;; (use-package oceanic-theme
+;;   :ensure t
+;;   :config
+;;   (load-theme 'oceanic)
+;;   (load-theme 'oceanic-overrides))
+
+(load-theme 'misterioso)
+(load-theme 'misterioso-overrides)
 
 (use-package neotree
   :ensure t
@@ -318,7 +363,9 @@
   :bind (("∫" . ts/contextual-helm-ag)))
 
 (use-package helm-projectile
-  :ensure t)
+  :ensure t
+  :init
+  (setq helm-projectile-fuzzy-match t))
 
 (use-package undo-tree
   :ensure t
@@ -346,6 +393,7 @@
   (which-key-declare-prefixes ", b" "buffers")
   (which-key-declare-prefixes ", g" "git")
   (which-key-declare-prefixes ", o" "org")
+  (which-key-declare-prefixes ", x" "errors")
   (which-key-declare-prefixes ", t" "toggle"))
 
 (use-package powerline
@@ -410,7 +458,7 @@
   :ensure t
   :config
   (add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode))
-  (add-hook 'rjsx-mode-hook (lambda () (setq js2-strict-missing-semi-warning nil))))
+  (add-hook 'js-mode-hook (lambda () (setq js2-strict-missing-semi-warning nil))))
 
 (use-package js2-refactor
   :ensure t
@@ -434,12 +482,26 @@
   :config
   (eshell-git-prompt-use-theme 'powerline))
 
-(use-package magit
+(use-package eshell-z
   :ensure t)
+
+(use-package magit
+  :ensure t
+  :config
+  (magit-define-popup-switch 'magit-pull-popup ?r "Rebase" "--rebase"))
 
 (use-package evil-magit
   :ensure t
   :after magit)
+
+(use-package git-timemachine
+  :ensure t
+  :config
+  (eval-after-load 'git-timemachine
+    '(progn
+       (evil-make-overriding-map git-timemachine-mode-map 'normal)
+       ;; force update evil keymaps after git-timemachine-mode loaded
+       (add-hook 'git-timemachine-mode-hook #'evil-normalize-keymaps))))
 
 (use-package yasnippet
   :ensure t
@@ -449,12 +511,13 @@
 (use-package org
   :ensure t
   :init
-  (setq org-directory "~/Documents/org")
-  (setq org-src-fontify-natively t)
-  (setq org-src-tab-acts-natively t)
-  (setq org-todo-keywords '((sequence "☛ TODO(t)" "|" "✔ DONE(d)")
-                            (sequence "⚑ WAITING(w)" "|")
-                            (sequence "|" "✘ CANCELED(c)"))))
+  (setq org-directory "~/Documents/org"
+        org-src-fontify-natively t
+        org-src-tab-acts-natively t
+        org-ellipsis "…"
+        org-todo-keywords '((sequence "☛ TODO(t)" "|" "✔ DONE(d)")
+                            (sequence "⚑ WAITING(w@)" "|")
+                            (sequence "|" "✘ CANCELED(c@)"))))
 
 (use-package org-bullets
   :ensure t
@@ -465,6 +528,9 @@
 
   :config
   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+
+(use-package htmlize
+  :ensure t)
 
 (use-package paredit
   :ensure t
@@ -483,6 +549,68 @@
   :config
   (persistent-scratch-setup-default))
 
+(use-package flycheck
+  :ensure t
+  :init
+  :config
+  (define-fringe-bitmap 'my-flycheck-fringe-indicator
+    (vector #b00000000
+            #b00000000
+            #b00000000
+            #b00000000
+            #b00000000
+            #b00000000
+            #b00011100
+            #b00111110
+            #b00111110
+            #b00111110
+            #b00011100
+            #b00000000
+            #b00000000
+            #b00000000
+            #b00000000
+            #b00000000
+            #b00000000))
+
+  (flycheck-define-error-level 'error
+    :severity 2
+    :overlay-category 'flycheck-error-overlay
+    :fringe-bitmap 'my-flycheck-fringe-indicator
+    :fringe-face 'flycheck-fringe-error)
+  (flycheck-define-error-level 'warning
+    :severity 1
+    :overlay-category 'flycheck-warning-overlay
+    :fringe-bitmap 'my-flycheck-fringe-indicator
+    :fringe-face 'flycheck-fringe-warning)
+  (flycheck-define-error-level 'info
+    :severity 0
+    :overlay-category 'flycheck-info-overlay
+    :fringe-bitmap 'my-flycheck-fringe-indicator
+    :fringe-face 'flycheck-fringe-info)
+
+  (global-flycheck-mode))
+
+(use-package coffee-mode
+  :init
+  (setq coffee-tab-width 2)
+  :ensure t)
+
+(use-package engine-mode
+  :ensure t
+  :config
+  (defengine google
+    "http://www.google.com/search?ie=utf-8&oe=utf-8&q=%s"
+    :keybinding "g")
+
+  (engine-mode t))
+
+(use-package highlight-indent-guides
+  :ensure t
+  :init
+  (setq highlight-indent-guides-method 'character)
+  :config
+  (add-hook 'coffee-mode-hook 'highlight-indent-guides-mode))
+
 ;; (use-package evil-org
 ;;   :ensure t
 ;;   :after (evil org)
@@ -500,10 +628,20 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(markdown-mode company spaceline powerline which-key helm-projectile helm-ag helm neotree oceanic-theme all-the-icons rainbow-delimiters rainbow-mode evil-leader evil use-package)))
+   '(coffee-mode highlight-indent-guides engine-mode htmlize flycheck git-timemachine eshell-z markdown-mode company spaceline powerline which-key helm-projectile helm-ag helm neotree oceanic-theme all-the-icons rainbow-delimiters rainbow-mode evil-leader evil use-package))
+ '(safe-local-variable-values
+   '((projectile-project-test-cmd . "curl -s -i -X POST -u \"exthousyvtu:74c5eb9f9788478a2d64efbb4e6e43c4\" \"http://makemv01t.tst.veikkaus.fi:8080/job/web-test-revision/buildWithParameters?delay=0sec&revision=$(git rev-parse --symbolic --abbrev-ref HEAD)\"")
+     (projectile-project-run-cmd . "BUILD_SPEC=0 ./gulp --buildPages")
+     (projectile-project-test-cmd . "curl -i -X POST -u \"exthousyvtu:74c5eb9f9788478a2d64efbb4e6e43c4\" \"http://makemv01t.tst.veikkaus.fi:8080/job/web-test-revision/buildWithParameters?delay=0sec&revision=$(git rev-parse --symbolic --abbrev-ref HEAD)\"")
+     (projectile-project-run-cmd . "echo Run")
+     (projectile-project-compilation-cmd . "echo Compile"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+(provide 'init)
+
+;;; init.el ends here

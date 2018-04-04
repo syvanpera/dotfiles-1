@@ -1,3 +1,7 @@
+;;; init.el --- My magnificent Emacs configuration
+
+;;; Code:
+
 (defun ts/minibuffer-keyboard-quit ()
   "Abort recursive edit.
 In Delete Selection mode, if the mark is active, just deactivate it;
@@ -46,6 +50,11 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (interactive)
   (find-file user-init-file))
 
+(defun ts/load-project-org (project-name)
+  "Opens project specific org file."
+  (interactive)
+  (find-file (expand-file-name (format "projects/%s.org" project-name) org-directory)))
+
 (defun ts/load-configuration ()
   "Loads the Emacs configuration file."
   (interactive)
@@ -57,6 +66,20 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (if (projectile-project-p)
       (helm-projectile-ag args)
     (helm-ag args)))
+
+(defun ts/contextual-helm-recentf (args)
+  "Does helm-recentf or helm-projectile-recentf depending on whether we are in a project or not."
+  (interactive "P")
+  (if (projectile-project-p)
+      (helm-projectile-recentf args)
+    (helm-recentf args)))
+
+(defun ts/contextual-shell-pop (args)
+  "Does shell-pop or ts/projectile-shell-pop depending on whether we are in a project or not."
+  (interactive "P")
+  (if (projectile-project-p)
+      (ts/projectile-shell-pop)
+    (shell-pop args)))
 
 (defun ts/paredit-nonlisp ()
   "Turn on paredit mode for non-lisps."
@@ -75,9 +98,26 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (interactive "P")
   (org-agenda arg "n"))
 
-(defun ts/eshell-next-prompt-input ()
+(defun ts/eshell-evil-input-mode ()
   (interactive)
-  (eshell-next-prompt 0)
-  (evil-append-line nil))
+  (eshell-return-to-prompt)
+  (evil-insert nil))
+
+(defun ts/helm-find-org-files ()
+  (interactive)
+  (message org-directory)
+  (helm-find-files-1 (concat org-directory "/")))
+
+(defun ts/projectile-shell-pop ()
+  "Open a term buffer at projectile project root."
+  (interactive)
+  (let ((default-directory (projectile-project-root)))
+    (call-interactively 'shell-pop)))
+
+(defun ts/open-create-scratch-buffer ()
+  "Opens (and creates) a scratch buffer."
+  (interactive)
+  (switch-to-buffer (get-buffer-create "*scratch*"))
+  (lisp-interaction-mode))
 
 (provide 'ts-funcs)

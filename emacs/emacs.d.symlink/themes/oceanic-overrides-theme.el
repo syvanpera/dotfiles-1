@@ -1,8 +1,8 @@
-(deftheme ts-overrides
-  "My own theme overrides.")
+(deftheme oceanic-overrides
+  "Oceanic theme overrides.")
 
 (custom-theme-set-faces
- 'ts-overrides
+ 'oceanic-overrides
  '(line-number-current-line ((t (:foreground "white" :background "#343D46"))))
  ;; '(spaceline-evil-normal ((t (:background "#99C794"))))
  ;; '(spaceline-evil-insert ((t (:background "#99C794"))))
@@ -15,6 +15,7 @@
  '(company-scrollbar-bg ((t :background "#232526")))
  '(company-scrollbar-fg ((t :background "#99C794")))
  '(company-tooltip-selection ((t :background "#6699CC")))
- '(company-tooltip-common ((t :inherit font-lock-constant-face))))
+ '(company-tooltip-common ((t :inherit font-lock-constant-face)))
+ '(font-lock-comment-face ((t (:foreground "#65737E" :weight normal)))))
 
-(provide-theme 'ts-overrides)
+(provide-theme 'oceanic-overrides)

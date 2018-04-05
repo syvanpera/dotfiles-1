@@ -16,6 +16,11 @@
         ("melpa-stable" . "http://stable.melpa.org/packages/")
         ("gnu"          . "http://elpa.gnu.org/packages/")
         ("marmalade"    . "http://marmalade-repo.org/packages/")))
+(package-initialize)
+
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
 
 (add-to-list 'load-path (expand-file-name "elisp" user-emacs-directory))
 
@@ -23,12 +28,6 @@
 (sensible-defaults/use-all-settings)
 (sensible-defaults/use-all-keybindings)
 (sensible-defaults/backup-to-temp-directory)
-
-(package-initialize)
-
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
 
 (eval-when-compile
   (require 'use-package))
@@ -282,22 +281,13 @@
   :config
   (global-evil-surround-mode 1))
 
-(use-package diminish
-  :ensure t)
-
 (use-package rainbow-mode
   :ensure t
-  :diminish rainbow-mode
-  :config
-  (add-hook 'emacs-lisp-mode-hook 'rainbow-mode)
-  (add-hook 'css-mode-hook 'rainbow-mode)
-  (add-hook 'html-mode-hook 'rainbow-mode)
-  (add-hook 'js2-mode-hook 'rainbow-mode))
+  :hook ((emacs-lisp-mode css-mode html-mode js-mode) . rainbow-mode))
 
 (use-package rainbow-delimiters
   :ensure t
-  :config
-  (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
+  :hook (prog-mode . rainbow-delimiters-mode))
 
 (use-package all-the-icons
   :ensure t)
@@ -325,12 +315,28 @@
 
 (use-package helm
   :ensure t
-  :diminish helm-mode
   :bind (("M-x" . helm-M-x)
          ("M-P" . helm-M-x)
-         ("M-p" . helm-find-files)
          ("M-r" . helm-recentf)
-         ("M-e" . helm-recentf))
+         :map helm-map
+         ("C-j"   . helm-next-line)
+         ("C-k"   . helm-previous-line)
+         ("C-f"   . helm-next-page)
+         ("C-b"   . helm-previous-page)
+         ("C-h"   . helm-next-source)
+         ("C-v"   . helm-toggle-visible-mark)
+         ("C-p"   . helm-copy-to-buffer)
+         ("C-S-h" . describe-key)
+         ("C-l"   . helm-confirm-and-exit-minibuffer)
+         ("ESC"   . helm-keyboard-quit)
+         :map helm-find-files-map
+         ("C-l"   . helm-execute-persistent-action)
+         ("C-h"   . helm-find-files-up-one-level)
+         ("C-S-h" . describe-key)
+         :map helm-read-file-map
+         ("C-l"   . helm-execute-persistent-action)
+         ("C-h"   . helm-find-files-up-one-level)
+         ("C-S-h" . describe-key))
   :init
   (setq helm-buffers-fuzzy-matching t
         helm-autoresize-mode t
@@ -340,27 +346,10 @@
   :config
   (helm-mode t)
 
-  (define-key helm-map (kbd "C-j") 'helm-next-line)
-  (define-key helm-map (kbd "C-k") 'helm-previous-line)
-  (define-key helm-map (kbd "C-f") 'helm-next-page)
-  (define-key helm-map (kbd "C-b") 'helm-previous-page)
-  (define-key helm-map (kbd "C-h") 'helm-next-source)
-  (define-key helm-map (kbd "C-v") 'helm-toggle-visible-mark)
-  (define-key helm-map (kbd "C-p") 'helm-copy-to-buffer)
-  (define-key helm-map (kbd "C-S-h") 'describe-key)
-  (define-key helm-map (kbd "C-l") (kbd "RET"))
-  (define-key helm-map [escape] 'helm-keyboard-quit)
-
-  (dolist (keymap (list helm-find-files-map helm-read-file-map))
-    (define-key keymap (kbd "C-l") 'helm-execute-persistent-action)
-    (define-key keymap (kbd "C-h") 'helm-find-files-up-one-level)
-    (define-key keymap (kbd "C-S-h") 'describe-key))
-
   (add-hook 'helm-after-initialize-hook 'ts/hide-cursor-in-helm-buffer))
 
 (use-package helm-ag
-  :ensure t
-  :bind (("∫" . ts/contextual-helm-ag)))
+  :bind ("∫" . ts/contextual-helm-ag))
 
 (use-package helm-projectile
   :ensure t
@@ -369,13 +358,11 @@
 
 (use-package undo-tree
   :ensure t
-  :diminish undo-tree-mode
   :config
   (global-undo-tree-mode))
 
 (use-package projectile
   :ensure t
-  :diminish projectile-mode
   :init
   (setq projectile-enable-caching t)
 
@@ -384,7 +371,6 @@
 
 (use-package which-key
   :ensure t
-  :diminish which-key-mode
   :config
   (which-key-mode)
   (which-key-declare-prefixes ", h" "help")
@@ -426,10 +412,7 @@
 
 (use-package company
   :ensure t
-  :diminish company-mode
   :config
-  ;;  (setq company-idle-delay nil)
-
   (global-company-mode t)
 
   (define-key company-active-map (kbd "C-j") 'company-select-next-or-abort)
@@ -462,8 +445,8 @@
 
 (use-package js2-refactor
   :ensure t
+  :hook (rjsx-mode . js2-refactor-mode)
   :config
-  (add-hook 'rjsx-mode-hook #'js2-refactor-mode)
   (js2r-add-keybindings-with-prefix "C-c C-m"))
 
 (use-package expand-region
@@ -510,7 +493,7 @@
 
 (use-package org
   :ensure t
-  :init
+  :config
   (setq org-directory "~/Documents/org"
         org-src-fontify-natively t
         org-src-tab-acts-natively t
@@ -522,12 +505,9 @@
 (use-package org-bullets
   :ensure t
   :after org
-  :init
-  (setq org-bullets-bullet-list '("◉" "◎" "⚫" "○" "►" "◇"))
-  ;; (setq org-ellipsis "⤵")
-
+  :hook (org-mode . org-bullets-mode)
   :config
-  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+  (setq org-bullets-bullet-list '("◉" "◎" "⚫" "○" "►" "◇")))
 
 (use-package htmlize
   :ensure t)
@@ -605,11 +585,8 @@
   (engine-mode t))
 
 (use-package highlight-indent-guides
-  :ensure t
-  :init
-  (setq highlight-indent-guides-method 'character)
-  :config
-  (add-hook 'coffee-mode-hook 'highlight-indent-guides-mode))
+  :hook (coffee-mode . highlight-indent-guides-mode)
+  :config (setq-default highlight-indent-guides-method 'character))
 
 ;; (use-package evil-org
 ;;   :ensure t

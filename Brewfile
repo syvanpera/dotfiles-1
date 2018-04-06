@@ -3,6 +3,8 @@ cask_args appdir: '/Applications'
 tap 'caskroom/cask'
 tap 'caskroom/versions'
 tap 'caskroom/fonts'
+tap 'd12frosted/emacs-plus'
+tap 'thoughtbot/formulae'
 
 brew 'coreutils'
 brew 'neovim'
@@ -15,6 +17,8 @@ brew 'reattach-to-user-namespace'
 brew 'nvm'
 brew 'ripgrep'
 brew 'yarn', args: ['without-node']
+brew 'emacs-plus'
+brew 'rcm'
 
 cask 'iterm2'
 cask 'google-chrome'

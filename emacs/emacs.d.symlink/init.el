@@ -130,6 +130,12 @@
   (message "Another Visitor! Stay awhile! Stay FOREVER!!!!!!!!!!!!"))
 
 (use-package dashboard
+  :init
+  (setq dashboard-items '((recents  . 5)
+                          (bookmarks . 5)
+                          (projects . 5)
+                          (agenda . 5))
+        dashboard-startup-banner 'official)
   :config
   (dashboard-setup-startup-hook))
 
@@ -238,6 +244,14 @@
   (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "C-j") 'evil-window-down)
   (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "C-k") 'evil-window-up)
   (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "C-l") 'evil-window-right)
+
+  (evil-define-key 'motion help-mode-map (kbd "C-h") 'evil-window-left)
+  (evil-define-key 'motion help-mode-map (kbd "C-j") 'evil-window-down)
+  (evil-define-key 'motion help-mode-map (kbd "C-k") 'evil-window-up)
+  (evil-define-key 'motion help-mode-map (kbd "C-l") 'evil-window-right)
+
+  (evil-define-key 'normal dashboard-mode-map (kbd "j") 'widget-forward)
+  (evil-define-key 'normal dashboard-mode-map (kbd "k") 'widget-backward)
 
   (evil-define-key 'normal flycheck-error-list-mode-map (kbd "j")   'flycheck-error-list-next-error)
   (evil-define-key 'normal flycheck-error-list-mode-map (kbd "k")   'flycheck-error-list-previous-error)

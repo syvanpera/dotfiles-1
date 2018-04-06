@@ -12,7 +12,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
     (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
     (abort-recursive-edit)))
 
-(defvar ts/not-to-kill-buffer-list '("*scratch*" "*Messages*" "*Warnings*"))
+(defconst ts/not-to-kill-buffer-list '("*scratch*" "*Messages*" "*Warnings*" "*dashboard*"))
 
 (defun ts/kill-window-or-buffer ()
   "Kills the current window if more than one with same buffer open, otherwise kills the buffer."

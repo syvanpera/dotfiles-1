@@ -9,12 +9,20 @@
 (when (fboundp 'blink-cursor-mode) (blink-cursor-mode -1))
 (when (fboundp 'mouse-wheel-mode) (mouse-wheel-mode 1))
 
+(setq gc-cons-threshold 64000000)
+;; restore after start-up
+(add-hook 'after-init-hook #'(lambda () (setq gc-cons-threshold 800000)))
+
+(setq warning-minimum-level :emergency)
+
 (require 'package)
+
 (setq package-enable-at-startup nil
+      use-package-always-ensure t
       package-archives
       '(("melpa"        . "http://melpa.org/packages/")
         ("melpa-stable" . "http://stable.melpa.org/packages/")
-        ("gnu"          . "http://elpa.gnu.org/packages/")
+        ("org"          . "http://orgmode.org/elpa/")
         ("marmalade"    . "http://marmalade-repo.org/packages/")))
 (package-initialize)
 
@@ -22,15 +30,19 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
+(eval-when-compile
+  (require 'use-package))
+
 (add-to-list 'load-path (expand-file-name "elisp" user-emacs-directory))
+(add-to-list 'load-path (expand-file-name "elisp/vendor" user-emacs-directory))
 
 (require 'sensible-defaults)
 (sensible-defaults/use-all-settings)
 (sensible-defaults/use-all-keybindings)
 (sensible-defaults/backup-to-temp-directory)
 
-(eval-when-compile
-  (require 'use-package))
+(setq user-full-name "Tuomo Syvänperä"
+      user-mail-address "tuomo.syvanpera@gmail.com")
 
 (require 'ts-funcs)
 
@@ -48,7 +60,9 @@
       help-window-select t
       eshell-scroll-to-bottom-on-input t
       save-interprogram-paste-before-kill t
-      x-select-enable-clipboard nil)
+      x-select-enable-clipboard nil
+      save-place-mode t
+      recentf-mode nil)
 
 (setq inhibit-startup-echo-area-message user-login-name
       ring-bell-function 'ignore)
@@ -100,6 +114,7 @@
   (emacs-lock-mode 'kill))
 
 (add-hook 'emacs-lisp-mode-hook (lambda ()
+                                  (setq show-paren-style 'parenthesis)
                                   (push '("<=" . ?≤) prettify-symbols-alist)
                                   (push '(">=" . ?≥) prettify-symbols-alist)
                                   (push '("==" . ?≡) prettify-symbols-alist)
@@ -114,14 +129,19 @@
   "Startup message."
   (message "Another Visitor! Stay awhile! Stay FOREVER!!!!!!!!!!!!"))
 
+(use-package dashboard
+  :config
+  (dashboard-setup-startup-hook))
+
+(use-package auto-compile
+  :config (auto-compile-on-load-mode))
+
 (use-package exec-path-from-shell
-  :ensure t
   :config
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)))
 
 (use-package evil
-  :ensure t
   :init
   (setq evil-want-integration nil)
 
@@ -130,8 +150,10 @@
 
   ;; Some commands are just not meant to be repeated
   (mapc 'evil-declare-not-repeat
-      '(undo-tree-undo
-        undo-tree-redo))
+        '(undo-tree-undo
+          undo-tree-redo))
+
+  (add-to-list 'evil-normal-state-modes 'Custom-mode)
 
   ;; Ensure ESC quits in all modes: http://stackoverflow.com/a/10166400/61435
   (global-set-key [escape] 'evil-exit-emacs-state)
@@ -198,10 +220,14 @@
   (evil-define-key 'normal neotree-mode-map (kbd "TAB") 'neotree-enter)
   (evil-define-key 'normal neotree-mode-map (kbd "SPC") 'neotree-quick-look)
   (evil-define-key 'normal neotree-mode-map (kbd "o")   'neotree-enter)
+  (evil-define-key 'normal neotree-mode-map (kbd "O")   'neotree-enter-horizontal-split)
   (evil-define-key 'normal neotree-mode-map (kbd "q")   'neotree-hide)
   (evil-define-key 'normal neotree-mode-map (kbd "c")   'neotree-create-node)
+  (evil-define-key 'normal neotree-mode-map (kbd "r")   'neotree-rename-node)
   (evil-define-key 'normal neotree-mode-map (kbd "d")   'neotree-delete-node)
   (evil-define-key 'normal neotree-mode-map (kbd "H")   'neotree-hidden-file-toggle)
+  (evil-define-key 'normal neotree-mode-map (kbd "z")   'neotree-stretch-toggle)
+  (evil-define-key 'normal neotree-mode-map (kbd "R")   'neotree-refresh)
   (evil-define-key 'normal neotree-mode-map (kbd "RET") 'neotree-enter)
 
   (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "j")   'undo-tree-visualize-redo)
@@ -215,19 +241,22 @@
 
   (evil-define-key 'normal flycheck-error-list-mode-map (kbd "j")   'flycheck-error-list-next-error)
   (evil-define-key 'normal flycheck-error-list-mode-map (kbd "k")   'flycheck-error-list-previous-error)
+  (evil-define-key 'normal flycheck-error-list-mode-map (kbd "q")   'kill-buffer-and-window)
   (evil-define-key 'normal flycheck-error-list-mode-map (kbd "RET") 'flycheck-error-list-goto-error)
+
+  (evil-define-key 'normal helm-ag-mode-map (kbd "o")   'helm-ag-mode-jump)
+  (evil-define-key 'normal helm-ag-mode-map (kbd "O")   'helm-ag-mode-jump-other-window)
+
+  (evil-define-key 'normal custom-mode-map (kbd "q")   'Custom-buffer-done)
 
   (evil-define-key 'normal eshell-mode-map (kbd "i")   'ts/eshell-evil-input-mode)
   (evil-define-key 'normal eshell-mode-map (kbd "q")   'shell-pop)
+  (evil-define-key 'insert eshell-mode-map (kbd "C-a") 'eshell-bol)
   (evil-define-key 'insert eshell-mode-map (kbd "C-p") 'eshell-previous-matching-input-from-input)
   (evil-define-key 'insert eshell-mode-map (kbd "C-n") 'eshell-next-matching-input-from-input)
   (evil-define-key 'insert eshell-mode-map (kbd "C-r") 'helm-eshell-history))
 
-
-
-
 (use-package evil-leader
-  :ensure t
   :after evil
   :init
   (setq evil-leader/in-all-states t)
@@ -239,32 +268,33 @@
   (evil-mode t)
 
   (evil-leader/set-key
-    "TAB"    'ts/alternate-buffer
-    "'"      'shell-pop
-    "s"      'ts/contextual-shell-pop
-    "q"      'ts/kill-window-or-buffer
+    "TAB"   'ts/alternate-buffer
+    "'"     'shell-pop
+    "s"     'ts/contextual-shell-pop
+    "q"     'ts/kill-window-or-buffer
     "hk"    'describe-key
     "hv"    'describe-variable
     "hf"    'describe-function
     "hw"    'where-is
-    "ff"    'helm-find-files
-    "fr"    'helm-recentf
-    "fb"    'helm-filtered-bookmarks
+    "ff"    'ts/contextual-helm-find-files
     "fo"    'ts/helm-find-org-files
     "fs"    'ts/open-create-scratch-buffer
+    "fr"    'helm-recentf
     "xl"    'flycheck-list-errors
     "xv"    'flycheck-verify-setup
-    "r"      'helm-recentf
-    "b"      'helm-mini
+    "xn"    'next-error
+    "xp"    'previous-error
+    "r"     'ts/contextual-helm-recentf
+    "b"     'helm-mini
     "pp"    'helm-projectile-switch-project
-    "pf"    'helm-projectile-find-file
+    "pf"    'ts/contextual-helm-find-files
     "pr"    'projectile-run-project
     "pt"    'projectile-test-project
     "ps"    'ts/projectile-shell-pop
     "po"    (lambda () (interactive) (ts/load-project-org "veikkaus"))
-    "v"      'ts/edit-configuration
-    "u"      'ts/load-configuration
-    "e"      'neotree-toggle
+    "v"     'ts/edit-configuration
+    "u"     'ts/load-configuration
+    "e"     'ts/contextual-neotree-toggle
     "gs"    'magit-status
     "gl"    'magit-log-current
     "gb"    'magit-blame
@@ -276,30 +306,24 @@
     "ob"    'org-switchb))
 
 (use-package evil-surround
-  :ensure t
   :after evil
   :config
   (global-evil-surround-mode 1))
 
 (use-package rainbow-mode
-  :ensure t
-  :hook ((emacs-lisp-mode css-mode html-mode js-mode) . rainbow-mode))
+  :hook ((emacs-lisp-mode css-mode html-mode js-mode rjsx-mode) . rainbow-mode))
 
 (use-package rainbow-delimiters
-  :ensure t
   :hook (prog-mode . rainbow-delimiters-mode))
 
-(use-package all-the-icons
-  :ensure t)
+(use-package all-the-icons)
 
 ;; (use-package color-theme-sanityinc-tomorrow
-;;   :ensure t
 ;;   :config
 ;;   (color-theme-sanityinc-tomorrow-eighties)
 ;;   (load-theme 'tomorrow-overrides))
 
 ;; (use-package oceanic-theme
-;;   :ensure t
 ;;   :config
 ;;   (load-theme 'oceanic)
 ;;   (load-theme 'oceanic-overrides))
@@ -307,14 +331,24 @@
 (load-theme 'misterioso)
 (load-theme 'misterioso-overrides)
 
+;; (use-package doom-themes
+;;   :init
+;;   (setq doom-themes-enable-bold t
+;;         doom-themes-enable-italic t)
+
+;;   :config
+;;   (load-theme 'doom-one t)
+;;   (doom-themes-visual-bell-config)
+;;   (doom-themes-neotree-config)
+;;   (doom-themes-org-config))
+
 (use-package neotree
-  :ensure t
   :init
-  (setq neo-smart-open t)
-  (setq neo-theme (if (display-graphic-p) 'icons 'arrow)))
+  (setq neo-smart-open t
+        ;; projectile-switch-project-action 'neotree-projectile-action
+        neo-theme (if (display-graphic-p) 'icons 'arrow)))
 
 (use-package helm
-  :ensure t
   :bind (("M-x" . helm-M-x)
          ("M-P" . helm-M-x)
          ("M-r" . helm-recentf)
@@ -341,28 +375,30 @@
   (setq helm-buffers-fuzzy-matching t
         helm-autoresize-mode t
         helm-split-window-inside-p t
+        helm-commands-using-frame nil
         helm-display-buffer-default-height 15)
 
   :config
-  (helm-mode t)
+  (helm-mode add)
 
-  (add-hook 'helm-after-initialize-hook 'ts/hide-cursor-in-helm-buffer))
+  (t-hook 'helm-after-initialize-hook 'ts/hide-cursor-in-helm-buffer))
 
 (use-package helm-ag
-  :bind ("∫" . ts/contextual-helm-ag))
+  :bind ("∫" . ts/contextual-helm-ag)
+  :init
+  (setq helm-ag-base-command "ag --nocolor --nogroup"
+        ;; helm-ag-command-option "-C2"
+        helm-ag-insert-at-point 'symbol))
 
 (use-package helm-projectile
-  :ensure t
   :init
   (setq helm-projectile-fuzzy-match t))
 
 (use-package undo-tree
-  :ensure t
   :config
   (global-undo-tree-mode))
 
 (use-package projectile
-  :ensure t
   :init
   (setq projectile-enable-caching t)
 
@@ -370,7 +406,6 @@
   (projectile-global-mode))
 
 (use-package which-key
-  :ensure t
   :config
   (which-key-mode)
   (which-key-declare-prefixes ", h" "help")
@@ -383,12 +418,10 @@
   (which-key-declare-prefixes ", t" "toggle"))
 
 (use-package powerline
-  :ensure t
   :init
   (setq powerline-image-apple-rgb t))
 
 (use-package spaceline
-  :ensure t
   :after powerline)
 
 (use-package spaceline-config
@@ -411,10 +444,10 @@
   (spaceline-toggle-all-the-icons-region-info-on))
 
 (use-package company
-  :ensure t
   :config
   (global-company-mode t)
 
+  (define-key company-active-map [tab]       'company-complete)
   (define-key company-active-map (kbd "C-j") 'company-select-next-or-abort)
   (define-key company-active-map (kbd "C-k") 'company-select-previous-or-abort)
   (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
@@ -423,7 +456,6 @@
   (define-key company-active-map (kbd "C-b") 'company-previous-page))
 
 (use-package markdown-mode
-  :ensure t
   :commands (markdown-mode gfm-mode)
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
@@ -431,54 +463,46 @@
   :init (setq markdown-command "multimarkdown"))
 
 (use-package web-mode
-  :ensure t
   :config
   (add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.ejs\\'" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
 
 (use-package rjsx-mode
-  :ensure t
   :config
   (add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode))
   (add-hook 'js-mode-hook (lambda () (setq js2-strict-missing-semi-warning nil))))
 
 (use-package js2-refactor
-  :ensure t
   :hook (rjsx-mode . js2-refactor-mode)
   :config
   (js2r-add-keybindings-with-prefix "C-c C-m"))
 
 (use-package expand-region
-  :ensure t
   :config
   (define-key evil-normal-state-map (kbd "M-+") #'er/expand-region)
   (define-key evil-normal-state-map (kbd "M--") #'er/contract-region))
 
 (use-package shell-pop
-  :ensure t
   :init
   (setq shell-pop-shell-type (quote ("eshell" "*eshell*" (lambda nil (eshell shell-pop-term-shell))))))
 
 (use-package eshell-git-prompt
-  :ensure t
   :config
   (eshell-git-prompt-use-theme 'powerline))
 
-(use-package eshell-z
-  :ensure t)
+(use-package eshell-z)
 
 (use-package magit
-  :ensure t
+  :init
+  (setq git-commit-summary-max-length 50)
   :config
   (magit-define-popup-switch 'magit-pull-popup ?r "Rebase" "--rebase"))
 
 (use-package evil-magit
-  :ensure t
   :after magit)
 
 (use-package git-timemachine
-  :ensure t
   :config
   (eval-after-load 'git-timemachine
     '(progn
@@ -487,12 +511,10 @@
        (add-hook 'git-timemachine-mode-hook #'evil-normalize-keymaps))))
 
 (use-package yasnippet
-  :ensure t
   :config
   (yas-global-mode t))
 
 (use-package org
-  :ensure t
   :config
   (setq org-directory "~/Documents/org"
         org-src-fontify-natively t
@@ -503,17 +525,14 @@
                             (sequence "|" "✘ CANCELED(c@)"))))
 
 (use-package org-bullets
-  :ensure t
   :after org
   :hook (org-mode . org-bullets-mode)
   :config
   (setq org-bullets-bullet-list '("◉" "◎" "⚫" "○" "►" "◇")))
 
-(use-package htmlize
-  :ensure t)
+(use-package htmlize)
 
 (use-package paredit
-  :ensure t
   :config
   (add-hook 'emacs-lisp-mode-hook                  'enable-paredit-mode)
   (add-hook 'lisp-mode-hook                        'enable-paredit-mode)
@@ -524,13 +543,13 @@
   (add-hook 'scheme-mode-hook                      'enable-paredit-mode)
   (add-hook 'js-mode-hook                          'ts/paredit-nonlisp))
 
+(use-package evil-paredit)
+
 (use-package persistent-scratch
-  :ensure t
   :config
   (persistent-scratch-setup-default))
 
 (use-package flycheck
-  :ensure t
   :init
   :config
   (define-fringe-bitmap 'my-flycheck-fringe-indicator
@@ -572,11 +591,9 @@
 
 (use-package coffee-mode
   :init
-  (setq coffee-tab-width 2)
-  :ensure t)
+  (setq coffee-tab-width 2))
 
 (use-package engine-mode
-  :ensure t
   :config
   (defengine google
     "http://www.google.com/search?ie=utf-8&oe=utf-8&q=%s"
@@ -589,7 +606,6 @@
   :config (setq-default highlight-indent-guides-method 'character))
 
 ;; (use-package evil-org
-;;   :ensure t
 ;;   :after (evil org)
 ;;   :config
 ;;   (add-hook 'org-mode-hook 'evil-org-mode)
@@ -607,7 +623,9 @@
  '(package-selected-packages
    '(coffee-mode highlight-indent-guides engine-mode htmlize flycheck git-timemachine eshell-z markdown-mode company spaceline powerline which-key helm-projectile helm-ag helm neotree oceanic-theme all-the-icons rainbow-delimiters rainbow-mode evil-leader evil use-package))
  '(safe-local-variable-values
-   '((projectile-project-test-cmd . "curl -s -i -X POST -u \"exthousyvtu:74c5eb9f9788478a2d64efbb4e6e43c4\" \"http://makemv01t.tst.veikkaus.fi:8080/job/web-test-revision/buildWithParameters?delay=0sec&revision=$(git rev-parse --symbolic --abbrev-ref HEAD)\"")
+   '((projectile-project-run-cmd . "yarn start")
+     (projectile-project-run-cmd . "y start")
+     (projectile-project-test-cmd . "curl -s -i -X POST -u \"exthousyvtu:74c5eb9f9788478a2d64efbb4e6e43c4\" \"http://makemv01t.tst.veikkaus.fi:8080/job/web-test-revision/buildWithParameters?delay=0sec&revision=$(git rev-parse --symbolic --abbrev-ref HEAD)\"")
      (projectile-project-run-cmd . "BUILD_SPEC=0 ./gulp --buildPages")
      (projectile-project-test-cmd . "curl -i -X POST -u \"exthousyvtu:74c5eb9f9788478a2d64efbb4e6e43c4\" \"http://makemv01t.tst.veikkaus.fi:8080/job/web-test-revision/buildWithParameters?delay=0sec&revision=$(git rev-parse --symbolic --abbrev-ref HEAD)\"")
      (projectile-project-run-cmd . "echo Run")

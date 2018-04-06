@@ -51,14 +51,21 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (find-file user-init-file))
 
 (defun ts/load-project-org (project-name)
-  "Opens project specific org file."
+  "Open project specific org file."
   (interactive)
   (find-file (expand-file-name (format "projects/%s.org" project-name) org-directory)))
 
 (defun ts/load-configuration ()
-  "Loads the Emacs configuration file."
+  "Load the Emacs configuration file."
   (interactive)
   (load-file user-init-file))
+
+(defun ts/contextual-helm-find-files (args)
+  "Does helm-find-files or helm-projectile-find-file depending on whether we are in a project or not."
+  (interactive "P")
+  (if (projectile-project-p)
+      (helm-projectile-find-file args)
+    (helm-find-files args)))
 
 (defun ts/contextual-helm-ag (args)
   "Does helm-ag or helm-projectile-ag depending on whether we are in a project or not."
@@ -67,12 +74,12 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
       (helm-projectile-ag args)
     (helm-ag args)))
 
-(defun ts/contextual-helm-recentf (args)
+(defun ts/contextual-helm-recentf ()
   "Does helm-recentf or helm-projectile-recentf depending on whether we are in a project or not."
-  (interactive "P")
+  (interactive)
   (if (projectile-project-p)
-      (helm-projectile-recentf args)
-    (helm-recentf args)))
+      (helm-projectile-recentf)
+    (helm-recentf)))
 
 (defun ts/contextual-shell-pop (args)
   "Does shell-pop or ts/projectile-shell-pop depending on whether we are in a project or not."
@@ -119,5 +126,24 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (interactive)
   (switch-to-buffer (get-buffer-create "*scratch*"))
   (lisp-interaction-mode))
+
+(defun ts/contextual-neotree-toggle ()
+  "Opens the neotree with project root as the root directory if inside a project."
+  (interactive)
+  (let ((project-dir
+         (ignore-errors
+           (projectile-project-root)
+           ))
+        (file-name (buffer-file-name))
+        (neo-smart-open t))
+    (if (and (fboundp 'neo-global--window-exists-p)
+             (neo-global--window-exists-p))
+        (neotree-hide)
+      (progn
+        (neotree-show)
+        (if project-dir
+            (neotree-dir project-dir))
+        (if file-name
+            (neotree-find file-name))))))
 
 (provide 'ts-funcs)

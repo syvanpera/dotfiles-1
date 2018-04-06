@@ -13,6 +13,13 @@
 ;; restore after start-up
 (add-hook 'after-init-hook #'(lambda () (setq gc-cons-threshold 800000)))
 
+;; reduce the frequency of garbage collection by making it happen on
+;; each 50MB of allocated data (the default is on every 0.76MB)
+;; (setq gc-cons-threshold 50000000)
+
+;; warn when opening files bigger than 100MB
+(setq large-file-warning-threshold 100000000)
+
 (setq warning-minimum-level :emergency)
 
 (require 'package)
@@ -22,6 +29,7 @@
       package-archives
       '(("melpa"        . "http://melpa.org/packages/")
         ("melpa-stable" . "http://stable.melpa.org/packages/")
+        ("gnu"          . "http://elpa.gnu.org/packages/")
         ("org"          . "http://orgmode.org/elpa/")
         ("marmalade"    . "http://marmalade-repo.org/packages/")))
 (package-initialize)
@@ -61,7 +69,6 @@
       eshell-scroll-to-bottom-on-input t
       save-interprogram-paste-before-kill t
       x-select-enable-clipboard nil
-      save-place-mode t
       recentf-mode nil)
 
 (setq inhibit-startup-echo-area-message user-login-name
@@ -206,19 +213,25 @@
   (evil-define-key 'normal org-mode-map (kbd "M-l") 'org-metaright)
   (evil-define-key 'normal org-mode-map (kbd "M-k") 'org-metaup)
   (evil-define-key 'normal org-mode-map (kbd "M-j") 'org-metadown)
-  (evil-define-key 'normal org-mode-map (kbd "gh") 'org-backward-element)
-  (evil-define-key 'normal org-mode-map (kbd "gl") 'org-forward-element)
-  (evil-define-key 'normal org-mode-map (kbd "gk") 'org-up-element)
-  (evil-define-key 'normal org-mode-map (kbd "gj") 'org-down-element)
+  (evil-define-key 'normal org-mode-map (kbd "gh")  'org-backward-element)
+  (evil-define-key 'normal org-mode-map (kbd "gl")  'org-forward-element)
+  (evil-define-key 'normal org-mode-map (kbd "gk")  'org-up-element)
+  (evil-define-key 'normal org-mode-map (kbd "gj")  'org-down-element)
   (evil-define-key 'normal org-mode-map (kbd "H")   'org-shiftleft)
   (evil-define-key 'normal org-mode-map (kbd "L")   'org-shiftright)
+  (evil-define-key 'normal org-mode-map (kbd "K")   'org-shiftup)
+  (evil-define-key 'normal org-mode-map (kbd "J")   'org-shiftdown)
 
-  (evil-define-key 'normal magit-status-mode-map (kbd "M-n") 'magit-section-forward-sibling)
-  (evil-define-key 'normal magit-status-mode-map (kbd "M-p") 'magit-section-backward-sibling)
+  (evil-define-key 'normal magit-status-mode-map (kbd "C-h") 'evil-window-left)
+  (evil-define-key 'normal magit-status-mode-map (kbd "C-j") 'evil-window-down)
+  (evil-define-key 'normal magit-status-mode-map (kbd "C-k") 'evil-window-up)
+  (evil-define-key 'normal magit-status-mode-map (kbd "C-l") 'evil-window-right)
+  (evil-define-key 'normal magit-status-mode-map (kbd "M-j") 'magit-section-forward-sibling)
+  (evil-define-key 'normal magit-status-mode-map (kbd "M-k") 'magit-section-backward-sibling)
   (evil-define-key 'normal magit-status-mode-map (kbd "j")   'magit-section-forward)
   (evil-define-key 'normal magit-status-mode-map (kbd "k")   'magit-section-backward)
 
-  (evil-define-key 'normal paredit-mode-map (kbd "M-{") 'paredit-wrap-curly)
+  ;; (evil-define-key 'normal paredit-mode-map (kbd "M-{") 'paredit-wrap-curly)
 
   (evil-define-key 'normal js-mode-map (kbd "M-k") 'js2r-move-line-up)
   (evil-define-key 'normal js-mode-map (kbd "M-j") 'js2r-move-line-down)
@@ -235,6 +248,8 @@
   (evil-define-key 'normal neotree-mode-map (kbd "z")   'neotree-stretch-toggle)
   (evil-define-key 'normal neotree-mode-map (kbd "R")   'neotree-refresh)
   (evil-define-key 'normal neotree-mode-map (kbd "RET") 'neotree-enter)
+
+  ;; (evil-define-key 'normal evil-treemacs-state-map (kbd "C-l") 'evil-window-right)
 
   (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "j")   'undo-tree-visualize-redo)
   (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "k")   'undo-tree-visualize-undo)
@@ -290,10 +305,11 @@
     "hv"    'describe-variable
     "hf"    'describe-function
     "hw"    'where-is
-    "ff"    'ts/contextual-helm-find-files
+    "ff"    'helm-find-files
     "fo"    'ts/helm-find-org-files
     "fs"    'ts/open-create-scratch-buffer
     "fr"    'helm-recentf
+    "xx"    'flycheck-mode
     "xl"    'flycheck-list-errors
     "xv"    'flycheck-verify-setup
     "xn"    'next-error
@@ -309,6 +325,7 @@
     "v"     'ts/edit-configuration
     "u"     'ts/load-configuration
     "e"     'ts/contextual-neotree-toggle
+    ;; "e"     'ts/contextual-treemacs-toggle
     "gs"    'magit-status
     "gl"    'magit-log-current
     "gb"    'magit-blame
@@ -359,8 +376,64 @@
 (use-package neotree
   :init
   (setq neo-smart-open t
-        ;; projectile-switch-project-action 'neotree-projectile-action
         neo-theme (if (display-graphic-p) 'icons 'arrow)))
+
+;; (use-package treemacs
+;;   :ensure t
+;;   :defer t
+;;   :config
+;;   (progn
+;;     (use-package treemacs-evil
+;;       :ensure t
+;;       :demand t)
+;;     (setq treemacs-change-root-without-asking nil
+;;           treemacs-collapse-dirs              (if (executable-find "python") 3 0)
+;;           treemacs-file-event-delay           5000
+;;           treemacs-follow-after-init          t
+;;           treemacs-follow-recenter-distance   0.1
+;;           treemacs-goto-tag-strategy          'refetch-index
+;;           treemacs-indentation                2
+;;           treemacs-indentation-string         " "
+;;           treemacs-is-never-other-window      nil
+;;           treemacs-never-persist              nil
+;;           treemacs-no-png-images              nil
+;;           treemacs-recenter-after-file-follow nil
+;;           treemacs-recenter-after-tag-follow  nil
+;;           treemacs-show-hidden-files          t
+;;           treemacs-silent-filewatch           nil
+;;           treemacs-silent-refresh             nil
+;;           treemacs-sorting                    'alphabetic-desc
+;;           treemacs-tag-follow-cleanup         t
+;;           treemacs-tag-follow-delay           1.5
+;;           treemacs-width                      35)
+
+;;     (treemacs-follow-mode t)
+;;     (treemacs-filewatch-mode t)
+;;     (pcase (cons (not (null (executable-find "git")))
+;;                  (not (null (executable-find "python3"))))
+;;       (`(t . t)
+;;        (treemacs-git-mode 'extended))
+;;       (`(t . _)
+;;        (treemacs-git-mode 'simple))))
+;;   :bind
+;;   (:map global-map
+;;         ([f8]         . treemacs-toggle)
+;;         ("M-0"        . treemacs-select-window)
+;;         ("C-c 1"      . treemacs-delete-other-windows)
+;;         ("M-m ft"     . treemacs-toggle)
+;;         ("M-m fT"     . treemacs)
+;;         ("M-m fB"     . treemacs-bookmark)
+;;         ("M-m f C-t"  . treemacs-find-file)
+;;         ("M-m f M-t"  . treemacs-find-tag)))
+
+;; (use-package treemacs-projectile
+;;   :defer t
+;;   :ensure t
+;;   :config
+;;   (setq treemacs-header-function #'treemacs-projectile-create-header)
+;;   :bind (:map global-map
+;;               ("M-m fP" . treemacs-projectile)
+;;               ("M-m fp" . treemacs-projectile-toggle)))
 
 (use-package helm
   :bind (("M-x" . helm-M-x)
@@ -395,7 +468,12 @@
   :config
   (helm-mode add)
 
-  (t-hook 'helm-after-initialize-hook 'ts/hide-cursor-in-helm-buffer))
+  (t-hook 'helm-after-initialize-hook 'ts/hide-cursor-in-helm-buffer)
+  (add-to-list 'display-buffer-alist
+               `(,(rx bos "*helm" (* not-newline) "*" eos)
+                 (display-buffer-in-side-window)
+                 (inhibit-same-window . t)
+                 (window-height . 0.4))))
 
 (use-package helm-ag
   :bind ("∫" . ts/contextual-helm-ag)
@@ -488,7 +566,7 @@
   (add-hook 'js-mode-hook (lambda () (setq js2-strict-missing-semi-warning nil))))
 
 (use-package js2-refactor
-  :hook (rjsx-mode . js2-refactor-mode)
+  :hook (js-mode . js2-refactor-mode)
   :config
   (js2r-add-keybindings-with-prefix "C-c C-m"))
 
@@ -557,7 +635,8 @@
   (add-hook 'scheme-mode-hook                      'enable-paredit-mode)
   (add-hook 'js-mode-hook                          'ts/paredit-nonlisp))
 
-(use-package evil-paredit)
+(use-package evil-paredit
+  :hook (paredit-mode . evil-paredit-mode))
 
 (use-package persistent-scratch
   :config
@@ -629,28 +708,20 @@
 ;;   (require 'evil-org-agenda)
 ;;   (evil-org-agenda-set-keys))
 
+(provide 'init)
+
+;;; init.el ends here
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(coffee-mode highlight-indent-guides engine-mode htmlize flycheck git-timemachine eshell-z markdown-mode company spaceline powerline which-key helm-projectile helm-ag helm neotree oceanic-theme all-the-icons rainbow-delimiters rainbow-mode evil-leader evil use-package))
- '(safe-local-variable-values
-   '((projectile-project-run-cmd . "yarn start")
-     (projectile-project-run-cmd . "y start")
-     (projectile-project-test-cmd . "curl -s -i -X POST -u \"exthousyvtu:74c5eb9f9788478a2d64efbb4e6e43c4\" \"http://makemv01t.tst.veikkaus.fi:8080/job/web-test-revision/buildWithParameters?delay=0sec&revision=$(git rev-parse --symbolic --abbrev-ref HEAD)\"")
-     (projectile-project-run-cmd . "BUILD_SPEC=0 ./gulp --buildPages")
-     (projectile-project-test-cmd . "curl -i -X POST -u \"exthousyvtu:74c5eb9f9788478a2d64efbb4e6e43c4\" \"http://makemv01t.tst.veikkaus.fi:8080/job/web-test-revision/buildWithParameters?delay=0sec&revision=$(git rev-parse --symbolic --abbrev-ref HEAD)\"")
-     (projectile-project-run-cmd . "echo Run")
-     (projectile-project-compilation-cmd . "echo Compile"))))
+   '(evil-paredit evil-magit rainbow-mode evil-surround evil-leader evil which-key wgrep web-mode use-package undo-tree spaceline-all-the-icons shell-pop rjsx-mode rainbow-delimiters persistent-scratch paredit org-bullets neotree markdown-mode magit js2-refactor htmlize highlight-indent-guides helm-projectile helm-git-grep helm-ag git-timemachine flycheck expand-region exec-path-from-shell eshell-z eshell-git-prompt engine-mode dashboard company coffee-mode auto-compile))
+ '(safe-local-variable-values '((projectile-project-run-cmd . "yarn start"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
-
-(provide 'init)
-
-;;; init.el ends here

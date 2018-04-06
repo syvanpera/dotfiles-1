@@ -61,28 +61,28 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (load-file user-init-file))
 
 (defun ts/contextual-helm-find-files (args)
-  "Does helm-find-files or helm-projectile-find-file depending on whether we are in a project or not."
+  "Do helm-find-files or helm-projectile-find-file depending on whether we are in a project or not."
   (interactive "P")
   (if (projectile-project-p)
       (helm-projectile-find-file args)
     (helm-find-files args)))
 
 (defun ts/contextual-helm-ag (args)
-  "Does helm-ag or helm-projectile-ag depending on whether we are in a project or not."
+  "Do helm-ag or helm-projectile-ag depending on whether we are in a project or not."
   (interactive "P")
   (if (projectile-project-p)
       (helm-projectile-ag args)
     (helm-ag args)))
 
 (defun ts/contextual-helm-recentf ()
-  "Does helm-recentf or helm-projectile-recentf depending on whether we are in a project or not."
+  "Do helm-recentf or helm-projectile-recentf depending on whether we are in a project or not."
   (interactive)
   (if (projectile-project-p)
       (helm-projectile-recentf)
     (helm-recentf)))
 
 (defun ts/contextual-shell-pop (args)
-  "Does shell-pop or ts/projectile-shell-pop depending on whether we are in a project or not."
+  "Do shell-pop or ts/projectile-shell-pop depending on whether we are in a project or not."
   (interactive "P")
   (if (projectile-project-p)
       (ts/projectile-shell-pop)
@@ -127,8 +127,15 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (switch-to-buffer (get-buffer-create "*scratch*"))
   (lisp-interaction-mode))
 
+(defun ts/contextual-treemacs-toggle ()
+  "Open Treemacs with project root as the root directory if inside a project."
+  (interactive)
+  (if (projectile-project-p)
+      (treemacs)
+    (treemacs-projectile)))
+
 (defun ts/contextual-neotree-toggle ()
-  "Opens the neotree with project root as the root directory if inside a project."
+  "Open Neotree with project root as the root directory if inside a project."
   (interactive)
   (let ((project-dir
          (ignore-errors

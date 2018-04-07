@@ -9,6 +9,7 @@
  'misterioso-overrides
  '(cursor ((t (:background "DarkOliveGreen3"))))
  '(line-number-current-line ((t (:foreground "white" :background "#3d5958" :weight bold))))
+ '(line-number ((t (:background "#3d5958"))))
  '(highlight ((t (:background "#3d5958" :foreground nil))))
  '(region ((t (:background "#338f86" :foreground "#e1e1e0"))))
  '(flycheck-fringe-error ((t (:foreground "systemRedColor"))))
@@ -19,7 +20,7 @@
  '(spaceline-evil-visual ((t (:background "#338f86" :foreground "white" :inherit 'mode-line))))
  '(spaceline-evil-insert ((t (:background "DarkOliveGreen3" :foreground "#3E3D31" :inherit 'mode-line))))
  '(show-paren-match ((t (:foreground: "white" :background "#6699CC"))))
- '(helm-selection ((t (:background "#4d6968" :weight bold))))
+ '(helm-selection ((t (:background "#3d5958" :weight bold))))
  '(helm-source-header ((t (:background nil :foreground "white" :weight bold :height 1.1 :family "Menlo"))))
  '(helm-visible-mark ((t (:background "#ffbd29" :foreground "black"))))
  '(helm-candidate-number ((t (:background "#ffbd29" :foreground "black"))))

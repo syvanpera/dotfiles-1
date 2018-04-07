@@ -100,6 +100,7 @@
       display-time-24hr-format t
       custom-safe-themes t
       show-paren-when-point-inside-paren t
+      show-paren-mode nil
       prettify-symbols-unprettify-at-point t
       default-frame-alist '((font . "Hack-12")))
 
@@ -131,6 +132,12 @@
                                   (push '("->" . ?→) prettify-symbols-alist)
                                   (push '("<-" . ?←) prettify-symbols-alist)
                                   (push '("=>" . ?⇒) prettify-symbols-alist)))
+
+(add-to-list 'display-buffer-alist
+               `(,(rx bos "*helm" (* not-newline) "*" eos)
+                 (display-buffer-in-side-window)
+                 (inhibit-same-window . t)
+                 (window-height . 0.3)))
 
 (defun display-startup-echo-area-message ()
   "Startup message."
@@ -169,14 +176,14 @@
   (add-to-list 'evil-normal-state-modes 'Custom-mode)
 
   ;; Ensure ESC quits in all modes: http://stackoverflow.com/a/10166400/61435
-  (global-set-key [escape] 'evil-exit-emacs-state)
-  (define-key evil-normal-state-map [escape] 'keyboard-quit)
-  (define-key evil-visual-state-map [escape] 'keyboard-quit)
-  (define-key minibuffer-local-map [escape] 'ts/minibuffer-keyboard-quit)
-  (define-key minibuffer-local-ns-map [escape] 'ts/minibuffer-keyboard-quit)
+  (global-set-key [escape]                             'evil-exit-emacs-state)
+  (define-key evil-normal-state-map [escape]           'keyboard-quit)
+  (define-key evil-visual-state-map [escape]           'keyboard-quit)
+  (define-key minibuffer-local-map [escape]            'ts/minibuffer-keyboard-quit)
+  (define-key minibuffer-local-ns-map [escape]         'ts/minibuffer-keyboard-quit)
   (define-key minibuffer-local-completion-map [escape] 'ts/minibuffer-keyboard-quit)
   (define-key minibuffer-local-must-match-map [escape] 'ts/minibuffer-keyboard-quit)
-  (define-key minibuffer-local-isearch-map [escape] 'ts/minibuffer-keyboard-quit)
+  (define-key minibuffer-local-isearch-map [escape]    'ts/minibuffer-keyboard-quit)
 
   (define-key evil-normal-state-map   (kbd "C-g") 'ts/evil-keyboard-quit)
   (define-key evil-motion-state-map   (kbd "C-g") 'ts/evil-keyboard-quit)
@@ -199,9 +206,9 @@
   (define-key evil-normal-state-map (kbd "u")   'undo-tree-undo)
   (define-key evil-normal-state-map (kbd "M-u") 'undo-tree-visualize)
   (define-key evil-normal-state-map (kbd "C-r") 'undo-tree-redo)
-  (define-key evil-normal-state-map (kbd "gf") 'projectile-find-file-dwim)
-  (define-key evil-normal-state-map (kbd "gF") 'projectile-find-file-dwim-other-window)
-  (define-key evil-normal-state-map (kbd "gc") 'sensible-defaults/comment-or-uncomment-region-or-line)
+  (define-key evil-normal-state-map (kbd "gf")  'projectile-find-file-dwim)
+  (define-key evil-normal-state-map (kbd "gF")  'projectile-find-file-dwim-other-window)
+  (define-key evil-normal-state-map (kbd "gc")  'sensible-defaults/comment-or-uncomment-region-or-line)
   (define-key evil-normal-state-map (kbd "M-√") (lambda () (interactive) (scroll-other-window 1)))
   (define-key evil-normal-state-map (kbd "M-ª") (lambda () (interactive) (scroll-other-window-down 1)))
   (define-key evil-normal-state-map (kbd "M-ƒ") 'scroll-other-window)
@@ -273,10 +280,34 @@
   (evil-define-key 'normal flycheck-error-list-mode-map (kbd "q")   'kill-buffer-and-window)
   (evil-define-key 'normal flycheck-error-list-mode-map (kbd "RET") 'flycheck-error-list-goto-error)
 
-  (evil-define-key 'normal helm-ag-mode-map (kbd "o")   'helm-ag-mode-jump)
-  (evil-define-key 'normal helm-ag-mode-map (kbd "O")   'helm-ag-mode-jump-other-window)
+  (evil-define-key 'normal helm-ag-mode-map (kbd "o") 'helm-ag-mode-jump)
+  (evil-define-key 'normal helm-ag-mode-map (kbd "O") 'helm-ag-mode-jump-other-window)
 
-  (evil-define-key 'normal custom-mode-map (kbd "q")   'Custom-buffer-done)
+  (evil-define-key 'normal custom-mode-map (kbd "q") 'Custom-buffer-done)
+
+  (evil-define-key 'motion tide-mode-map
+    (kbd "gd")  'tide-jump-to-definition
+    (kbd "C-o") 'tide-jump-back
+    (kbd "C-t") 'tide-jump-back
+    (kbd "K")   'tide-documentation-at-point)
+
+  (evil-define-key 'normal tide-references-mode-map
+    (kbd "gj")       'tide-find-next-reference
+    (kbd "gk")       'tide-find-previous-reference
+    (kbd "C-j")      'tide-find-next-reference
+    (kbd "C-k")      'tide-find-previous-reference
+    (kbd "C-l")      'tide-goto-reference
+    (kbd "<return>") 'tide-goto-reference
+    (kbd "q")        'quit-window)
+
+  (evil-define-key 'normal tide-project-errors-mode-map
+    (kbd "gj")       'tide-find-next-error
+    (kbd "gk")       'tide-find-previous-error
+    (kbd "C-j")      'tide-find-next-error
+    (kbd "C-k")      'tide-find-previous-error
+    (kbd "C-l")      'tide-goto-error
+    (kbd "<return>") 'tide-goto-error
+    (kbd "q")        'quit-window)
 
   (evil-define-key 'normal eshell-mode-map (kbd "i")   'ts/eshell-evil-input-mode)
   (evil-define-key 'normal eshell-mode-map (kbd "q")   'shell-pop)
@@ -305,6 +336,7 @@
     "hv"    'describe-variable
     "hf"    'describe-function
     "hw"    'where-is
+    "fe"    'neotree-toggle
     "ff"    'helm-find-files
     "fo"    'ts/helm-find-org-files
     "fs"    'ts/open-create-scratch-buffer
@@ -468,12 +500,7 @@
   :config
   (helm-mode add)
 
-  (t-hook 'helm-after-initialize-hook 'ts/hide-cursor-in-helm-buffer)
-  (add-to-list 'display-buffer-alist
-               `(,(rx bos "*helm" (* not-newline) "*" eos)
-                 (display-buffer-in-side-window)
-                 (inhibit-same-window . t)
-                 (window-height . 0.4))))
+  (t-hook 'helm-after-initialize-hook 'ts/hide-cursor-in-helm-buffer))
 
 (use-package helm-ag
   :bind ("∫" . ts/contextual-helm-ag)
@@ -624,19 +651,25 @@
 
 (use-package htmlize)
 
-(use-package paredit
+(use-package smartparens
+  :defer t
   :config
-  (add-hook 'emacs-lisp-mode-hook                  'enable-paredit-mode)
-  (add-hook 'lisp-mode-hook                        'enable-paredit-mode)
-  (add-hook 'eval-expression-minibuffer-setup-hook 'enable-paredit-mode)
-  (add-hook 'ielm-mode-hook                        'enable-paredit-mode)
-  (add-hook 'lisp-mode-hook                        'enable-paredit-mode)
-  (add-hook 'lisp-interaction-mode-hook            'enable-paredit-mode)
-  (add-hook 'scheme-mode-hook                      'enable-paredit-mode)
-  (add-hook 'js-mode-hook                          'ts/paredit-nonlisp))
+  (smartparens-global-mode 1)
+  (show-smartparens-global-mode 1))
 
-(use-package evil-paredit
-  :hook (paredit-mode . evil-paredit-mode))
+;; (use-package paredit
+;;   :config
+;;   (add-hook 'emacs-lisp-mode-hook                  'enable-paredit-mode)
+;;   (add-hook 'lisp-mode-hook                        'enable-paredit-mode)
+;;   (add-hook 'eval-expression-minibuffer-setup-hook 'enable-paredit-mode)
+;;   (add-hook 'ielm-mode-hook                        'enable-paredit-mode)
+;;   (add-hook 'lisp-mode-hook                        'enable-paredit-mode)
+;;   (add-hook 'lisp-interaction-mode-hook            'enable-paredit-mode)
+;;   (add-hook 'scheme-mode-hook                      'enable-paredit-mode)
+;;   (add-hook 'js-mode-hook                          'ts/paredit-nonlisp))
+
+;; (use-package evil-paredit
+;;   :hook (paredit-mode . evil-paredit-mode))
 
 (use-package persistent-scratch
   :config
@@ -698,6 +731,25 @@
   :hook (coffee-mode . highlight-indent-guides-mode)
   :config (setq-default highlight-indent-guides-method 'character))
 
+(use-package indium
+  :hook (js-mode-hook . indium-interaction-mode))
+
+(defun setup-tide-mode ()
+  (interactive)
+  (tide-setup)
+  (flycheck-mode +1)
+  (setq flycheck-check-syntax-automatically '(save mode-enabled))
+  (eldoc-mode +1)
+  (tide-hl-identifier-mode +1)
+  (company-mode +1))
+
+(use-package tide
+  :hook (js2-mode . setup-tide-mode)
+  :init
+  (setq tide-tsserver-executable "/usr/local/bin/tsserver")
+  :config
+  (flycheck-add-next-checker 'javascript-eslint 'javascript-tide 'append))
+
 ;; (use-package evil-org
 ;;   :after (evil org)
 ;;   :config
@@ -717,8 +769,11 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(evil-paredit evil-magit rainbow-mode evil-surround evil-leader evil which-key wgrep web-mode use-package undo-tree spaceline-all-the-icons shell-pop rjsx-mode rainbow-delimiters persistent-scratch paredit org-bullets neotree markdown-mode magit js2-refactor htmlize highlight-indent-guides helm-projectile helm-git-grep helm-ag git-timemachine flycheck expand-region exec-path-from-shell eshell-z eshell-git-prompt engine-mode dashboard company coffee-mode auto-compile))
- '(safe-local-variable-values '((projectile-project-run-cmd . "yarn start"))))
+   '(tide indium evil-paredit evil-magit rainbow-mode evil-surround evil-leader evil which-key wgrep web-mode use-package undo-tree spaceline-all-the-icons shell-pop rjsx-mode rainbow-delimiters persistent-scratch paredit org-bullets neotree markdown-mode magit js2-refactor htmlize highlight-indent-guides helm-projectile helm-git-grep helm-ag git-timemachine flycheck expand-region exec-path-from-shell eshell-z eshell-git-prompt engine-mode dashboard company coffee-mode auto-compile))
+ '(safe-local-variable-values
+   '((projectile-project-run-cmd . "BUILD_SPEC=0 ./gulp --buildPages")
+     (projectile-project-test-cmd . "curl -s -i -X POST -u \"exthousyvtu:74c5eb9f9788478a2d64efbb4e6e43c4\" \"http://makemv01t.tst.veikkaus.fi:8080/job/web-test-revision/buildWithParameters?delay=0sec&revision=$(git rev-parse --symbolic --abbrev-ref HEAD)\"")
+     (projectile-project-run-cmd . "yarn start"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

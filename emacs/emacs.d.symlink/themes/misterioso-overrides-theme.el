@@ -24,7 +24,7 @@
  '(helm-visible-mark ((t (:background "#ffbd29" :foreground "black"))))
  '(helm-candidate-number ((t (:background "#ffbd29" :foreground "black"))))
  '(helm-buffer-directory ((t (:background "#5d7978" :foreground "white"))))
- '(helm-header ((t (:background "#5d7978" :foreground "gray80"))))
+ '(helm-header ((t (:background "#5d7978" :foreground "gray90"))))
  '(helm-ff-file ((t (:background nil :foreground "gray80"))))
  '(helm-ff-directory ((t (:background nil :foreground "#6699CC"))))
  '(helm-ff-executable ((t (:background nil :foreground "DarkOliveGreen3"))))

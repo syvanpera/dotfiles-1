@@ -2,13 +2,22 @@
 
 ;;; Code:
 
+(defun ts/toggle-relative-line-numbers ()
+  "Toggles between relative and absolute line numbering."
+  (interactive)
+  (display-line-numbers-mode)
+  (if (eq display-line-numbers-type 'relative)
+      (setq display-line-numbers-type t)
+    (setq display-line-numbers-type 'relative))
+  (display-line-numbers-mode))
+
 (defun ts/minibuffer-keyboard-quit ()
   "Abort recursive edit.
 In Delete Selection mode, if the mark is active, just deactivate it;
 then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (interactive)
   (if (and delete-selection-mode transient-mark-mode mark-active)
-      (setq deactivate-mark  t)
+      (setq deactivate-mark t)
     (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
     (abort-recursive-edit)))
 

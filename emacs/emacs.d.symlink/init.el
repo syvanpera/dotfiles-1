@@ -341,6 +341,8 @@
     "'"     'shell-pop
     "s"     'ts/contextual-shell-pop
     "q"     'ts/kill-window-or-buffer
+    "tl"    'display-line-numbers-mode
+    "tr"    'ts/toggle-relative-line-numbers
     "hk"    'describe-key
     "hv"    'describe-variable
     "hf"    'describe-function

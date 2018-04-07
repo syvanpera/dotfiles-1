@@ -35,6 +35,15 @@
  '(company-scrollbar-fg ((t :background "#338f86")))
  '(company-tooltip-selection ((t :background "#5d7978")))
  '(company-tooltip-common ((t :inherit font-lock-constant-face)))
+ '(org-level-1 ((t (:height 1.2 :inherit 'outline-1))))
+ ;; '(org-level-1 ((t (:height 1.2 :inherit 'outline-3))))
+ ;; '(org-level-2 ((t (:inherit 'outline-4))))
+ ;; '(org-level-3 ((t (:inherit 'outline-2))))
+ ;; '(org-level-4 ((t (:inherit 'outline-1))))
+ ;; '(org-level-2 ((t (:foreground "DarkOliveGreen3"))))
+ ;; '(org-level-3 ((t (:foreground "#6699CC"))))
+ ;; '(org-level-4 ((t (:foreground "white"))))
+ '(org-ellipsis ((t (:underline nil))))
  )
 
 ;;; misterioso-overrides-theme.el ends here

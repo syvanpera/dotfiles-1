@@ -220,6 +220,10 @@
   (evil-define-key 'normal org-mode-map (kbd "M-l") 'org-metaright)
   (evil-define-key 'normal org-mode-map (kbd "M-k") 'org-metaup)
   (evil-define-key 'normal org-mode-map (kbd "M-j") 'org-metadown)
+  (evil-define-key 'normal org-mode-map (kbd "M-H") 'org-shiftmetaleft)
+  (evil-define-key 'normal org-mode-map (kbd "M-L") 'org-shiftmetaright)
+  (evil-define-key 'normal org-mode-map (kbd "M-K") 'org-shiftmetaup)
+  (evil-define-key 'normal org-mode-map (kbd "M-J") 'org-shiftmetadown)
   (evil-define-key 'normal org-mode-map (kbd "gh")  'org-backward-element)
   (evil-define-key 'normal org-mode-map (kbd "gl")  'org-forward-element)
   (evil-define-key 'normal org-mode-map (kbd "gk")  'org-up-element)
@@ -635,13 +639,27 @@
 
 (use-package org
   :config
-  (setq org-directory "~/Documents/org"
+  (setq org-directory "~/Google Drive/org"
+        org-default-notes-file (concat org-directory "/capture.org")
         org-src-fontify-natively t
         org-src-tab-acts-natively t
         org-ellipsis "…"
         org-todo-keywords '((sequence "☛ TODO(t)" "|" "✔ DONE(d)")
                             (sequence "⚑ WAITING(w@)" "|")
-                            (sequence "|" "✘ CANCELED(c@)"))))
+                            (sequence "|" "✘ CANCELED(c@)")))
+  (setq org-capture-templates
+        '(("t" "Task" entry
+           (file+headline org-default-notes-file "Inbox")
+           "* TODO %^{Task}\nSCHEDULED: %t\n"
+           :immediate-finish t)
+          ("i" "Interrupting task" entry
+           (file+headline org-default-notes-file "Inbox")
+           "* STARTED %^{Task}"
+           :clock-in :clock-resume)
+          ("e" "Emacs idea" entry
+           (file+headline "code/emacs-notes/tasks.org" "Emacs")
+           "* TODO %^{Task}"
+           :immediate-finish t))))
 
 (use-package org-bullets
   :after org
@@ -677,6 +695,9 @@
 
 (use-package flycheck
   :init
+  (setq-default flycheck-disabled-checkers
+                (append flycheck-disabled-checkers
+                        '(javascript-jshint)))
   :config
   (define-fringe-bitmap 'my-flycheck-fringe-indicator
     (vector #b00000000
@@ -713,7 +734,8 @@
     :fringe-bitmap 'my-flycheck-fringe-indicator
     :fringe-face 'flycheck-fringe-info)
 
-  (global-flycheck-mode))
+  (global-flycheck-mode)
+  (flycheck-add-mode 'javascript-eslint 'web-mode))
 
 (use-package coffee-mode
   :init
@@ -744,10 +766,11 @@
   (company-mode +1))
 
 (use-package tide
-  :hook (js2-mode . setup-tide-mode)
+  :hook ((js2-mode rjsx-mode) . setup-tide-mode)
   :init
   (setq tide-tsserver-executable "/usr/local/bin/tsserver")
   :config
+  (flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append)
   (flycheck-add-next-checker 'javascript-eslint 'javascript-tide 'append))
 
 ;; (use-package evil-org

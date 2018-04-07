@@ -502,9 +502,9 @@
         helm-display-buffer-default-height 15)
 
   :config
-  (helm-mode add)
+  (helm-mode t)
 
-  (t-hook 'helm-after-initialize-hook 'ts/hide-cursor-in-helm-buffer))
+  (add-hook 'helm-after-initialize-hook 'ts/hide-cursor-in-helm-buffer))
 
 (use-package helm-ag
   :bind ("∫" . ts/contextual-helm-ag)

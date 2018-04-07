@@ -175,6 +175,11 @@
 
   (add-to-list 'evil-normal-state-modes 'Custom-mode)
 
+  ;; Some org-mode global keys
+  (define-key global-map "\C-cl" 'org-store-link)
+  (define-key global-map "\C-ca" 'org-agenda)
+  (define-key global-map "\C-cc" 'org-capture)
+
   ;; Ensure ESC quits in all modes: http://stackoverflow.com/a/10166400/61435
   (global-set-key [escape]                             'evil-exit-emacs-state)
   (define-key evil-normal-state-map [escape]           'keyboard-quit)
@@ -224,14 +229,14 @@
   (evil-define-key 'normal org-mode-map (kbd "M-L") 'org-shiftmetaright)
   (evil-define-key 'normal org-mode-map (kbd "M-K") 'org-shiftmetaup)
   (evil-define-key 'normal org-mode-map (kbd "M-J") 'org-shiftmetadown)
-  (evil-define-key 'normal org-mode-map (kbd "gh")  'org-backward-element)
-  (evil-define-key 'normal org-mode-map (kbd "gl")  'org-forward-element)
-  (evil-define-key 'normal org-mode-map (kbd "gk")  'org-up-element)
-  (evil-define-key 'normal org-mode-map (kbd "gj")  'org-down-element)
-  (evil-define-key 'normal org-mode-map (kbd "H")   'org-shiftleft)
-  (evil-define-key 'normal org-mode-map (kbd "L")   'org-shiftright)
-  (evil-define-key 'normal org-mode-map (kbd "K")   'org-shiftup)
-  (evil-define-key 'normal org-mode-map (kbd "J")   'org-shiftdown)
+  (evil-define-key 'normal org-mode-map (kbd "C-H") 'org-shiftcontrolleft)
+  (evil-define-key 'normal org-mode-map (kbd "C-L") 'org-shiftcontrolright)
+  (evil-define-key 'normal org-mode-map (kbd "C-K") 'org-shiftcontrolup)
+  (evil-define-key 'normal org-mode-map (kbd "C-J") 'org-shiftcontroldown)
+  (evil-define-key 'normal org-mode-map (kbd "gh")  'org-shiftleft)
+  (evil-define-key 'normal org-mode-map (kbd "gl")  'org-shiftright)
+  (evil-define-key 'normal org-mode-map (kbd "gk")  'org-shiftup)
+  (evil-define-key 'normal org-mode-map (kbd "gj")  'org-shiftdown)
 
   (evil-define-key 'normal magit-status-mode-map (kbd "C-h") 'evil-window-left)
   (evil-define-key 'normal magit-status-mode-map (kbd "C-j") 'evil-window-down)
@@ -365,7 +370,6 @@
     "gs"    'magit-status
     "gl"    'magit-log-current
     "gb"    'magit-blame
-    "ol"    'org-store-link
     "of"    'ts/helm-find-org-files
     "oa"    'ts/org-agenda-show-agenda-and-todo
     "oc"    'org-capture
@@ -640,17 +644,22 @@
 (use-package org
   :config
   (setq org-directory "~/Google Drive/org"
-        org-default-notes-file (concat org-directory "/capture.org")
+        org-default-notes-file (concat org-directory "/inbox.org")
         org-src-fontify-natively t
         org-src-tab-acts-natively t
-        org-ellipsis "…"
-        org-todo-keywords '((sequence "☛ TODO(t)" "|" "✔ DONE(d)")
-                            (sequence "⚑ WAITING(w@)" "|")
-                            (sequence "|" "✘ CANCELED(c@)")))
+        org-log-done 'time
+        org-ellipsis "…")
+        ;; org-todo-keywords '((sequence "☛ TODO(t)" "|" "✔ DONE(d)")
+        ;;                     (sequence "⚑ WAITING(w@)" "|")
+        ;;                     (sequence "|" "✘ CANCELED(c@)")))
   (setq org-capture-templates
         '(("t" "Task" entry
            (file+headline org-default-notes-file "Inbox")
            "* TODO %^{Task}\nSCHEDULED: %t\n"
+           :immediate-finish t)
+          ("x" "Test task" entry
+           (file+headline org-default-notes-file "Test")
+           "* TODO %^{Task}\n"
            :immediate-finish t)
           ("i" "Interrupting task" entry
            (file+headline org-default-notes-file "Inbox")
@@ -791,8 +800,9 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(org-agenda-files '("~/Desktop/tutorial.org"))
  '(package-selected-packages
-   '(tide indium evil-paredit evil-magit rainbow-mode evil-surround evil-leader evil which-key wgrep web-mode use-package undo-tree spaceline-all-the-icons shell-pop rjsx-mode rainbow-delimiters persistent-scratch paredit org-bullets neotree markdown-mode magit js2-refactor htmlize highlight-indent-guides helm-projectile helm-git-grep helm-ag git-timemachine flycheck expand-region exec-path-from-shell eshell-z eshell-git-prompt engine-mode dashboard company coffee-mode auto-compile))
+   '(helm-org tide indium evil-paredit evil-magit rainbow-mode evil-surround evil-leader evil which-key wgrep web-mode use-package undo-tree spaceline-all-the-icons shell-pop rjsx-mode rainbow-delimiters persistent-scratch paredit org-bullets neotree markdown-mode magit js2-refactor htmlize highlight-indent-guides helm-projectile helm-git-grep helm-ag git-timemachine flycheck expand-region exec-path-from-shell eshell-z eshell-git-prompt engine-mode dashboard company coffee-mode auto-compile))
  '(safe-local-variable-values
    '((projectile-project-run-cmd . "BUILD_SPEC=0 ./gulp --buildPages")
      (projectile-project-test-cmd . "curl -s -i -X POST -u \"exthousyvtu:74c5eb9f9788478a2d64efbb4e6e43c4\" \"http://makemv01t.tst.veikkaus.fi:8080/job/web-test-revision/buildWithParameters?delay=0sec&revision=$(git rev-parse --symbolic --abbrev-ref HEAD)\"")

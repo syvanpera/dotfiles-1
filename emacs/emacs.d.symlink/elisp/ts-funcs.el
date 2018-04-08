@@ -162,4 +162,8 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
         (if file-name
             (neotree-find file-name))))))
 
+(defun ts/open-org-inbox ()
+  (interactive)
+  (find-file org-default-notes-file))
+
 (provide 'ts-funcs)

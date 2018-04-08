@@ -3,7 +3,7 @@
 ;;; Code:
 
 ;; Unclutter the interface immediately
-(when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+;; (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (when (fboundp 'blink-cursor-mode) (blink-cursor-mode -1))
@@ -43,6 +43,7 @@
 
 (add-to-list 'load-path (expand-file-name "elisp" user-emacs-directory))
 (add-to-list 'load-path (expand-file-name "elisp/vendor" user-emacs-directory))
+(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
 
 (require 'sensible-defaults)
 (sensible-defaults/use-all-settings)
@@ -69,7 +70,9 @@
       eshell-scroll-to-bottom-on-input t
       save-interprogram-paste-before-kill t
       x-select-enable-clipboard nil
-      recentf-mode nil)
+      align-default-spacing 0
+      recentf-mode nil
+      compilation-window-height 30)
 
 (setq inhibit-startup-echo-area-message user-login-name
       ring-bell-function 'ignore)
@@ -102,7 +105,7 @@
       show-paren-when-point-inside-paren t
       show-paren-mode nil
       prettify-symbols-unprettify-at-point t
-      default-frame-alist '((font . "Hack-12")))
+      default-frame-alist '((font . "Hasklug Nerd Font-12")))
 
 (add-hook 'prog-mode-hook (lambda () (setq-local show-trailing-whitespace t)))
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
@@ -117,7 +120,6 @@
 
 (with-current-buffer "*scratch*"
   (emacs-lock-mode 'kill))
-
 (with-current-buffer "*Messages*"
   (emacs-lock-mode 'kill))
 
@@ -134,10 +136,10 @@
                                   (push '("=>" . ?⇒) prettify-symbols-alist)))
 
 (add-to-list 'display-buffer-alist
-               `(,(rx bos "*helm" (* not-newline) "*" eos)
-                 (display-buffer-in-side-window)
-                 (inhibit-same-window . t)
-                 (window-height . 0.3)))
+             `(,(rx bos "*helm" (* not-newline) "*" eos)
+               (display-buffer-in-side-window)
+               (inhibit-same-window . t)
+               (window-height . 0.3)))
 
 (defun display-startup-echo-area-message ()
   "Startup message."
@@ -166,164 +168,198 @@
   (setq evil-want-integration nil)
 
   :config
-  (evil-mode t)
+  (progn
+    (evil-mode t)
 
-  ;; Some commands are just not meant to be repeated
-  (mapc 'evil-declare-not-repeat
-        '(undo-tree-undo
-          undo-tree-redo))
+    ;; Some commands are just not meant to be repeated
+    (mapc 'evil-declare-not-repeat
+          '(undo-tree-undo
+            undo-tree-redo))
 
-  (add-to-list 'evil-normal-state-modes 'Custom-mode)
+    (add-to-list 'evil-normal-state-modes 'Custom-mode)
 
-  ;; Some org-mode global keys
-  (define-key global-map "\C-cl" 'org-store-link)
-  (define-key global-map "\C-ca" 'org-agenda)
-  (define-key global-map "\C-cc" 'org-capture)
+    (define-key global-map "\C-cy"        'clipboard-yank)
+    (define-key global-map "\C-cs"        'ts/contextual-shell-pop)
 
-  ;; Ensure ESC quits in all modes: http://stackoverflow.com/a/10166400/61435
-  (global-set-key [escape]                             'evil-exit-emacs-state)
-  (define-key evil-normal-state-map [escape]           'keyboard-quit)
-  (define-key evil-visual-state-map [escape]           'keyboard-quit)
-  (define-key minibuffer-local-map [escape]            'ts/minibuffer-keyboard-quit)
-  (define-key minibuffer-local-ns-map [escape]         'ts/minibuffer-keyboard-quit)
-  (define-key minibuffer-local-completion-map [escape] 'ts/minibuffer-keyboard-quit)
-  (define-key minibuffer-local-must-match-map [escape] 'ts/minibuffer-keyboard-quit)
-  (define-key minibuffer-local-isearch-map [escape]    'ts/minibuffer-keyboard-quit)
+    ;; Some org-mode global keys
+    (define-key global-map "\C-cl"        'org-store-link)
+    (define-key global-map "\C-ca"        'org-agenda)
+    (define-key global-map "\C-cc"        'org-capture)
+    (define-key global-map "\C-c\C-x\C-i" 'org-clock-in)
+    (define-key global-map "\C-c\C-x\C-o" 'org-clock-out)
 
-  (define-key evil-normal-state-map   (kbd "C-g") 'ts/evil-keyboard-quit)
-  (define-key evil-motion-state-map   (kbd "C-g") 'ts/evil-keyboard-quit)
-  (define-key evil-insert-state-map   (kbd "C-g") 'ts/evil-keyboard-quit)
-  (define-key evil-window-map         (kbd "C-g") 'ts/evil-keyboard-quit)
-  (define-key evil-operator-state-map (kbd "C-g") 'ts/evil-keyboard-quit)
+    (define-key global-map (kbd "M-v")         'clipboard-yank)
+    (define-key global-map (kbd "M-S-<left>")  'shrink-window-horizontally)
+    (define-key global-map (kbd "M-S-<right>") 'enlarge-window-horizontally)
+    (define-key global-map (kbd "M-S-<down>")  'shrink-window)
+    (define-key global-map (kbd "M-S-<up>")    'enlarge-window)
 
-  (define-key evil-normal-state-map (kbd "M-s") 'save-buffer)
-  (define-key evil-normal-state-map (kbd "M-a") 'mark-whole-buffer)
-  (define-key evil-normal-state-map (kbd "M-q") 'evil-quit-all)
-  (define-key evil-normal-state-map (kbd "M-c") 'evil-yank)
-  (define-key evil-normal-state-map (kbd "M-v") 'clipboard-yank)
-  (define-key evil-insert-state-map (kbd "M-v") 'clipboard-yank)
-  (define-key evil-normal-state-map (kbd "M-y") 'helm-show-kill-ring)
-  (define-key evil-insert-state-map (kbd "M-y") 'helm-show-kill-ring)
-  (define-key evil-normal-state-map (kbd "C-h") 'evil-window-left)
-  (define-key evil-normal-state-map (kbd "C-j") 'evil-window-down)
-  (define-key evil-normal-state-map (kbd "C-k") 'evil-window-up)
-  (define-key evil-normal-state-map (kbd "C-l") 'evil-window-right)
-  (define-key evil-normal-state-map (kbd "u")   'undo-tree-undo)
-  (define-key evil-normal-state-map (kbd "M-u") 'undo-tree-visualize)
-  (define-key evil-normal-state-map (kbd "C-r") 'undo-tree-redo)
-  (define-key evil-normal-state-map (kbd "gf")  'projectile-find-file-dwim)
-  (define-key evil-normal-state-map (kbd "gF")  'projectile-find-file-dwim-other-window)
-  (define-key evil-normal-state-map (kbd "gc")  'sensible-defaults/comment-or-uncomment-region-or-line)
-  (define-key evil-normal-state-map (kbd "M-√") (lambda () (interactive) (scroll-other-window 1)))
-  (define-key evil-normal-state-map (kbd "M-ª") (lambda () (interactive) (scroll-other-window-down 1)))
-  (define-key evil-normal-state-map (kbd "M-ƒ") 'scroll-other-window)
-  (define-key evil-normal-state-map (kbd "M-›") 'scroll-other-window-down)
-  (define-key evil-normal-state-map (kbd "M-k") 'move-line-up)
-  (define-key evil-normal-state-map (kbd "M-j") 'move-line-down)
+    (define-key org-capture-mode-map (kbd "M-v") 'clipboard-yank)
 
-  (evil-define-key 'normal org-mode-map (kbd "M-h") 'org-metaleft)
-  (evil-define-key 'normal org-mode-map (kbd "M-l") 'org-metaright)
-  (evil-define-key 'normal org-mode-map (kbd "M-k") 'org-metaup)
-  (evil-define-key 'normal org-mode-map (kbd "M-j") 'org-metadown)
-  (evil-define-key 'normal org-mode-map (kbd "M-H") 'org-shiftmetaleft)
-  (evil-define-key 'normal org-mode-map (kbd "M-L") 'org-shiftmetaright)
-  (evil-define-key 'normal org-mode-map (kbd "M-K") 'org-shiftmetaup)
-  (evil-define-key 'normal org-mode-map (kbd "M-J") 'org-shiftmetadown)
-  (evil-define-key 'normal org-mode-map (kbd "C-H") 'org-shiftcontrolleft)
-  (evil-define-key 'normal org-mode-map (kbd "C-L") 'org-shiftcontrolright)
-  (evil-define-key 'normal org-mode-map (kbd "C-K") 'org-shiftcontrolup)
-  (evil-define-key 'normal org-mode-map (kbd "C-J") 'org-shiftcontroldown)
-  (evil-define-key 'normal org-mode-map (kbd "gh")  'org-shiftleft)
-  (evil-define-key 'normal org-mode-map (kbd "gl")  'org-shiftright)
-  (evil-define-key 'normal org-mode-map (kbd "gk")  'org-shiftup)
-  (evil-define-key 'normal org-mode-map (kbd "gj")  'org-shiftdown)
+    ;; Ensure ESC quits in all modes: http://stackoverflow.com/a/10166400/61435
+    (global-set-key [escape]                             'evil-exit-emacs-state)
+    (define-key evil-normal-state-map [escape]           'keyboard-quit)
+    (define-key evil-visual-state-map [escape]           'keyboard-quit)
+    (define-key minibuffer-local-map [escape]            'ts/minibuffer-keyboard-quit)
+    (define-key minibuffer-local-ns-map [escape]         'ts/minibuffer-keyboard-quit)
+    (define-key minibuffer-local-completion-map [escape] 'ts/minibuffer-keyboard-quit)
+    (define-key minibuffer-local-must-match-map [escape] 'ts/minibuffer-keyboard-quit)
+    (define-key minibuffer-local-isearch-map [escape]    'ts/minibuffer-keyboard-quit)
 
-  (evil-define-key 'normal magit-status-mode-map (kbd "C-h") 'evil-window-left)
-  (evil-define-key 'normal magit-status-mode-map (kbd "C-j") 'evil-window-down)
-  (evil-define-key 'normal magit-status-mode-map (kbd "C-k") 'evil-window-up)
-  (evil-define-key 'normal magit-status-mode-map (kbd "C-l") 'evil-window-right)
-  (evil-define-key 'normal magit-status-mode-map (kbd "M-j") 'magit-section-forward-sibling)
-  (evil-define-key 'normal magit-status-mode-map (kbd "M-k") 'magit-section-backward-sibling)
-  (evil-define-key 'normal magit-status-mode-map (kbd "j")   'magit-section-forward)
-  (evil-define-key 'normal magit-status-mode-map (kbd "k")   'magit-section-backward)
+    (define-key evil-normal-state-map   (kbd "C-g") 'ts/evil-keyboard-quit)
+    (define-key evil-motion-state-map   (kbd "C-g") 'ts/evil-keyboard-quit)
+    (define-key evil-insert-state-map   (kbd "C-g") 'ts/evil-keyboard-quit)
+    (define-key evil-window-map         (kbd "C-g") 'ts/evil-keyboard-quit)
+    (define-key evil-operator-state-map (kbd "C-g") 'ts/evil-keyboard-quit)
 
-  ;; (evil-define-key 'normal paredit-mode-map (kbd "M-{") 'paredit-wrap-curly)
+    (define-key evil-normal-state-map (kbd "C-s") 'save-buffer)
+    (define-key evil-normal-state-map (kbd "M-s") 'save-buffer)
+    (define-key evil-normal-state-map (kbd "M-a") 'mark-whole-buffer)
+    (define-key evil-normal-state-map (kbd "M-q") 'evil-quit-all)
+    (define-key evil-normal-state-map (kbd "M-c") 'evil-yank)
+    ;; (define-key evil-normal-state-map (kbd "M-v") 'clipboard-yank)
+    ;; (define-key evil-insert-state-map (kbd "M-v") 'clipboard-yank)
+    (define-key evil-normal-state-map (kbd "M-y") 'helm-show-kill-ring)
+    (define-key evil-insert-state-map (kbd "M-y") 'helm-show-kill-ring)
+    (define-key evil-normal-state-map (kbd "C-h") 'evil-window-left)
+    (define-key evil-normal-state-map (kbd "C-j") 'evil-window-down)
+    (define-key evil-normal-state-map (kbd "C-k") 'evil-window-up)
+    (define-key evil-normal-state-map (kbd "C-l") 'evil-window-right)
+    (define-key evil-normal-state-map (kbd "u")   'undo-tree-undo)
+    (define-key evil-normal-state-map (kbd "M-u") 'undo-tree-visualize)
+    (define-key evil-normal-state-map (kbd "C-r") 'undo-tree-redo)
+    (define-key evil-normal-state-map (kbd "go")  'find-file-at-point)
+    (define-key evil-normal-state-map (kbd "gf")  'projectile-find-file-dwim)
+    (define-key evil-normal-state-map (kbd "gF")  'projectile-find-file-dwim-other-window)
+    (define-key evil-normal-state-map (kbd "gc")  'sensible-defaults/comment-or-uncomment-region-or-line)
+    (define-key evil-normal-state-map (kbd "M-√") (lambda () (interactive) (scroll-other-window 1)))
+    (define-key evil-normal-state-map (kbd "M-ª") (lambda () (interactive) (scroll-other-window-down 1)))
+    (define-key evil-normal-state-map (kbd "M-ƒ") 'scroll-other-window)
+    (define-key evil-normal-state-map (kbd "M-›") 'scroll-other-window-down)
+    (define-key evil-normal-state-map (kbd "M-k") 'move-line-up)
+    (define-key evil-normal-state-map (kbd "M-j") 'move-line-down)
 
-  (evil-define-key 'normal js-mode-map (kbd "M-k") 'js2r-move-line-up)
-  (evil-define-key 'normal js-mode-map (kbd "M-j") 'js2r-move-line-down)
+    ;; (define-key compilation-mode-map (kbd "C-h") 'evil-window-left)
+    ;; (define-key compilation-mode-map (kbd "C-h") 'evil-window-left)
+    ;; (define-key compilation-mode-map (kbd "C-l") 'evil-window-right)
+    ;; (define-key compilation-mode-map (kbd "C-k") 'evil-window-up)
+    ;; (define-key compilation-mode-map (kbd "C-j") 'evil-window-down)
 
-  (evil-define-key 'normal neotree-mode-map (kbd "TAB") 'neotree-enter)
-  (evil-define-key 'normal neotree-mode-map (kbd "SPC") 'neotree-quick-look)
-  (evil-define-key 'normal neotree-mode-map (kbd "o")   'neotree-enter)
-  (evil-define-key 'normal neotree-mode-map (kbd "O")   'neotree-enter-horizontal-split)
-  (evil-define-key 'normal neotree-mode-map (kbd "q")   'neotree-hide)
-  (evil-define-key 'normal neotree-mode-map (kbd "c")   'neotree-create-node)
-  (evil-define-key 'normal neotree-mode-map (kbd "r")   'neotree-rename-node)
-  (evil-define-key 'normal neotree-mode-map (kbd "d")   'neotree-delete-node)
-  (evil-define-key 'normal neotree-mode-map (kbd "H")   'neotree-hidden-file-toggle)
-  (evil-define-key 'normal neotree-mode-map (kbd "z")   'neotree-stretch-toggle)
-  (evil-define-key 'normal neotree-mode-map (kbd "R")   'neotree-refresh)
-  (evil-define-key 'normal neotree-mode-map (kbd "RET") 'neotree-enter)
+    (evil-define-key 'normal eww-mode-map (kbd "q") 'quit-window)
 
-  ;; (evil-define-key 'normal evil-treemacs-state-map (kbd "C-l") 'evil-window-right)
+    (evil-define-key 'normal org-mode-map (kbd "C-h") 'evil-window-left)
+    (evil-define-key 'normal org-mode-map (kbd "C-h") 'evil-window-left)
+    (evil-define-key 'normal org-mode-map (kbd "C-l") 'evil-window-right)
+    (evil-define-key 'normal org-mode-map (kbd "C-k") 'evil-window-up)
+    (evil-define-key 'normal org-mode-map (kbd "C-j") 'evil-window-down)
+    (evil-define-key 'normal org-mode-map (kbd "M-h") 'org-metaleft)
+    (evil-define-key 'normal org-mode-map (kbd "M-l") 'org-metaright)
+    (evil-define-key 'normal org-mode-map (kbd "M-k") 'org-metaup)
+    (evil-define-key 'normal org-mode-map (kbd "M-j") 'org-metadown)
+    (evil-define-key 'normal org-mode-map (kbd "M-S-h") 'org-shiftmetaleft)
+    (evil-define-key 'normal org-mode-map (kbd "M-S-l") 'org-shiftmetaright)
+    (evil-define-key 'normal org-mode-map (kbd "M-S-k") 'org-shiftmetaup)
+    (evil-define-key 'normal org-mode-map (kbd "M-S-j") 'org-shiftmetadown)
+    (evil-define-key 'normal org-mode-map (kbd "C-S-h") 'org-shiftcontrolleft)
+    (evil-define-key 'normal org-mode-map (kbd "C-S-l") 'org-shiftcontrolright)
+    (evil-define-key 'normal org-mode-map (kbd "C-S-k") 'org-shiftcontrolup)
+    (evil-define-key 'normal org-mode-map (kbd "C-S-j") 'org-shiftcontroldown)
+    (evil-define-key 'normal org-mode-map (kbd "gh")  'org-shiftleft)
+    (evil-define-key 'normal org-mode-map (kbd "gl")  'org-shiftright)
+    (evil-define-key 'normal org-mode-map (kbd "gk")  'org-shiftup)
+    (evil-define-key 'normal org-mode-map (kbd "gj")  'org-shiftdown)
 
-  (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "j")   'undo-tree-visualize-redo)
-  (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "k")   'undo-tree-visualize-undo)
-  (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "l")   'undo-tree-visualize-switch-branch-right)
-  (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "h")   'undo-tree-visualize-switch-branch-left)
-  (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "C-h") 'evil-window-left)
-  (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "C-j") 'evil-window-down)
-  (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "C-k") 'evil-window-up)
-  (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "C-l") 'evil-window-right)
+    (evil-define-key 'normal org-export-stack-mode-map (kbd "C-j") 'widget-forward)
+    (evil-define-key 'normal dashboard-mode-map (kbd "C-k") 'widget-backward)
 
-  (evil-define-key 'motion help-mode-map (kbd "C-h") 'evil-window-left)
-  (evil-define-key 'motion help-mode-map (kbd "C-j") 'evil-window-down)
-  (evil-define-key 'motion help-mode-map (kbd "C-k") 'evil-window-up)
-  (evil-define-key 'motion help-mode-map (kbd "C-l") 'evil-window-right)
+    (evil-define-key 'normal magit-status-mode-map (kbd "C-h") 'evil-window-left)
+    (evil-define-key 'normal magit-status-mode-map (kbd "C-j") 'evil-window-down)
+    (evil-define-key 'normal magit-status-mode-map (kbd "C-k") 'evil-window-up)
+    (evil-define-key 'normal magit-status-mode-map (kbd "C-l") 'evil-window-right)
+    (evil-define-key 'normal magit-status-mode-map (kbd "M-j") 'magit-section-forward-sibling)
+    (evil-define-key 'normal magit-status-mode-map (kbd "M-k") 'magit-section-backward-sibling)
+    (evil-define-key 'normal magit-status-mode-map (kbd "C-n") 'magit-section-forward-sibling)
+    (evil-define-key 'normal magit-status-mode-map (kbd "C-p") 'magit-section-backward-sibling)
+    (evil-define-key 'normal magit-status-mode-map (kbd "j")   'magit-section-forward)
+    (evil-define-key 'normal magit-status-mode-map (kbd "k")   'magit-section-backward)
 
-  (evil-define-key 'normal dashboard-mode-map (kbd "j") 'widget-forward)
-  (evil-define-key 'normal dashboard-mode-map (kbd "k") 'widget-backward)
+    ;; (evil-define-key 'normal paredit-mode-map (kbd "M-{") 'paredit-wrap-curly)
 
-  (evil-define-key 'normal flycheck-error-list-mode-map (kbd "j")   'flycheck-error-list-next-error)
-  (evil-define-key 'normal flycheck-error-list-mode-map (kbd "k")   'flycheck-error-list-previous-error)
-  (evil-define-key 'normal flycheck-error-list-mode-map (kbd "q")   'kill-buffer-and-window)
-  (evil-define-key 'normal flycheck-error-list-mode-map (kbd "RET") 'flycheck-error-list-goto-error)
+    (evil-define-key 'normal js-mode-map (kbd "M-k") 'js2r-move-line-up)
+    (evil-define-key 'normal js-mode-map (kbd "M-j") 'js2r-move-line-down)
 
-  (evil-define-key 'normal helm-ag-mode-map (kbd "o") 'helm-ag-mode-jump)
-  (evil-define-key 'normal helm-ag-mode-map (kbd "O") 'helm-ag-mode-jump-other-window)
+    (evil-define-key 'normal neotree-mode-map (kbd "TAB") 'neotree-enter)
+    (evil-define-key 'normal neotree-mode-map (kbd "SPC") 'neotree-quick-look)
+    (evil-define-key 'normal neotree-mode-map (kbd "o")   'neotree-enter)
+    (evil-define-key 'normal neotree-mode-map (kbd "O")   'neotree-enter-horizontal-split)
+    (evil-define-key 'normal neotree-mode-map (kbd "q")   'neotree-hide)
+    (evil-define-key 'normal neotree-mode-map (kbd "c")   'neotree-create-node)
+    (evil-define-key 'normal neotree-mode-map (kbd "r")   'neotree-rename-node)
+    (evil-define-key 'normal neotree-mode-map (kbd "d")   'neotree-delete-node)
+    (evil-define-key 'normal neotree-mode-map (kbd "H")   'neotree-hidden-file-toggle)
+    (evil-define-key 'normal neotree-mode-map (kbd "z")   'neotree-stretch-toggle)
+    (evil-define-key 'normal neotree-mode-map (kbd "R")   'neotree-refresh)
+    (evil-define-key 'normal neotree-mode-map (kbd "RET") 'neotree-enter)
 
-  (evil-define-key 'normal custom-mode-map (kbd "q") 'Custom-buffer-done)
+    ;; (evil-define-key 'normal evil-treemacs-state-map (kbd "C-l") 'evil-window-right)
 
-  (evil-define-key 'motion tide-mode-map
-    (kbd "gd")  'tide-jump-to-definition
-    (kbd "C-o") 'tide-jump-back
-    (kbd "C-t") 'tide-jump-back
-    (kbd "K")   'tide-documentation-at-point)
+    (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "j")   'undo-tree-visualize-redo)
+    (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "k")   'undo-tree-visualize-undo)
+    (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "l")   'undo-tree-visualize-switch-branch-right)
+    (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "h")   'undo-tree-visualize-switch-branch-left)
+    (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "C-h") 'evil-window-left)
+    (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "C-j") 'evil-window-down)
+    (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "C-k") 'evil-window-up)
+    (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "C-l") 'evil-window-right)
 
-  (evil-define-key 'normal tide-references-mode-map
-    (kbd "gj")       'tide-find-next-reference
-    (kbd "gk")       'tide-find-previous-reference
-    (kbd "C-j")      'tide-find-next-reference
-    (kbd "C-k")      'tide-find-previous-reference
-    (kbd "C-l")      'tide-goto-reference
-    (kbd "<return>") 'tide-goto-reference
-    (kbd "q")        'quit-window)
+    (evil-define-key 'motion help-mode-map (kbd "C-h") 'evil-window-left)
+    (evil-define-key 'motion help-mode-map (kbd "C-j") 'evil-window-down)
+    (evil-define-key 'motion help-mode-map (kbd "C-k") 'evil-window-up)
+    (evil-define-key 'motion help-mode-map (kbd "C-l") 'evil-window-right)
 
-  (evil-define-key 'normal tide-project-errors-mode-map
-    (kbd "gj")       'tide-find-next-error
-    (kbd "gk")       'tide-find-previous-error
-    (kbd "C-j")      'tide-find-next-error
-    (kbd "C-k")      'tide-find-previous-error
-    (kbd "C-l")      'tide-goto-error
-    (kbd "<return>") 'tide-goto-error
-    (kbd "q")        'quit-window)
+    (evil-define-key 'normal dashboard-mode-map (kbd "j") 'widget-forward)
+    (evil-define-key 'normal dashboard-mode-map (kbd "k") 'widget-backward)
 
-  (evil-define-key 'normal eshell-mode-map (kbd "i")   'ts/eshell-evil-input-mode)
-  (evil-define-key 'normal eshell-mode-map (kbd "q")   'shell-pop)
-  (evil-define-key 'insert eshell-mode-map (kbd "C-a") 'eshell-bol)
-  (evil-define-key 'insert eshell-mode-map (kbd "C-p") 'eshell-previous-matching-input-from-input)
-  (evil-define-key 'insert eshell-mode-map (kbd "C-n") 'eshell-next-matching-input-from-input)
-  (evil-define-key 'insert eshell-mode-map (kbd "C-r") 'helm-eshell-history))
+    (evil-define-key 'normal flycheck-error-list-mode-map (kbd "j")   'flycheck-error-list-next-error)
+    (evil-define-key 'normal flycheck-error-list-mode-map (kbd "k")   'flycheck-error-list-previous-error)
+    (evil-define-key 'normal flycheck-error-list-mode-map (kbd "q")   'kill-buffer-and-window)
+    (evil-define-key 'normal flycheck-error-list-mode-map (kbd "RET") 'flycheck-error-list-goto-error)
+
+    (evil-define-key 'normal helm-ag-mode-map (kbd "o") 'helm-ag-mode-jump)
+    (evil-define-key 'normal helm-ag-mode-map (kbd "O") 'helm-ag-mode-jump-other-window)
+
+    (evil-define-key 'normal custom-mode-map (kbd "q") 'Custom-buffer-done)
+
+    (evil-define-key 'motion tide-mode-map
+      (kbd "gd")  'tide-jump-to-definition
+      (kbd "C-o") 'tide-jump-back
+      (kbd "C-t") 'tide-jump-back
+      (kbd "K")   'tide-documentation-at-point)
+
+    (evil-define-key 'normal tide-references-mode-map
+      (kbd "gj")       'tide-find-next-reference
+      (kbd "gk")       'tide-find-previous-reference
+      (kbd "C-j")      'tide-find-next-reference
+      (kbd "C-k")      'tide-find-previous-reference
+      (kbd "C-l")      'tide-goto-reference
+      (kbd "<return>") 'tide-goto-reference
+      (kbd "q")        'quit-window)
+
+    (evil-define-key 'normal tide-project-errors-mode-map
+      (kbd "gj")       'tide-find-next-error
+      (kbd "gk")       'tide-find-previous-error
+      (kbd "C-j")      'tide-find-next-error
+      (kbd "C-k")      'tide-find-previous-error
+      (kbd "C-l")      'tide-goto-error
+      (kbd "<return>") 'tide-goto-error
+      (kbd "q")        'quit-window)
+
+    (evil-define-key 'normal eshell-mode-map (kbd "i")   'ts/eshell-evil-input-mode)
+    (evil-define-key 'normal eshell-mode-map (kbd "q")   'shell-pop)
+    (evil-define-key 'insert eshell-mode-map (kbd "C-a") 'eshell-bol)
+    (evil-define-key 'insert eshell-mode-map (kbd "C-p") 'eshell-previous-matching-input-from-input)
+    (evil-define-key 'insert eshell-mode-map (kbd "C-n") 'eshell-next-matching-input-from-input)
+    (evil-define-key 'insert eshell-mode-map (kbd "C-r") 'helm-eshell-history)))
 
 (use-package evil-leader
   :after evil
@@ -331,52 +367,59 @@
   (setq evil-leader/in-all-states t)
 
   :config
-  (evil-leader/set-leader ",")
-  (evil-mode nil)
-  (global-evil-leader-mode)
-  (evil-mode t)
+  (progn
+    (evil-leader/set-leader ",")
+    (evil-mode nil)
+    (global-evil-leader-mode)
+    (evil-mode t)
 
-  (evil-leader/set-key
-    "TAB"   'ts/alternate-buffer
-    "'"     'shell-pop
-    "s"     'ts/contextual-shell-pop
-    "q"     'ts/kill-window-or-buffer
-    "tl"    'display-line-numbers-mode
-    "tr"    'ts/toggle-relative-line-numbers
-    "hk"    'describe-key
-    "hv"    'describe-variable
-    "hf"    'describe-function
-    "hw"    'where-is
-    "fe"    'neotree-toggle
-    "ff"    'helm-find-files
-    "fo"    'ts/helm-find-org-files
-    "fs"    'ts/open-create-scratch-buffer
-    "fr"    'helm-recentf
-    "xx"    'flycheck-mode
-    "xl"    'flycheck-list-errors
-    "xv"    'flycheck-verify-setup
-    "xn"    'next-error
-    "xp"    'previous-error
-    "r"     'ts/contextual-helm-recentf
-    "b"     'helm-mini
-    "pp"    'helm-projectile-switch-project
-    "pf"    'ts/contextual-helm-find-files
-    "pr"    'projectile-run-project
-    "pt"    'projectile-test-project
-    "ps"    'ts/projectile-shell-pop
-    "po"    (lambda () (interactive) (ts/load-project-org "veikkaus"))
-    "v"     'ts/edit-configuration
-    "u"     'ts/load-configuration
-    "e"     'ts/contextual-neotree-toggle
-    ;; "e"     'ts/contextual-treemacs-toggle
-    "gs"    'magit-status
-    "gl"    'magit-log-current
-    "gb"    'magit-blame
-    "of"    'ts/helm-find-org-files
-    "oa"    'ts/org-agenda-show-agenda-and-todo
-    "oc"    'org-capture
-    "op"    (lambda () (interactive) (ts/load-project-org "veikkaus"))
-    "ob"    'org-switchb))
+    (evil-leader/set-key
+      "TAB"   'ts/alternate-buffer
+      "'"     'shell-pop
+      "s"     'ts/contextual-shell-pop
+      "q"     'ts/kill-window-or-buffer
+      "tl"    'display-line-numbers-mode
+      "tr"    'ts/toggle-relative-line-numbers
+      "jw"    'avy-goto-word-1
+      "jc"    'avy-goto-char
+      "jl"    'avy-goto-line
+      "hk"    'describe-key
+      "hv"    'describe-variable
+      "hf"    'describe-function
+      "hw"    'where-is
+      "fe"    'neotree-toggle
+      "ff"    'helm-find-files
+      "fo"    'ts/helm-find-org-files
+      "fs"    'ts/open-create-scratch-buffer
+      "fr"    'helm-recentf
+      "xx"    'flycheck-mode
+      "xl"    'flycheck-list-errors
+      "xv"    'flycheck-verify-setup
+      "xn"    'next-error
+      "xp"    'previous-error
+      "r"     'ts/contextual-helm-recentf
+      "b"     'helm-mini
+      "pp"    'helm-projectile-switch-project
+      "pf"    'ts/contextual-helm-find-files
+      "pr"    'projectile-run-project
+      "pt"    'projectile-test-project
+      "ps"    'ts/projectile-shell-pop
+      "po"    (lambda () (interactive) (ts/load-project-org "veikkaus"))
+      "v"     'ts/edit-configuration
+      "u"     'ts/load-configuration
+      "e"     'ts/contextual-neotree-toggle
+      ;; "e"     'ts/contextual-treemacs-toggle
+      "gs"    'magit-status
+      "gl"    'magit-log-current
+      "gb"    'magit-blame
+      "of"    'ts/helm-find-org-files
+      "oa"    'ts/org-agenda-show-agenda-and-todo
+      "oc"    'org-capture
+      "oi"    'ts/open-org-inbox
+      "oh"    'helm-org-agenda-files-headings
+      "or"    'org-refile
+      "op"    (lambda () (interactive) (ts/load-project-org "veikkaus"))
+      "ob"    'org-switchb)))
 
 (use-package evil-surround
   :after evil
@@ -393,13 +436,15 @@
 
 ;; (use-package color-theme-sanityinc-tomorrow
 ;;   :config
-;;   (color-theme-sanityinc-tomorrow-eighties)
-;;   (load-theme 'tomorrow-overrides))
+;;   (progn
+;;     (color-theme-sanityinc-tomorrow-eighties)
+;;     (load-theme 'tomorrow-overrides)))
 
 ;; (use-package oceanic-theme
 ;;   :config
-;;   (load-theme 'oceanic)
-;;   (load-theme 'oceanic-overrides))
+;;   (progn
+;;     (load-theme 'oceanic)
+;;     (load-theme 'oceanic-overrides)))
 
 (load-theme 'misterioso)
 (load-theme 'misterioso-overrides)
@@ -410,10 +455,11 @@
 ;;         doom-themes-enable-italic t)
 
 ;;   :config
-;;   (load-theme 'doom-one t)
-;;   (doom-themes-visual-bell-config)
-;;   (doom-themes-neotree-config)
-;;   (doom-themes-org-config))
+;;   (progn
+;;     (load-theme 'doom-one t)
+;;     (doom-themes-visual-bell-config)
+;;     (doom-themes-neotree-config)
+;;     (doom-themes-org-config)))
 
 (use-package neotree
   :init
@@ -479,6 +525,7 @@
 
 (use-package helm
   :bind (("M-x" . helm-M-x)
+         ("C-x C-b" . helm-mini)
          ("M-P" . helm-M-x)
          ("M-r" . helm-recentf)
          :map helm-map
@@ -489,13 +536,13 @@
          ("C-h"   . helm-next-source)
          ("C-v"   . helm-toggle-visible-mark)
          ("C-p"   . helm-copy-to-buffer)
-         ("C-S-h" . describe-key)
          ("C-l"   . helm-confirm-and-exit-minibuffer)
          ("ESC"   . helm-keyboard-quit)
+         ("C-S-h" . describe-key)
+         ("C-S-v" . clipboard-yank)
          :map helm-find-files-map
          ("C-l"   . helm-execute-persistent-action)
          ("C-h"   . helm-find-files-up-one-level)
-         ("C-S-h" . describe-key)
          :map helm-read-file-map
          ("C-l"   . helm-execute-persistent-action)
          ("C-h"   . helm-find-files-up-one-level)
@@ -508,9 +555,9 @@
         helm-display-buffer-default-height 15)
 
   :config
-  (helm-mode t)
-
-  (add-hook 'helm-after-initialize-hook 'ts/hide-cursor-in-helm-buffer))
+  (progn
+    (helm-mode t)
+    (add-hook 'helm-after-initialize-hook 'ts/hide-cursor-in-helm-buffer)))
 
 (use-package helm-ag
   :bind ("∫" . ts/contextual-helm-ag)
@@ -522,6 +569,14 @@
 (use-package helm-projectile
   :init
   (setq helm-projectile-fuzzy-match t))
+
+(use-package helm-google)
+
+(use-package helm-dash
+  :init
+  (setq helm-dash-browser-func 'eww))
+
+(use-package helm-descbinds)
 
 (use-package undo-tree
   :config
@@ -536,19 +591,65 @@
 
 (use-package which-key
   :config
-  (which-key-mode)
-  (which-key-declare-prefixes ", h" "help")
-  (which-key-declare-prefixes ", p" "project")
-  (which-key-declare-prefixes ", f" "files")
-  (which-key-declare-prefixes ", b" "buffers")
-  (which-key-declare-prefixes ", g" "git")
-  (which-key-declare-prefixes ", o" "org")
-  (which-key-declare-prefixes ", x" "errors")
-  (which-key-declare-prefixes ", t" "toggle"))
+  (progn
+    (which-key-mode)
+    (which-key-declare-prefixes ", h" "help")
+    (which-key-declare-prefixes ", p" "project")
+    (which-key-declare-prefixes ", f" "files")
+    (which-key-declare-prefixes ", b" "buffers")
+    (which-key-declare-prefixes ", g" "git")
+    (which-key-declare-prefixes ", o" "org")
+    (which-key-declare-prefixes ", x" "errors")
+    (which-key-declare-prefixes ", t" "toggle")))
+
+(use-package mu4e
+  :ensure nil
+  :init
+  (setq mu4e-maildir "~/Mail"
+        mu4e-sent-folder "/Gmail/Sent Mail"
+        mu4e-drafts-folder "/Gmail/Drafts"
+        mu4e-trash-folder "/Gmail/Trash"
+        mu4e-sent-messages-behavior 'delete))
+;;       mu4e-get-mail-command "offlineimap"
+;;       mu4e-update-interval 600
+;;       mu4e-view-show-images t
+;;       mu4e-html2text-command "textutil -stdin -format html -convert txt -stdout")
+;; ;; configuration for sending mail
+;; (setq message-send-mail-function 'smtpmail-send-it
+;;       smtpmail-stream-type 'starttls
+;;       smtpmail-default-smtp-server "smtp.gmail.com"
+;;       smtpmail-smtp-server "smtp.gmail.com"
+;;       smtpmail-smtp-service 587)
+
+
+(use-package mu4e-alert
+  :ensure t
+  :after mu4e
+  :init
+  (setq mu4e-alert-interesting-mail-query
+        (concat
+         "flag:unread maildir:/Houston/INBOX "
+         "OR "
+         "flag:unread maildir:/Gmail/INBOX"
+         ))
+  (mu4e-alert-enable-mode-line-display)
+  ;; (defun gjstein-refresh-mu4e-alert-mode-line ()
+  ;;   (interactive)
+  ;;   (mu4e~proc-kill)
+  ;;   (mu4e-alert-enable-mode-line-display)
+  ;;   )
+  ;; (run-with-timer 0 60 'gjstein-refresh-mu4e-alert-mode-line)
+  )
+
+(require 'org-mu4e)
+(setq org-mu4e-link-query-in-headers-mode nil)
+
+(use-package evil-mu4e)
 
 (use-package powerline
   :init
-  (setq powerline-image-apple-rgb t))
+  (setq powerline-image-apple-rgb t
+        powerline-text-scale-factor 1))
 
 (use-package spaceline
   :after powerline)
@@ -565,24 +666,30 @@
   :after spaceline
   :init
   (setq spaceline-all-the-icons-highlight-file-name t
-        spaceline-all-the-icons-separator-type 'cup)
+        spaceline-all-the-icons-separator-type 'wave)
   :config
-  (spaceline-all-the-icons-theme)
-  (spaceline-all-the-icons--setup-git-ahead)
-  (spaceline-toggle-all-the-icons-buffer-position-on)
-  (spaceline-toggle-all-the-icons-region-info-on))
+  (progn
+    (spaceline-all-the-icons-theme)
+    (spaceline-all-the-icons--setup-git-ahead)
+    (spaceline-all-the-icons--setup-package-updates)
+    ;; (spaceline-all-the-icons-flycheck-alternate t)
+    (spaceline-toggle-all-the-icons-buffer-position-on)
+    (spaceline-toggle-all-the-icons-region-info-on)
+    (spaceline-toggle-all-the-icons-sunrise-off)
+    (spaceline-toggle-all-the-icons-sunset-off)))
 
 (use-package company
   :config
-  (global-company-mode t)
+  (progn
+    (global-company-mode t)
 
-  (define-key company-active-map [tab]       'company-complete)
-  (define-key company-active-map (kbd "C-j") 'company-select-next-or-abort)
-  (define-key company-active-map (kbd "C-k") 'company-select-previous-or-abort)
-  (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
-  (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
-  (define-key company-active-map (kbd "C-f") 'company-next-page)
-  (define-key company-active-map (kbd "C-b") 'company-previous-page))
+    (define-key company-active-map [tab]       'company-complete)
+    (define-key company-active-map (kbd "C-j") 'company-select-next-or-abort)
+    (define-key company-active-map (kbd "C-k") 'company-select-previous-or-abort)
+    (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
+    (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
+    (define-key company-active-map (kbd "C-f") 'company-next-page)
+    (define-key company-active-map (kbd "C-b") 'company-previous-page)))
 
 (use-package markdown-mode
   :commands (markdown-mode gfm-mode)
@@ -593,14 +700,16 @@
 
 (use-package web-mode
   :config
-  (add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.ejs\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
+  (progn
+    (add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.ejs\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))))
 
 (use-package rjsx-mode
   :config
-  (add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode))
-  (add-hook 'js-mode-hook (lambda () (setq js2-strict-missing-semi-warning nil))))
+  (progn
+    (add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode))
+    (add-hook 'js-mode-hook (lambda () (setq js2-strict-missing-semi-warning nil)))))
 
 (use-package js2-refactor
   :hook (js-mode . js2-refactor-mode)
@@ -609,8 +718,9 @@
 
 (use-package expand-region
   :config
-  (define-key evil-normal-state-map (kbd "M-+") #'er/expand-region)
-  (define-key evil-normal-state-map (kbd "M--") #'er/contract-region))
+  (progn
+    (define-key evil-normal-state-map (kbd "M-+") #'er/expand-region)
+    (define-key evil-normal-state-map (kbd "M--") #'er/contract-region)))
 
 (use-package shell-pop
   :init
@@ -639,38 +749,60 @@
        ;; force update evil keymaps after git-timemachine-mode loaded
        (add-hook 'git-timemachine-mode-hook #'evil-normalize-keymaps))))
 
+(use-package git-gutter+
+  :config
+  (global-git-gutter+-mode))
+
 (use-package yasnippet
   :config
   (yas-global-mode t))
 
 (use-package org
   :config
-  (setq org-directory "~/Google Drive/org"
-        org-default-notes-file (concat org-directory "/inbox.org")
-        org-src-fontify-natively t
-        org-src-tab-acts-natively t
-        org-log-done 'time
-        org-ellipsis "…")
-        ;; org-todo-keywords '((sequence "☛ TODO(t)" "|" "✔ DONE(d)")
-        ;;                     (sequence "⚑ WAITING(w@)" "|")
-        ;;                     (sequence "|" "✘ CANCELED(c@)")))
-  (setq org-capture-templates
-        '(("t" "Task" entry
-           (file+headline org-default-notes-file "Inbox")
-           "* TODO %^{Task}\nSCHEDULED: %t\n"
-           :immediate-finish t)
-          ("x" "Test task" entry
-           (file+headline org-default-notes-file "Test")
-           "* TODO %^{Task}\n"
-           :immediate-finish t)
-          ("i" "Interrupting task" entry
-           (file+headline org-default-notes-file "Inbox")
-           "* STARTED %^{Task}"
-           :clock-in :clock-resume)
-          ("e" "Emacs idea" entry
-           (file+headline "code/emacs-notes/tasks.org" "Emacs")
-           "* TODO %^{Task}"
-           :immediate-finish t))))
+  (progn
+    (setq org-directory "~/Google Drive/org"
+          org-default-notes-file (concat org-directory "/inbox.org")
+          org-snippets-file (concat org-directory "/snippets.org")
+          org-agenda-files (quote ("~/Google Drive/org"
+                                   "~/Google Drive/org/work"))
+          org-refile-targets (quote ((nil :maxlevel . 1)
+                                     (org-agenda-files :maxlevel . 1)))
+          org-agenda-custom-commands '((" " "Agenda"
+                                        ((agenda "" nil)
+                                         (tags-todo "REFILE"
+                                                    ((org-agenda-overriding-header "Tasks to Refile")
+                                                     (org-tags-match-list-sublevels nil))))))
+          ;; org-agenda-window-setup 'only-window
+          org-agenda-window-setup 'reorganize-frame
+          org-refile-use-outline-path 'file
+          org-outline-path-complete-in-steps nil
+          org-refile-allow-creating-parent-nodes (quote confirm)
+          org-src-fontify-natively t
+          org-src-tab-acts-natively t
+          org-log-done 'time
+          org-treat-S-cursor-todo-selection-as-state-change nil
+          org-ellipsis "…")
+    ;; org-ellipsis "⤵")
+    ;; org-todo-keywords '((sequence "☛ TODO(t)" "|" "✔ DONE(d)")
+    ;;                     (sequence "⚑ WAITING(w@)" "|")
+    ;;                     (sequence "|" "✘ CANCELED(c@)")))
+    (setq org-capture-templates
+          '(("t" "Task" entry
+             (file+headline org-default-notes-file "Refile")
+             "* TODO %^{Task}\n%a\n"
+             :immediate-finish t)
+            ("s" "Snippet" entry
+             (file+headline org-snippets-file "Snippets")
+             "* %^{Title}\n#+BEGIN_SRC %^{Language|javascript|emacs-lisp}\n%i\n#+END_SRC\n"
+             :immediate-finish t)
+            ("i" "Interrupting task" entry
+             (file+headline org-default-notes-file "Inbox")
+             "* STARTED %^{Task}"
+             :clock-in :clock-resume)
+            ("e" "Emacs task" entry
+             (file+headline "emacs/tasks.org" "Emacs tasks")
+             "* TODO %^{Task}\n\n"
+             :immediate-finish t)))))
 
 (use-package org-bullets
   :after org
@@ -678,13 +810,16 @@
   :config
   (setq org-bullets-bullet-list '("◉" "◎" "⚫" "○" "►" "◇")))
 
+(use-package ox-twbs)
+
 (use-package htmlize)
 
 (use-package smartparens
   :defer t
   :config
-  (smartparens-global-mode 1)
-  (show-smartparens-global-mode 1))
+  (progn
+    (smartparens-global-mode 1)
+    (show-smartparens-global-mode 1)))
 
 ;; (use-package paredit
 ;;   :config
@@ -710,43 +845,44 @@
                 (append flycheck-disabled-checkers
                         '(javascript-jshint)))
   :config
-  (define-fringe-bitmap 'my-flycheck-fringe-indicator
-    (vector #b00000000
-            #b00000000
-            #b00000000
-            #b00000000
-            #b00000000
-            #b00000000
-            #b00011100
-            #b00111110
-            #b00111110
-            #b00111110
-            #b00011100
-            #b00000000
-            #b00000000
-            #b00000000
-            #b00000000
-            #b00000000
-            #b00000000))
+  (progn
+    (define-fringe-bitmap 'my-flycheck-fringe-indicator
+      (vector #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00011100
+              #b00111110
+              #b00111110
+              #b00111110
+              #b00011100
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000))
 
-  (flycheck-define-error-level 'error
-    :severity 2
-    :overlay-category 'flycheck-error-overlay
-    :fringe-bitmap 'my-flycheck-fringe-indicator
-    :fringe-face 'flycheck-fringe-error)
-  (flycheck-define-error-level 'warning
-    :severity 1
-    :overlay-category 'flycheck-warning-overlay
-    :fringe-bitmap 'my-flycheck-fringe-indicator
-    :fringe-face 'flycheck-fringe-warning)
-  (flycheck-define-error-level 'info
-    :severity 0
-    :overlay-category 'flycheck-info-overlay
-    :fringe-bitmap 'my-flycheck-fringe-indicator
-    :fringe-face 'flycheck-fringe-info)
+    (flycheck-define-error-level 'error
+      :severity 2
+      :overlay-category 'flycheck-error-overlay
+      :fringe-bitmap 'my-flycheck-fringe-indicator
+      :fringe-face 'flycheck-fringe-error)
+    (flycheck-define-error-level 'warning
+      :severity 1
+      :overlay-category 'flycheck-warning-overlay
+      :fringe-bitmap 'my-flycheck-fringe-indicator
+      :fringe-face 'flycheck-fringe-warning)
+    (flycheck-define-error-level 'info
+      :severity 0
+      :overlay-category 'flycheck-info-overlay
+      :fringe-bitmap 'my-flycheck-fringe-indicator
+      :fringe-face 'flycheck-fringe-info)
 
-  (global-flycheck-mode)
-  (flycheck-add-mode 'javascript-eslint 'web-mode))
+    (global-flycheck-mode)
+    (flycheck-add-mode 'javascript-eslint 'web-mode)))
 
 (use-package coffee-mode
   :init
@@ -762,7 +898,8 @@
 
 (use-package highlight-indent-guides
   :hook (coffee-mode . highlight-indent-guides-mode)
-  :config (setq-default highlight-indent-guides-method 'character))
+  :config
+  (setq-default highlight-indent-guides-method 'character))
 
 (use-package indium
   :hook (js-mode-hook . indium-interaction-mode))
@@ -781,34 +918,64 @@
   :init
   (setq tide-tsserver-executable "/usr/local/bin/tsserver")
   :config
-  (flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append)
-  (flycheck-add-next-checker 'javascript-eslint 'javascript-tide 'append))
+  (progn
+    (flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append)
+    (flycheck-add-next-checker 'javascript-eslint 'javascript-tide 'append)))
+
+(use-package avy
+  :init
+  (setq avy-all-windows t))
+
+(use-package yahoo-weather
+  :init
+  (setq yahoo-weather-location "Vantaa"
+        yahoo-weather-format "[%(weather) %(temperature)℃]")
+  :config
+  (yahoo-weather-mode t))
+
+(use-package try)
+
+;; (load "~/.ercrc.el")
+;; (use-package erc
+;;   :commands erc
+;;   :init
+;;   (progn
+;;     (setq erc-server "irc.freenode.net"
+;;           erc-port 6667
+;;           erc-nick "tinimini"
+;;           erc-away-nickname "tinimini_AWAY"
+;;           erc-user-full-name "Tuomo Syvänperä"
+;;           erc-prompt-for-password nil
+;;           erc-autojoin-channels-alist '(("freenode.net" "#emacs" "#emacs-beginners" "#evil-mode")))
+;;     (setq erc-prompt-for-nickserv-password nil
+;;           erc-nickserv-passwords '((freenode     (("tinimini" . ,erc-password))))
+;;           erc-prompt (lambda () (concat "[" (buffer-name) "]"))))
+;;   :config
+;;   (erc-services-mode 1))
 
 ;; (use-package evil-org
 ;;   :after (evil org)
 ;;   :config
-;;   (add-hook 'org-mode-hook 'evil-org-mode)
-;;   (add-hook 'evil-org-mode-hook
-;;             (lambda ()
-;;               (evil-org-set-key-theme (evil-org-set-key-theme '(textobjects insert navigation additional shift todo heading)))))
-;;   (require 'evil-org-agenda)
-;;   (evil-org-agenda-set-keys))
+;;   (progn
+;;     (add-hook 'org-mode-hook 'evil-org-mode)
+;;     (add-hook 'evil-org-mode-hook
+;;               (lambda ()
+;;                 (evil-org-set-key-theme (evil-org-set-key-theme '(textobjects insert navigation additional shift todo heading)))))
+;;     (require 'evil-org-agenda)
+;;     (evil-org-agenda-set-keys)))
 
 (provide 'init)
-
-;;; init.el ends here
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-agenda-files '("~/Desktop/tutorial.org"))
  '(package-selected-packages
-   '(helm-org tide indium evil-paredit evil-magit rainbow-mode evil-surround evil-leader evil which-key wgrep web-mode use-package undo-tree spaceline-all-the-icons shell-pop rjsx-mode rainbow-delimiters persistent-scratch paredit org-bullets neotree markdown-mode magit js2-refactor htmlize highlight-indent-guides helm-projectile helm-git-grep helm-ag git-timemachine flycheck expand-region exec-path-from-shell eshell-z eshell-git-prompt engine-mode dashboard company coffee-mode auto-compile))
+   '(yahoo-weather mu4e-alert evil-mu4e evil-m4ue try erc-services which-key wgrep web-mode use-package treemacs-projectile treemacs-evil tide spaceline-all-the-icons smartparens shell-pop rjsx-mode rainbow-mode rainbow-delimiters persistent-scratch ox-twbs org-bullets neotree markdown-mode js2-refactor indium htmlize highlight-indent-guides helm-projectile helm-google helm-git-grep helm-descbinds helm-dash helm-ag git-timemachine expand-region exec-path-from-shell evil-surround evil-paredit evil-magit evil-leader eshell-z eshell-git-prompt engine-mode dashboard coffee-mode auto-compile aggressive-indent))
  '(safe-local-variable-values
-   '((projectile-project-run-cmd . "BUILD_SPEC=0 ./gulp --buildPages")
-     (projectile-project-test-cmd . "curl -s -i -X POST -u \"exthousyvtu:74c5eb9f9788478a2d64efbb4e6e43c4\" \"http://makemv01t.tst.veikkaus.fi:8080/job/web-test-revision/buildWithParameters?delay=0sec&revision=$(git rev-parse --symbolic --abbrev-ref HEAD)\"")
-     (projectile-project-run-cmd . "yarn start"))))
+   '((projectile-project-run-cmd . "yarn start")
+     (projectile-project-run-cmd . "BUILD_SPEC=0 ./gulp --buildPages")
+     (projectile-project-test-cmd . "curl -s -i -X POST -u \"exthousyvtu:74c5eb9f9788478a2d64efbb4e6e43c4\" \"http://makemv01t.tst.veikkaus.fi:8080/job/web-test-revision/buildWithParameters?delay=0sec&revision=$(git rev-parse --symbolic --abbrev-ref HEAD)\""))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

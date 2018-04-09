@@ -7,7 +7,9 @@
 
 (custom-theme-set-faces
  'misterioso-overrides
- '(cursor ((t (:background "DarkOliveGreen3"))))
+ '(default ((t (:background "#1B2B32"))))
+ '(fringe ((t (:background "#1B2B32"))))
+ '(cursor ((t (:background "white"))))
  '(line-number-current-line ((t (:foreground "white" :background "#3d5958" :weight bold))))
  '(line-number ((t (:background "#2d4948"))))
  '(highlight ((t (:background "#3d5958" :foreground nil))))
@@ -36,8 +38,17 @@
  '(company-scrollbar-fg ((t :background "#338f86")))
  '(company-tooltip-selection ((t :background "#5d7978")))
  '(company-tooltip-common ((t :inherit font-lock-constant-face)))
- '(org-level-1 ((t (:height 1.1 :inherit 'outline-1))))
+ '(org-todo ((t (:bold t :weight bold :foreground "#e2716c"))))
+ '(org-done ((t (:bold t :weight bold :foreground "DarkOliveGreen3"))))
+ '(org-headline-done ((t (:foreground "#5d7978" :strike-through t))))
+ '(org-level-1 ((t (:height 1.1 :inherit 'outline-1 :foreground "#72afe9"))))
+ '(org-level-2 ((t (:inherit 'outline-2 :foreground "#bb7ed7"))))
+ '(org-level-3 ((t (:inherit 'outline-3 :foreground "#ffbd29"))))
  '(org-ellipsis ((t (:underline nil))))
+ '(org-archived ((t (:underline t))))
+ '(font-lock-comment-face ((t (:foreground "#65737E"))))
+ '(font-lock-string-face ((t (:foreground "#74af68"))))
+ ;; '(solaire-default-face ((t (:background "#2d3743"))))
  )
 
 ;;; misterioso-overrides-theme.el ends here

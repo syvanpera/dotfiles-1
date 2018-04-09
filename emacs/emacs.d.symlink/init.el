@@ -43,7 +43,6 @@
 
 (add-to-list 'load-path (expand-file-name "elisp" user-emacs-directory))
 (add-to-list 'load-path (expand-file-name "elisp/vendor" user-emacs-directory))
-(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
 
 (require 'sensible-defaults)
 (sensible-defaults/use-all-settings)
@@ -103,9 +102,10 @@
       display-time-24hr-format t
       custom-safe-themes t
       show-paren-when-point-inside-paren t
-      show-paren-mode nil
+      show-paren-mode t
       prettify-symbols-unprettify-at-point t
-      default-frame-alist '((font . "Hasklug Nerd Font-12")))
+      superword-mode t
+      default-frame-alist '((font . "Cousine-12")))
 
 (add-hook 'prog-mode-hook (lambda () (setq-local show-trailing-whitespace t)))
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
@@ -155,9 +155,6 @@
   :config
   (dashboard-setup-startup-hook))
 
-(use-package auto-compile
-  :config (auto-compile-on-load-mode))
-
 (use-package exec-path-from-shell
   :config
   (when (memq window-system '(mac ns x))
@@ -169,24 +166,74 @@
 
   :config
   (progn
+    (use-package evil-leader
+      :config
+      (evil-leader/set-leader ",")
+      (global-evil-leader-mode 1)
+
+      (evil-leader/set-key
+        "TAB"   'ts/alternate-buffer
+        "'"     'shell-pop
+        "s"     'ts/contextual-shell-pop
+        "q"     'ts/kill-window-or-buffer
+        "tl"    'display-line-numbers-mode
+        "tr"    'ts/toggle-relative-line-numbers
+        "jw"    'avy-goto-word-1
+        "jc"    'avy-goto-char
+        "jl"    'avy-goto-line
+        "hk"    'describe-key
+        "hv"    'describe-variable
+        "hf"    'describe-function
+        "hw"    'where-is
+        "fe"    'neotree-toggle
+        "ff"    'helm-find-files
+        "fo"    'ts/helm-find-org-files
+        "fs"    'ts/open-create-scratch-buffer
+        "fr"    'helm-recentf
+        "xx"    'flycheck-mode
+        "xl"    'flycheck-list-errors
+        "xv"    'flycheck-verify-setup
+        "xn"    'next-error
+        "xp"    'previous-error
+        "r"     'ts/contextual-helm-recentf
+        "bb"    'helm-buffers-list
+        "bk"    'kill-buffer
+        "br"    'rename-buffer
+        "pp"    'helm-projectile-switch-project
+        "pf"    'ts/contextual-helm-find-files
+        "pr"    'projectile-run-project
+        "pt"    'projectile-test-project
+        "ps"    'ts/projectile-shell-pop
+        "po"    (lambda () (interactive) (ts/load-project-org "veikkaus"))
+        "v"     'ts/edit-configuration
+        "u"     'ts/load-configuration
+        "e"     'ts/contextual-neotree-toggle
+        ;; "e"     'ts/contextual-treemacs-toggle
+        "gs"    'magit-status
+        "gl"    'magit-log-current
+        "gb"    'magit-blame
+        "gn"    'git-gutter+-next-hunk
+        "gp"    'git-gutter+-previous-hunk
+        "gv"    'git-gutter+-show-hunk
+        "gr"    'git-gutter+-revert-hunk
+        "of"    'ts/helm-find-org-files
+        "oa"    'ts/org-agenda-show-agenda-and-todo
+        "oc"    'org-capture
+        "oi"    'ts/open-org-inbox
+        "oh"    'helm-org-agenda-files-headings
+        "or"    'org-refile
+        "op"    (lambda () (interactive) (ts/load-project-org "veikkaus"))
+        "ob"    'org-switchb))
+
     (evil-mode t)
 
     ;; Some commands are just not meant to be repeated
-    (mapc 'evil-declare-not-repeat
-          '(undo-tree-undo
-            undo-tree-redo))
+    (mapc 'evil-declare-not-repeat '(undo-tree-undo undo-tree-redo))
 
     (add-to-list 'evil-normal-state-modes 'Custom-mode)
 
     (define-key global-map "\C-cy"        'clipboard-yank)
     (define-key global-map "\C-cs"        'ts/contextual-shell-pop)
-
-    ;; Some org-mode global keys
-    (define-key global-map "\C-cl"        'org-store-link)
-    (define-key global-map "\C-ca"        'org-agenda)
-    (define-key global-map "\C-cc"        'org-capture)
-    (define-key global-map "\C-c\C-x\C-i" 'org-clock-in)
-    (define-key global-map "\C-c\C-x\C-o" 'org-clock-out)
 
     (define-key global-map (kbd "M-v")         'clipboard-yank)
     (define-key global-map (kbd "M-S-<left>")  'shrink-window-horizontally)
@@ -244,42 +291,9 @@
     ;; (define-key compilation-mode-map (kbd "C-j") 'evil-window-down)
 
     (evil-define-key 'normal eww-mode-map (kbd "q") 'quit-window)
+    (evil-define-key 'normal diff-mode-map (kbd "q") 'quit-window)
 
-    (evil-define-key 'normal org-mode-map (kbd "C-h") 'evil-window-left)
-    (evil-define-key 'normal org-mode-map (kbd "C-h") 'evil-window-left)
-    (evil-define-key 'normal org-mode-map (kbd "C-l") 'evil-window-right)
-    (evil-define-key 'normal org-mode-map (kbd "C-k") 'evil-window-up)
-    (evil-define-key 'normal org-mode-map (kbd "C-j") 'evil-window-down)
-    (evil-define-key 'normal org-mode-map (kbd "M-h") 'org-metaleft)
-    (evil-define-key 'normal org-mode-map (kbd "M-l") 'org-metaright)
-    (evil-define-key 'normal org-mode-map (kbd "M-k") 'org-metaup)
-    (evil-define-key 'normal org-mode-map (kbd "M-j") 'org-metadown)
-    (evil-define-key 'normal org-mode-map (kbd "M-S-h") 'org-shiftmetaleft)
-    (evil-define-key 'normal org-mode-map (kbd "M-S-l") 'org-shiftmetaright)
-    (evil-define-key 'normal org-mode-map (kbd "M-S-k") 'org-shiftmetaup)
-    (evil-define-key 'normal org-mode-map (kbd "M-S-j") 'org-shiftmetadown)
-    (evil-define-key 'normal org-mode-map (kbd "C-S-h") 'org-shiftcontrolleft)
-    (evil-define-key 'normal org-mode-map (kbd "C-S-l") 'org-shiftcontrolright)
-    (evil-define-key 'normal org-mode-map (kbd "C-S-k") 'org-shiftcontrolup)
-    (evil-define-key 'normal org-mode-map (kbd "C-S-j") 'org-shiftcontroldown)
-    (evil-define-key 'normal org-mode-map (kbd "gh")  'org-shiftleft)
-    (evil-define-key 'normal org-mode-map (kbd "gl")  'org-shiftright)
-    (evil-define-key 'normal org-mode-map (kbd "gk")  'org-shiftup)
-    (evil-define-key 'normal org-mode-map (kbd "gj")  'org-shiftdown)
-
-    (evil-define-key 'normal org-export-stack-mode-map (kbd "C-j") 'widget-forward)
     (evil-define-key 'normal dashboard-mode-map (kbd "C-k") 'widget-backward)
-
-    (evil-define-key 'normal magit-status-mode-map (kbd "C-h") 'evil-window-left)
-    (evil-define-key 'normal magit-status-mode-map (kbd "C-j") 'evil-window-down)
-    (evil-define-key 'normal magit-status-mode-map (kbd "C-k") 'evil-window-up)
-    (evil-define-key 'normal magit-status-mode-map (kbd "C-l") 'evil-window-right)
-    (evil-define-key 'normal magit-status-mode-map (kbd "M-j") 'magit-section-forward-sibling)
-    (evil-define-key 'normal magit-status-mode-map (kbd "M-k") 'magit-section-backward-sibling)
-    (evil-define-key 'normal magit-status-mode-map (kbd "C-n") 'magit-section-forward-sibling)
-    (evil-define-key 'normal magit-status-mode-map (kbd "C-p") 'magit-section-backward-sibling)
-    (evil-define-key 'normal magit-status-mode-map (kbd "j")   'magit-section-forward)
-    (evil-define-key 'normal magit-status-mode-map (kbd "k")   'magit-section-backward)
 
     ;; (evil-define-key 'normal paredit-mode-map (kbd "M-{") 'paredit-wrap-curly)
 
@@ -359,78 +373,21 @@
     (evil-define-key 'insert eshell-mode-map (kbd "C-n") 'eshell-next-matching-input-from-input)
     (evil-define-key 'insert eshell-mode-map (kbd "C-r") 'helm-eshell-history)))
 
-(use-package evil-leader
-  :after evil
-  :init
-  (setq evil-leader/in-all-states t)
-
-  :config
-  (progn
-    (evil-leader/set-leader ",")
-    (evil-mode nil)
-    (global-evil-leader-mode)
-    (evil-mode t)
-
-    (evil-leader/set-key
-      "TAB"   'ts/alternate-buffer
-      "'"     'shell-pop
-      "s"     'ts/contextual-shell-pop
-      "q"     'ts/kill-window-or-buffer
-      "tl"    'display-line-numbers-mode
-      "tr"    'ts/toggle-relative-line-numbers
-      "jw"    'avy-goto-word-1
-      "jc"    'avy-goto-char
-      "jl"    'avy-goto-line
-      "hk"    'describe-key
-      "hv"    'describe-variable
-      "hf"    'describe-function
-      "hw"    'where-is
-      "fe"    'neotree-toggle
-      "ff"    'helm-find-files
-      "fo"    'ts/helm-find-org-files
-      "fs"    'ts/open-create-scratch-buffer
-      "fr"    'helm-recentf
-      "xx"    'flycheck-mode
-      "xl"    'flycheck-list-errors
-      "xv"    'flycheck-verify-setup
-      "xn"    'next-error
-      "xp"    'previous-error
-      "r"     'ts/contextual-helm-recentf
-      "b"     'helm-mini
-      "pp"    'helm-projectile-switch-project
-      "pf"    'ts/contextual-helm-find-files
-      "pr"    'projectile-run-project
-      "pt"    'projectile-test-project
-      "ps"    'ts/projectile-shell-pop
-      "po"    (lambda () (interactive) (ts/load-project-org "veikkaus"))
-      "v"     'ts/edit-configuration
-      "u"     'ts/load-configuration
-      "e"     'ts/contextual-neotree-toggle
-      ;; "e"     'ts/contextual-treemacs-toggle
-      "gs"    'magit-status
-      "gl"    'magit-log-current
-      "gb"    'magit-blame
-      "of"    'ts/helm-find-org-files
-      "oa"    'ts/org-agenda-show-agenda-and-todo
-      "oc"    'org-capture
-      "oi"    'ts/open-org-inbox
-      "oh"    'helm-org-agenda-files-headings
-      "or"    'org-refile
-      "op"    (lambda () (interactive) (ts/load-project-org "veikkaus"))
-      "ob"    'org-switchb)))
-
 (use-package evil-surround
   :after evil
   :config
   (global-evil-surround-mode 1))
 
 (use-package rainbow-mode
+  :defer t
   :hook ((emacs-lisp-mode css-mode html-mode js-mode rjsx-mode) . rainbow-mode))
 
 (use-package rainbow-delimiters
+  :defer t
   :hook (prog-mode . rainbow-delimiters-mode))
 
-(use-package all-the-icons)
+(use-package all-the-icons
+  :defer t)
 
 ;; (use-package color-theme-sanityinc-tomorrow
 ;;   :config
@@ -444,22 +401,25 @@
 ;;     (load-theme 'oceanic)
 ;;     (load-theme 'oceanic-overrides)))
 
-(load-theme 'misterioso)
-(load-theme 'misterioso-overrides)
+;; (load-theme 'misterioso)
+;; (load-theme 'misterioso-overrides)
 
-;; (use-package doom-themes
-;;   :init
-;;   (setq doom-themes-enable-bold t
-;;         doom-themes-enable-italic t)
+(use-package doom-themes
+  :init
+  (setq doom-themes-enable-bold t
+        doom-themes-enable-italic t
+        doom-vibrant-brighter-modeline t)
 
-;;   :config
-;;   (progn
-;;     (load-theme 'doom-one t)
-;;     (doom-themes-visual-bell-config)
-;;     (doom-themes-neotree-config)
-;;     (doom-themes-org-config)))
+  :config
+  (progn
+    (load-theme 'doom-vibrant t)
+    (doom-themes-visual-bell-config)
+    (doom-themes-neotree-config)
+    (doom-themes-org-config)
+    (load-theme 'doom-overrides)))
 
 (use-package neotree
+  :defer t
   :init
   (setq neo-smart-open t
         neo-theme (if (display-graphic-p) 'icons 'arrow)))
@@ -522,29 +482,32 @@
 ;;               ("M-m fp" . treemacs-projectile-toggle)))
 
 (use-package helm
+  :defer t
   :bind (("M-x" . helm-M-x)
          ("C-x C-b" . helm-mini)
          ("M-P" . helm-M-x)
          ("M-r" . helm-recentf)
          :map helm-map
-         ("C-j"   . helm-next-line)
-         ("C-k"   . helm-previous-line)
-         ("C-f"   . helm-next-page)
-         ("C-b"   . helm-previous-page)
-         ("C-h"   . helm-next-source)
-         ("C-v"   . helm-toggle-visible-mark)
-         ("C-p"   . helm-copy-to-buffer)
-         ("C-l"   . helm-confirm-and-exit-minibuffer)
-         ("ESC"   . helm-keyboard-quit)
-         ("C-S-h" . describe-key)
-         ("C-S-v" . clipboard-yank)
+         ("C-j" . helm-next-line)
+         ("C-k" . helm-previous-line)
+         ("C-f" . helm-next-page)
+         ("C-b" . helm-previous-page)
+         ("C-h" . helm-next-source)
+         ("C-v" . helm-toggle-visible-mark)
+         ("C-p" . helm-copy-to-buffer)
+         ("C-l" . helm-confirm-and-exit-minibuffer)
+         ("ESC" . helm-keyboard-quit)
+         ("C-S-H" . describe-key)
+         ("C-S-V" . clipboard-yank)
          :map helm-find-files-map
-         ("C-l"   . helm-execute-persistent-action)
-         ("C-h"   . helm-find-files-up-one-level)
+         ("C-l" . helm-execute-persistent-action)
+         ("C-h" . helm-find-files-up-one-level)
+         :map helm-buffer-map
+         ("C-d" . helm-buffer-run-kill-buffers)
          :map helm-read-file-map
-         ("C-l"   . helm-execute-persistent-action)
-         ("C-h"   . helm-find-files-up-one-level)
-         ("C-S-h" . describe-key))
+         ("C-l" . helm-execute-persistent-action)
+         ("C-h" . helm-find-files-up-one-level)
+         ("C-S-H" . describe-key))
   :init
   (setq helm-buffers-fuzzy-matching t
         helm-autoresize-mode t
@@ -558,6 +521,7 @@
     (add-hook 'helm-after-initialize-hook 'ts/hide-cursor-in-helm-buffer)))
 
 (use-package helm-ag
+  :defer t
   :bind ("∫" . ts/contextual-helm-ag)
   :init
   (setq helm-ag-base-command "ag --nocolor --nogroup"
@@ -565,16 +529,20 @@
         helm-ag-insert-at-point 'symbol))
 
 (use-package helm-projectile
+  :defer t
   :init
   (setq helm-projectile-fuzzy-match t))
 
-(use-package helm-google)
+(use-package helm-google
+  :defer t)
 
 (use-package helm-dash
+  :defer t
   :init
   (setq helm-dash-browser-func 'eww))
 
-(use-package helm-descbinds)
+(use-package helm-descbinds
+  :defer t)
 
 (use-package undo-tree
   :config
@@ -601,13 +569,17 @@
     (which-key-declare-prefixes ", t" "toggle")))
 
 (use-package mu4e
-  :ensure nil
+  :bind ("C-c m" . mu4e)
+  :load-path "/usr/local/share/emacs/site-lisp/mu/mu4e"
   :init
   (setq mu4e-maildir "~/Mail"
         mu4e-sent-folder "/Gmail/Sent Mail"
         mu4e-drafts-folder "/Gmail/Drafts"
         mu4e-trash-folder "/Gmail/Trash"
-        mu4e-sent-messages-behavior 'delete))
+        mu4e-sent-messages-behavior 'delete)
+  :config
+  (require 'org-mu4e)
+  (setq org-mu4e-link-query-in-headers-mode nil))
 ;;       mu4e-get-mail-command "offlineimap"
 ;;       mu4e-update-interval 600
 ;;       mu4e-view-show-images t
@@ -619,12 +591,11 @@
 ;;       smtpmail-smtp-server "smtp.gmail.com"
 ;;       smtpmail-smtp-service 587)
 
-
 (use-package mu4e-alert
-  :ensure t
   :after mu4e
   :init
-  (setq mu4e-alert-interesting-mail-query
+  (setq mu4e-alert-style 'osx-notifier
+        mu4e-alert-interesting-mail-query
         (concat
          "flag:unread maildir:/Houston/INBOX "
          "OR "
@@ -639,10 +610,11 @@
   ;; (run-with-timer 0 60 'gjstein-refresh-mu4e-alert-mode-line)
   )
 
-(require 'org-mu4e)
-(setq org-mu4e-link-query-in-headers-mode nil)
+(use-package evil-mu4e
+  :after mu4e)
 
-(use-package evil-mu4e)
+(use-package hide-mode-line
+  :hook ((dashboard-mode fundamental-mode) . hide-mode-line-mode))
 
 (use-package powerline
   :init
@@ -662,6 +634,7 @@
 
 (use-package spaceline-all-the-icons
   :after spaceline
+  :load-path "site-lisp/spaceline-all-the-icons.el"
   :init
   (setq spaceline-all-the-icons-highlight-file-name t
         spaceline-all-the-icons-separator-type 'wave)
@@ -690,13 +663,25 @@
     (define-key company-active-map (kbd "C-b") 'company-previous-page)))
 
 (use-package markdown-mode
+  :defer t
   :commands (markdown-mode gfm-mode)
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
 
+(use-package lua-mode
+  :defer t
+  :init
+  (setq lua-indent-level 2)
+  :config
+  (progn
+    (add-to-list 'auto-mode-alist '("\\.lua$" . lua-mode))
+    (add-to-list 'interpreter-mode-alist '("lua" . lua-mode))
+    ))
+
 (use-package web-mode
+  :defer t
   :config
   (progn
     (add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
@@ -704,21 +689,23 @@
     (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))))
 
 (use-package rjsx-mode
+  :defer t
+  :hook (js-mode . rjsx-mode)
   :config
   (progn
-    (add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode))
+    (add-to-list 'auto-mode-alist '("\\.jsx?\\'" . rjsx-mode))
     (add-hook 'js-mode-hook (lambda () (setq js2-strict-missing-semi-warning nil)))))
 
 (use-package js2-refactor
+  :defer t
   :hook (js-mode . js2-refactor-mode)
   :config
   (js2r-add-keybindings-with-prefix "C-c C-m"))
 
 (use-package expand-region
-  :config
-  (progn
-    (define-key evil-normal-state-map (kbd "M-+") #'er/expand-region)
-    (define-key evil-normal-state-map (kbd "M--") #'er/contract-region)))
+  :defer t
+  :bind (("M-+" . 'er/expand-region)
+         ("M--" . 'er/contract-region)))
 
 (use-package shell-pop
   :init
@@ -731,15 +718,29 @@
 (use-package eshell-z)
 
 (use-package magit
+  ;; :bind (:map magit-status-mode-map
+  ;;             ("C-h" . evil-window-left)
+  ;;             ("C-j" . evil-window-down)
+  ;;             ("C-k" . evil-window-up)
+  ;;             ("C-l" . evil-window-right)
+  ;;             ("j"   . magit-section-forward)
+  ;;             ("k"   . magit-section-backward))
+    ;; (evil-define-key 'normal magit-status-mode-map (kbd "M-j") 'magit-section-forward-sibling)
+    ;; (evil-define-key 'normal magit-status-mode-map (kbd "M-k") 'magit-section-backward-sibling)
+    ;; (evil-define-key 'normal magit-status-mode-map (kbd "C-n") 'magit-section-forward-sibling)
+    ;; (evil-define-key 'normal magit-status-mode-map (kbd "C-p") 'magit-section-backward-sibling)
+
+
   :init
   (setq git-commit-summary-max-length 50)
   :config
   (magit-define-popup-switch 'magit-pull-popup ?r "Rebase" "--rebase"))
 
-(use-package evil-magit
-  :after magit)
+;; (use-package evil-magit
+;;   :after magit)
 
 (use-package git-timemachine
+  :defer t
   :config
   (eval-after-load 'git-timemachine
     '(progn
@@ -756,6 +757,34 @@
   (yas-global-mode t))
 
 (use-package org
+  :defer t
+  :bind (("C-c l"       . org-store-link)
+         ("C-c a"       . org-agenda)
+         ("C-c c"       . org-capture)
+         ("C-c C-x C-i" . org-clock-in)
+         ("C-c C-x C-o" . org-clock-out)
+         :map org-mode-map
+         ("C-h"   . evil-window-left)
+         ("C-h"   . evil-window-left)
+         ("C-l"   . evil-window-right)
+         ("C-k"   . evil-window-up)
+         ("C-j"   . evil-window-down)
+         ("M-h"   . org-metaleft)
+         ("M-l"   . org-metaright)
+         ("M-k"   . org-metaup)
+         ("M-j"   . org-metadown)
+         ("M-H"   . org-shiftmetaleft)
+         ("M-L"   . org-shiftmetaright)
+         ("M-K"   . org-shiftmetaup)
+         ("M-J"   . org-shiftmetadown)
+         ("C-S-H" . org-shiftcontrolleft)
+         ("C-S-L" . org-shiftcontrolright)
+         ("C-S-K" . org-shiftcontrolup)
+         ("C-S-J" . org-shiftcontroldown)
+         ("gh"    . org-shiftleft)
+         ("gl"    . org-shiftright)
+         ("gk"    . org-shiftup)
+         ("gj"    . org-shiftdown))
   :config
   (progn
     (setq org-directory "~/Google Drive/org"
@@ -772,13 +801,18 @@
                                                      (org-tags-match-list-sublevels nil))))))
           ;; org-agenda-window-setup 'only-window
           org-agenda-window-setup 'reorganize-frame
-          org-refile-use-outline-path 'file
-          org-outline-path-complete-in-steps nil
-          org-refile-allow-creating-parent-nodes (quote confirm)
+          org-blank-before-new-entry (quote ((heading) (plain-list-item)))
+          ;; org-refile-use-outline-path 'file
+          ;; org-outline-path-complete-in-steps nil
+          org-refile-allow-creating-parent-nodes 'confirm
+          org-set-startup-visibility 'content
+          org-pretty-entities t
           org-src-fontify-natively t
+          org-fontify-done-headline t
           org-src-tab-acts-natively t
           org-log-done 'time
           org-treat-S-cursor-todo-selection-as-state-change nil
+          org-startup-indented 'indent
           org-ellipsis "…")
     ;; org-ellipsis "⤵")
     ;; org-todo-keywords '((sequence "☛ TODO(t)" "|" "✔ DONE(d)")
@@ -787,37 +821,41 @@
     (setq org-capture-templates
           '(("t" "Task" entry
              (file+headline org-default-notes-file "Refile")
-             "* TODO %^{Task}\n%a\n"
-             :immediate-finish t)
+             "* TODO %^{Task}\n"
+             :immediate-finish t :kill-buffer t)
+            ("b" "Bill" entry
+             (file+headline "bills.org" "Bills")
+             "* TODO %^{Description}\n%a\nDUE DATE: %^{Deadline}t\n"
+             :immediate-finish t :kill-buffer t)
             ("s" "Snippet" entry
              (file+headline org-snippets-file "Snippets")
-             "* %^{Title}\n#+BEGIN_SRC %^{Language|javascript|emacs-lisp}\n%i\n#+END_SRC\n"
-             :immediate-finish t)
+             "* %^{Title}\t%^g\n#+BEGIN_SRC %^{Language|javascript|emacs-lisp}\n%i%?\n#+END_SRC\n")
             ("i" "Interrupting task" entry
              (file+headline org-default-notes-file "Inbox")
              "* STARTED %^{Task}"
-             :clock-in :clock-resume)
+             :clock-in :clock-resume :kill-buffer t)
             ("e" "Emacs task" entry
              (file+headline "emacs/tasks.org" "Emacs tasks")
              "* TODO %^{Task}\n\n"
-             :immediate-finish t)))))
+             :immediate-finish t :kill-buffer t)))))
 
 (use-package org-bullets
+  :defer t
   :after org
   :hook (org-mode . org-bullets-mode)
   :config
   (setq org-bullets-bullet-list '("◉" "◎" "⚫" "○" "►" "◇")))
 
-(use-package ox-twbs)
+(use-package ox-twbs
+  :defer t)
 
-(use-package htmlize)
+(use-package htmlize
+  :defer t)
 
-(use-package smartparens
-  :defer t
-  :config
-  (progn
-    (smartparens-global-mode 1)
-    (show-smartparens-global-mode 1)))
+;; (use-package smartparens
+;;   :defer t
+;;   :hook ((prog-mode . show-smartparens-mode)
+;;          (prog-mode . smartparens-mode)))
 
 ;; (use-package paredit
 ;;   :config
@@ -838,6 +876,8 @@
   (persistent-scratch-setup-default))
 
 (use-package flycheck
+  :defer t
+  :hook (prog-mode . flycheck-mode)
   :init
   (setq-default flycheck-disabled-checkers
                 (append flycheck-disabled-checkers
@@ -879,14 +919,15 @@
       :fringe-bitmap 'my-flycheck-fringe-indicator
       :fringe-face 'flycheck-fringe-info)
 
-    (global-flycheck-mode)
     (flycheck-add-mode 'javascript-eslint 'web-mode)))
 
 (use-package coffee-mode
+  :defer t
   :init
   (setq coffee-tab-width 2))
 
 (use-package engine-mode
+  :defer t
   :config
   (defengine google
     "http://www.google.com/search?ie=utf-8&oe=utf-8&q=%s"
@@ -895,11 +936,13 @@
   (engine-mode t))
 
 (use-package highlight-indent-guides
+  :defer t
   :hook (coffee-mode . highlight-indent-guides-mode)
   :config
   (setq-default highlight-indent-guides-method 'character))
 
 (use-package indium
+  :defer t
   :hook (js-mode-hook . indium-interaction-mode))
 
 (defun setup-tide-mode ()
@@ -912,6 +955,7 @@
   (company-mode +1))
 
 (use-package tide
+  :defer t
   :hook ((js2-mode rjsx-mode) . setup-tide-mode)
   :init
   (setq tide-tsserver-executable "/usr/local/bin/tsserver")
@@ -930,6 +974,17 @@
         yahoo-weather-format "[%(weather) %(temperature)℃]")
   :config
   (yahoo-weather-mode t))
+
+(use-package solaire-mode
+  :config
+  (progn
+    (add-hook 'after-change-major-mode-hook #'turn-on-solaire-mode)
+    (add-hook 'focus-in-hook #'solaire-mode-reset)
+    (add-hook 'org-capture-mode-hook #'turn-on-solaire-mode)
+    (add-hook 'minibuffer-setup-hook #'solaire-mode-in-minibuffer)))
+
+(use-package vi-tilde-fringe
+  :hook ((prog-mode) . vi-tilde-fringe-mode))
 
 (use-package try)
 
@@ -969,11 +1024,8 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(yahoo-weather mu4e-alert evil-mu4e evil-m4ue try erc-services which-key wgrep web-mode use-package treemacs-projectile treemacs-evil tide spaceline-all-the-icons smartparens shell-pop rjsx-mode rainbow-mode rainbow-delimiters persistent-scratch ox-twbs org-bullets neotree markdown-mode js2-refactor indium htmlize highlight-indent-guides helm-projectile helm-google helm-git-grep helm-descbinds helm-dash helm-ag git-timemachine expand-region exec-path-from-shell evil-surround evil-paredit evil-magit evil-leader eshell-z eshell-git-prompt engine-mode dashboard coffee-mode auto-compile aggressive-indent))
- '(safe-local-variable-values
-   '((projectile-project-run-cmd . "yarn start")
-     (projectile-project-run-cmd . "BUILD_SPEC=0 ./gulp --buildPages")
-     (projectile-project-test-cmd . "curl -s -i -X POST -u \"exthousyvtu:74c5eb9f9788478a2d64efbb4e6e43c4\" \"http://makemv01t.tst.veikkaus.fi:8080/job/web-test-revision/buildWithParameters?delay=0sec&revision=$(git rev-parse --symbolic --abbrev-ref HEAD)\""))))
+   '(try vi-tilde-fringe solaire-mode yahoo-weather avy tide indium highlight-indent-guides engine-mode coffee-mode flycheck persistent-scratch smartparens htmlize ox-twbs org-bullets git-gutter+ git-timemachine magit eshell-z eshell-git-prompt shell-pop expand-region js2-refactor rjsx-mode web-mode lua-mode markdown-mode company spaceline-all-the-icons spaceline powerline hide-mode-line evil-mu4e mu4e-alert which-key helm-descbinds helm-dash helm-google helm-projectile helm-ag helm neotree doom-themes all-the-icons rainbow-delimiters rainbow-mode evil-surround evil-leader evil exec-path-from-shell dashboard use-package))
+ '(powerline-height 2))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

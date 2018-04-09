@@ -27,10 +27,12 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   "Kills the current window if more than one with same buffer open, otherwise kills the buffer."
   (interactive)
   (if (member (buffer-name (current-buffer)) ts/not-to-kill-buffer-list)
-      (delete-window)
+      (if (= 1 (length (window-list)))
+          (bury-buffer)
+        (delete-window))
     (if (= 1 (length (get-buffer-window-list (current-buffer))))
         (kill-buffer-and-window)
-        (delete-window))))
+      (delete-window))))
 
 (defun ts/alternate-buffer (&optional window)
   "Switch back and forth between current and last buffer in the current window."

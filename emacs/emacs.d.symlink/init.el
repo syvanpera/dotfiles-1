@@ -194,8 +194,6 @@
     (define-key global-map (kbd "M-S-<down>")  'shrink-window)
     (define-key global-map (kbd "M-S-<up>")    'enlarge-window)
 
-    (define-key org-capture-mode-map (kbd "M-v") 'clipboard-yank)
-
     ;; Ensure ESC quits in all modes: http://stackoverflow.com/a/10166400/61435
     (global-set-key [escape]                             'evil-exit-emacs-state)
     (define-key evil-normal-state-map [escape]           'keyboard-quit)

@@ -592,16 +592,16 @@
 ;;       smtpmail-smtp-service 587)
 
 (use-package mu4e-alert
-  :after mu4e
   :init
   (setq mu4e-alert-style 'osx-notifier
         mu4e-alert-interesting-mail-query
         (concat
          "flag:unread maildir:/Houston/INBOX "
          "OR "
-         "flag:unread maildir:/Gmail/INBOX"
-         ))
+         "flag:unread maildir:/Gmail/INBOX")
+        mu4e-alert-modeline-formatter 'ts/mu4e-alert-modeline-formatter)
   (mu4e-alert-enable-mode-line-display)
+  (mu4e-alert-enable-notifications)
   ;; (defun gjstein-refresh-mu4e-alert-mode-line ()
   ;;   (interactive)
   ;;   (mu4e~proc-kill)
@@ -643,11 +643,13 @@
     (spaceline-all-the-icons-theme)
     (spaceline-all-the-icons--setup-git-ahead)
     (spaceline-all-the-icons--setup-package-updates)
+    (spaceline-all-the-icons--setup-paradox)
     ;; (spaceline-all-the-icons-flycheck-alternate t)
     (spaceline-toggle-all-the-icons-buffer-position-on)
     (spaceline-toggle-all-the-icons-region-info-on)
     (spaceline-toggle-all-the-icons-sunrise-off)
-    (spaceline-toggle-all-the-icons-sunset-off)))
+    (spaceline-toggle-all-the-icons-sunset-off)
+    (spaceline-all-the-icons-theme 'mu4e-alert-segment)))
 
 (use-package company
   :config

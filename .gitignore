@@ -23,3 +23,5 @@ emacs/emacs.d.symlink/projectile.cache
 emacs/emacs.d.symlink/recentf
 emacs/emacs.d.symlink/.persistent-scratch
 emacs/emacs.d.symlink/bookmarks
+emacs/emacs.d.symlink/site-lisp
+emacs/emacs.d.symlink/url

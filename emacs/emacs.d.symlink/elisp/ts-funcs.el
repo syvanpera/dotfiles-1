@@ -168,4 +168,23 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (interactive)
   (find-file org-default-notes-file))
 
+(defun ts/mu4e-alert-modeline-formatter (mail-count)
+  "Mu4e-alert modeline formatter for spaceline-all-the-icons."
+  (when (not (zerop mail-count))
+    (let* ((icon (all-the-icons-faicon "envelope" :v-adjust 0.0)))
+      (propertize
+       (concat
+        (propertize icon
+                    'face `(:height ,(spaceline-all-the-icons--height 0.9) :inherit)
+                    'display '(raise 0.1))
+        (propertize (format " %d" mail-count) 'face `(:height ,(spaceline-all-the-icons--height 0.9) :inherit) 'display '(raise 0.1))
+        (spaceline-all-the-icons--separator spaceline-all-the-icons-secondary-separator " "))
+       'help-echo (concat (if (= mail-count 1)
+                              "You have an unread email"
+                            (format "You have %s unread emails" mail-count))
+                          "\nClick here to view "
+                          (if (= mail-count 1) "it" "them"))
+       'mouse-face (spaceline-all-the-icons--highlight)
+       'local-map (make-mode-line-mouse-map 'mouse-1 'mu4e-alert-view-unread-mails)))))
+
 (provide 'ts-funcs)

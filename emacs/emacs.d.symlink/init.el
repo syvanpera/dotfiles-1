@@ -384,15 +384,13 @@
 
 ;; (use-package color-theme-sanityinc-tomorrow
 ;;   :config
-;;   (progn
-;;     (color-theme-sanityinc-tomorrow-eighties)
-;;     (load-theme 'tomorrow-overrides)))
+;;   (color-theme-sanityinc-tomorrow-eighties)
+;;   (load-theme 'tomorrow-overrides))
 
 ;; (use-package oceanic-theme
 ;;   :config
-;;   (progn
-;;     (load-theme 'oceanic)
-;;     (load-theme 'oceanic-overrides)))
+;;   (load-theme 'oceanic)
+;;   (load-theme 'oceanic-overrides))
 
 (use-package doom-themes
   :init
@@ -400,12 +398,11 @@
         doom-themes-enable-italic t
         doom-vibrant-brighter-modeline t)
   :config
-  (progn
-    (load-theme 'doom-vibrant t)
-    (doom-themes-visual-bell-config)
-    (doom-themes-neotree-config)
-    (doom-themes-org-config)
-    (load-theme 'doom-overrides)))
+  (load-theme 'doom-vibrant t)
+  (doom-themes-visual-bell-config)
+  (doom-themes-neotree-config)
+  (doom-themes-org-config)
+  (load-theme 'doom-overrides))
 
 (use-package neotree
   :defer t
@@ -625,30 +622,28 @@
         spaceline-all-the-icons-separator-type 'wave
         spaceline-all-the-icons-icon-set-eyebrowse-slot 'square)
   :config
-  (progn
-    (spaceline-all-the-icons-theme)
-    (spaceline-all-the-icons--setup-git-ahead)
-    (spaceline-all-the-icons--setup-package-updates)
-    (spaceline-all-the-icons--setup-paradox)
-    ;; (spaceline-all-the-icons-flycheck-alternate t)
-    (spaceline-toggle-all-the-icons-buffer-position-on)
-    (spaceline-toggle-all-the-icons-region-info-on)
-    (spaceline-toggle-all-the-icons-sunrise-off)
-    (spaceline-toggle-all-the-icons-sunset-off)))
-;; (spaceline-all-the-icons-theme 'mu4e-alert-segment)))
+  (spaceline-all-the-icons-theme)
+  (spaceline-all-the-icons--setup-git-ahead)
+  (spaceline-all-the-icons--setup-package-updates)
+  (spaceline-all-the-icons--setup-paradox)
+  ;; (spaceline-all-the-icons-flycheck-alternate t)
+  (spaceline-toggle-all-the-icons-buffer-position-on)
+  (spaceline-toggle-all-the-icons-region-info-on)
+  (spaceline-toggle-all-the-icons-sunrise-off)
+  (spaceline-toggle-all-the-icons-sunset-off))
+;; (spaceline-all-the-icons-theme 'mu4e-alert-segment))
 
 (use-package company
   :config
-  (progn
-    (global-company-mode t)
+  (global-company-mode t)
 
-    (define-key company-active-map [tab]       'company-complete)
-    (define-key company-active-map (kbd "C-j") 'company-select-next-or-abort)
-    (define-key company-active-map (kbd "C-k") 'company-select-previous-or-abort)
-    (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
-    (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
-    (define-key company-active-map (kbd "C-f") 'company-next-page)
-    (define-key company-active-map (kbd "C-b") 'company-previous-page)))
+  (define-key company-active-map [tab]       'company-complete)
+  (define-key company-active-map (kbd "C-j") 'company-select-next-or-abort)
+  (define-key company-active-map (kbd "C-k") 'company-select-previous-or-abort)
+  (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
+  (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
+  (define-key company-active-map (kbd "C-f") 'company-next-page)
+  (define-key company-active-map (kbd "C-b") 'company-previous-page))
 
 (use-package markdown-mode
   :defer t
@@ -662,23 +657,20 @@
   :init
   (setq lua-indent-level 2)
   :config
-  (progn
-    (add-to-list 'auto-mode-alist '("\\.lua$" . lua-mode))
-    (add-to-list 'interpreter-mode-alist '("lua" . lua-mode))))
+  (add-to-list 'auto-mode-alist '("\\.lua$" . lua-mode))
+  (add-to-list 'interpreter-mode-alist '("lua" . lua-mode)))
 
 (use-package web-mode
   :config
-  (progn
-    (add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
-    (add-to-list 'auto-mode-alist '("\\.ejs\\'" . web-mode))
-    (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))))
+  (add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.ejs\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
 
 (use-package rjsx-mode
   :hook (js-mode . rjsx-mode)
   :config
-  (progn
-    (add-to-list 'auto-mode-alist '("\\.jsx?\\'" . rjsx-mode))
-    (add-hook 'js-mode-hook (lambda () (setq js2-strict-missing-semi-warning nil)))))
+  (add-to-list 'auto-mode-alist '("\\.jsx?\\'" . rjsx-mode))
+  (add-hook 'js-mode-hook (lambda () (setq js2-strict-missing-semi-warning nil))))
 
 (use-package js2-refactor
   :hook (js-mode . js2-refactor-mode)
@@ -787,58 +779,57 @@
    "r"       'org-refile
    "b"       'org-switchb)
   :config
-  (progn
-    (setq org-directory "~/Google Drive/org"
-          org-default-notes-file (concat org-directory "/inbox.org")
-          org-snippets-file (concat org-directory "/snippets.org")
-          org-agenda-files (quote ("~/Google Drive/org"
-                                   "~/Google Drive/org/work"))
-          org-refile-targets (quote ((nil :maxlevel . 1)
-                                     (org-agenda-files :maxlevel . 1)))
-          org-agenda-custom-commands '((" " "Agenda"
-                                        ((agenda "" nil)
-                                         (tags-todo "REFILE"
-                                                    ((org-agenda-overriding-header "Tasks to Refile")
-                                                     (org-tags-match-list-sublevels nil))))))
-          ;; org-agenda-window-setup 'only-window
-          org-agenda-window-setup 'reorganize-frame
-          org-blank-before-new-entry (quote ((heading) (plain-list-item)))
-          ;; org-refile-use-outline-path 'file
-          ;; org-outline-path-complete-in-steps nil
-          org-refile-allow-creating-parent-nodes 'confirm
-          org-set-startup-visibility 'content
-          org-pretty-entities t
-          org-src-fontify-natively t
-          org-fontify-done-headline t
-          org-src-tab-acts-natively t
-          org-log-done 'time
-          org-treat-S-cursor-todo-selection-as-state-change nil
-          org-startup-indented 'indent
-          ;; org-ellipsis "…"
-          org-ellipsis " ⤵")
-    ;; org-todo-keywords '((sequence "☛ TODO(t)" "|" "✔ DONE(d)")
-    ;;                     (sequence "⚑ WAITING(w@)" "|")
-    ;;                     (sequence "|" "✘ CANCELED(c@)")))
-    (setq org-capture-templates
-          '(("t" "Task" entry
-             (file+headline org-default-notes-file "Refile")
-             "* TODO %^{Task}\n"
-             :immediate-finish t :kill-buffer t)
-            ("b" "Bill" entry
-             (file+headline "bills.org" "Bills")
-             "* TODO %^{Description}\n%a\nDUE DATE: %^{Deadline}t\n"
-             :immediate-finish t :kill-buffer t)
-            ("s" "Snippet" entry
-             (file+headline org-snippets-file "Snippets")
-             "* %^{Title}\t%^g\n#+BEGIN_SRC %^{Language|javascript|emacs-lisp}\n%i%?\n#+END_SRC\n")
-            ("i" "Interrupting task" entry
-             (file+headline org-default-notes-file "Inbox")
-             "* STARTED %^{Task}"
-             :clock-in :clock-resume :kill-buffer t)
-            ("e" "Emacs task" entry
-             (file+headline "emacs.org" "Tasks")
-             "* TODO %^{Task}\n\n"
-             :immediate-finish t :kill-buffer t)))))
+  (setq org-directory "~/Google Drive/org"
+        org-default-notes-file (concat org-directory "/inbox.org")
+        org-snippets-file (concat org-directory "/snippets.org")
+        org-agenda-files (quote ("~/Google Drive/org"
+                                 "~/Google Drive/org/work"))
+        org-refile-targets (quote ((nil :maxlevel . 1)
+                                   (org-agenda-files :maxlevel . 1)))
+        org-agenda-custom-commands '((" " "Agenda"
+                                      ((agenda "" nil)
+                                       (tags-todo "REFILE"
+                                                  ((org-agenda-overriding-header "Tasks to Refile")
+                                                   (org-tags-match-list-sublevels nil))))))
+        ;; org-agenda-window-setup 'only-window
+        org-agenda-window-setup 'reorganize-frame
+        org-blank-before-new-entry (quote ((heading) (plain-list-item)))
+        ;; org-refile-use-outline-path 'file
+        ;; org-outline-path-complete-in-steps nil
+        org-refile-allow-creating-parent-nodes 'confirm
+        org-set-startup-visibility 'content
+        org-pretty-entities t
+        org-src-fontify-natively t
+        org-fontify-done-headline t
+        org-src-tab-acts-natively t
+        org-log-done 'time
+        org-treat-S-cursor-todo-selection-as-state-change nil
+        org-startup-indented 'indent
+        ;; org-ellipsis "…"
+        org-ellipsis " ⤵")
+  ;; org-todo-keywords '((sequence "☛ TODO(t)" "|" "✔ DONE(d)")
+  ;;                     (sequence "⚑ WAITING(w@)" "|")
+  ;;                     (sequence "|" "✘ CANCELED(c@)")))
+  (setq org-capture-templates
+        '(("t" "Task" entry
+           (file+headline org-default-notes-file "Refile")
+           "* TODO %^{Task}\n"
+           :immediate-finish t :kill-buffer t)
+          ("b" "Bill" entry
+           (file+headline "bills.org" "Bills")
+           "* TODO %^{Description}\n%a\nDUE DATE: %^{Deadline}t\n"
+           :immediate-finish t :kill-buffer t)
+          ("s" "Snippet" entry
+           (file+headline org-snippets-file "Snippets")
+           "* %^{Title}\t%^g\n#+BEGIN_SRC %^{Language|javascript|emacs-lisp}\n%i%?\n#+END_SRC\n")
+          ("i" "Interrupting task" entry
+           (file+headline org-default-notes-file "Inbox")
+           "* STARTED %^{Task}"
+           :clock-in :clock-resume :kill-buffer t)
+          ("e" "Emacs task" entry
+           (file+headline "emacs.org" "Tasks")
+           "* TODO %^{Task}\n\n"
+           :immediate-finish t :kill-buffer t))))
 
 (use-package org-bullets
   :defer t
@@ -877,43 +868,42 @@
                 (append flycheck-disabled-checkers
                         '(javascript-jshint emacs-lisp-checkdoc)))
   :config
-  (progn
-    (define-fringe-bitmap 'my-flycheck-fringe-indicator
-      (vector #b00000000
-              #b00000000
-              #b00000000
-              #b00000000
-              #b00000000
-              #b00000000
-              #b00011100
-              #b00111110
-              #b00111110
-              #b00111110
-              #b00011100
-              #b00000000
-              #b00000000
-              #b00000000
-              #b00000000
-              #b00000000
-              #b00000000))
+  (define-fringe-bitmap 'my-flycheck-fringe-indicator
+    (vector #b00000000
+            #b00000000
+            #b00000000
+            #b00000000
+            #b00000000
+            #b00000000
+            #b00011100
+            #b00111110
+            #b00111110
+            #b00111110
+            #b00011100
+            #b00000000
+            #b00000000
+            #b00000000
+            #b00000000
+            #b00000000
+            #b00000000))
 
-    (flycheck-define-error-level 'error
-      :severity 2
-      :overlay-category 'flycheck-error-overlay
-      :fringe-bitmap 'my-flycheck-fringe-indicator
-      :fringe-face 'flycheck-fringe-error)
-    (flycheck-define-error-level 'warning
-      :severity 1
-      :overlay-category 'flycheck-warning-overlay
-      :fringe-bitmap 'my-flycheck-fringe-indicator
-      :fringe-face 'flycheck-fringe-warning)
-    (flycheck-define-error-level 'info
-      :severity 0
-      :overlay-category 'flycheck-info-overlay
-      :fringe-bitmap 'my-flycheck-fringe-indicator
-      :fringe-face 'flycheck-fringe-info)
+  (flycheck-define-error-level 'error
+    :severity 2
+    :overlay-category 'flycheck-error-overlay
+    :fringe-bitmap 'my-flycheck-fringe-indicator
+    :fringe-face 'flycheck-fringe-error)
+  (flycheck-define-error-level 'warning
+    :severity 1
+    :overlay-category 'flycheck-warning-overlay
+    :fringe-bitmap 'my-flycheck-fringe-indicator
+    :fringe-face 'flycheck-fringe-warning)
+  (flycheck-define-error-level 'info
+    :severity 0
+    :overlay-category 'flycheck-info-overlay
+    :fringe-bitmap 'my-flycheck-fringe-indicator
+    :fringe-face 'flycheck-fringe-info)
 
-    (flycheck-add-mode 'javascript-eslint 'web-mode)))
+  (flycheck-add-mode 'javascript-eslint 'web-mode))
 
 (use-package coffee-mode
   :defer t
@@ -979,9 +969,8 @@
   :init
   (setq tide-tsserver-executable "/usr/local/bin/tsserver")
   :config
-  (progn
-    (flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append)
-    (flycheck-add-next-checker 'javascript-eslint 'javascript-tide 'append)))
+  (flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append)
+  (flycheck-add-next-checker 'javascript-eslint 'javascript-tide 'append))
 
 (use-package avy
   :general
@@ -1002,11 +991,10 @@
 
 (use-package solaire-mode
   :config
-  (progn
-    (add-hook 'after-change-major-mode-hook #'turn-on-solaire-mode)
-    (add-hook 'focus-in-hook #'solaire-mode-reset)
-    (add-hook 'org-capture-mode-hook #'turn-on-solaire-mode)
-    (add-hook 'minibuffer-setup-hook #'solaire-mode-in-minibuffer)))
+  (add-hook 'after-change-major-mode-hook #'turn-on-solaire-mode)
+  (add-hook 'focus-in-hook #'solaire-mode-reset)
+  (add-hook 'org-capture-mode-hook #'turn-on-solaire-mode)
+  (add-hook 'minibuffer-setup-hook #'solaire-mode-in-minibuffer))
 
 (use-package vi-tilde-fringe
   :hook ((prog-mode) . vi-tilde-fringe-mode))
@@ -1053,17 +1041,16 @@
 ;; (use-package erc
 ;;   :commands erc
 ;;   :init
-;;   (progn
-;;     (setq erc-server "irc.freenode.net"
-;;           erc-port 6667
-;;           erc-nick "tinimini"
-;;           erc-away-nickname "tinimini_AWAY"
-;;           erc-user-full-name "Tuomo Syvänperä"
-;;           erc-prompt-for-password nil
-;;           erc-autojoin-channels-alist '(("freenode.net" "#emacs" "#emacs-beginners" "#evil-mode")))
-;;     (setq erc-prompt-for-nickserv-password nil
-;;           erc-nickserv-passwords '((freenode     (("tinimini" . ,erc-password))))
-;;           erc-prompt (lambda () (concat "[" (buffer-name) "]"))))
+;;   (setq erc-server "irc.freenode.net"
+;;         erc-port 6667
+;;         erc-nick "tinimini"
+;;         erc-away-nickname "tinimini_AWAY"
+;;         erc-user-full-name "Tuomo Syvänperä"
+;;         erc-prompt-for-password nil
+;;         erc-autojoin-channels-alist '(("freenode.net" "#emacs" "#emacs-beginners" "#evil-mode"))
+;;         erc-prompt-for-nickserv-password nil
+;;         erc-nickserv-passwords '((freenode     (("tinimini" . ,erc-password))))
+;;         erc-prompt (lambda () (concat "[" (buffer-name) "]")))
 ;;   :config
 ;;   (erc-services-mode 1))
 

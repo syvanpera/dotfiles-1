@@ -7,11 +7,11 @@
 
 (custom-theme-set-faces
  'misterioso-overrides
- '(default ((t (:background "#1B2B32"))))
+ '(default ((t (:foreground "gray90" :background "#1B2B32"))))
  '(fringe ((t (:background "#1B2B32"))))
  '(cursor ((t (:background "white"))))
  '(line-number-current-line ((t (:foreground "white" :background "#3d5958" :weight bold))))
- '(line-number ((t (:background "#2d4948"))))
+ '(line-number ((t (:background "#2d4040"))))
  '(highlight ((t (:background "#3d5958" :foreground nil))))
  '(region ((t (:background "#338f86" :foreground "#e1e1e0"))))
  '(flycheck-fringe-error ((t (:foreground "systemRedColor"))))
@@ -46,6 +46,7 @@
  '(org-level-3 ((t (:inherit 'outline-3 :foreground "#ffbd29"))))
  '(org-ellipsis ((t (:underline nil))))
  '(org-archived ((t (:underline t))))
+ '(org-ellipsis ((t (:underline nil :background nil :foreground "#74af68"))))
  '(font-lock-comment-face ((t (:foreground "#65737E"))))
  '(font-lock-string-face ((t (:foreground "#74af68"))))
  ;; '(solaire-default-face ((t (:background "#2d3743"))))

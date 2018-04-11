@@ -201,6 +201,18 @@
   (general-create-definer ts-error-leader-def   :prefix ts-error-leader)
   (general-create-definer ts-toggle-leader-def  :prefix ts-toggle-leader)
 
+  (ts-local-leader-def   'normal "" '(nil :which-key "local leader"))
+  (ts-buffer-leader-def  'normal "" '(nil :which-key "buffer"))
+  (ts-file-leader-def    'normal "" '(nil :which-key "file"))
+  (ts-help-leader-def    'normal "" '(nil :which-key "help"))
+  (ts-project-leader-def 'normal "" '(nil :which-key "project"))
+  (ts-git-leader-def     'normal "" '(nil :which-key "git"))
+  (ts-window-leader-def  'normal "" '(nil :which-key "window"))
+  (ts-org-leader-def     'normal "" '(nil :which-key "org"))
+  (ts-jump-leader-def    'normal "" '(nil :which-key "jump"))
+  (ts-error-leader-def   'normal "" '(nil :which-key "error"))
+  (ts-toggle-leader-def  'normal "" '(nil :which-key "toggle"))
+
   (ts-leader-def 'normal
     "TAB" 'ts/alternate-buffer
     "'"   'shell-pop
@@ -530,16 +542,7 @@
 
 (use-package which-key
   :config
-  (progn
-    (which-key-mode)
-    (which-key-declare-prefixes ", h" "help")
-    (which-key-declare-prefixes ", p" "project")
-    (which-key-declare-prefixes ", f" "files")
-    (which-key-declare-prefixes ", b" "buffers")
-    (which-key-declare-prefixes ", g" "git")
-    (which-key-declare-prefixes ", o" "org")
-    (which-key-declare-prefixes ", x" "errors")
-    (which-key-declare-prefixes ", t" "toggle")))
+  (which-key-mode))
 
 (use-package mu4e
   :general

@@ -151,6 +151,14 @@
                (inhibit-same-window . t)
                (window-height . 0.3)))
 
+(add-to-list 'display-buffer-alist
+             `(,(rx bos "*Flycheck errors*" eos)
+              (display-buffer-reuse-window
+               display-buffer-in-side-window)
+              (side . bottom)
+              (reusable-frames . visible)
+              (window-height . 0.33)))
+
 (defun display-startup-echo-area-message ()
   "Startup message."
   (message "Another Visitor! Stay awhile! Stay FOREVER!!!!!!!!!!!!"))

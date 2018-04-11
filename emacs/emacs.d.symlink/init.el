@@ -108,15 +108,16 @@
       desktop-save-mode t
       default-frame-alist '((font . "Cousine-12")))
 
-(add-hook 'prog-mode-hook (lambda () (setq-local show-trailing-whitespace t)))
-(add-hook 'prog-mode-hook 'display-line-numbers-mode)
-;; (add-hook 'text-mode-hook 'display-line-numbers-mode)
-(add-hook 'prog-mode-hook 'hl-line-mode)
+(add-hook 'prog-mode-hook
+          (lambda () (progn
+                  (setq-local show-trailing-whitespace t)
+                  (hl-line-mode)
+                  (display-line-numbers-mode)
+                  (electric-pair-mode t)
+                  (electric-indent-mode t)
+                  (add-hook 'evil-insert-state-entry-hook 'ts/line-numbers-absolute nil t)
+                  (add-hook 'evil-insert-state-exit-hook 'ts/line-numbers-relative nil t))))
 
-;; (global-display-line-numbers-mode)
-;; (global-hl-line-mode t)
-(electric-pair-mode t)
-(electric-indent-mode t)
 (global-prettify-symbols-mode t)
 
 (with-current-buffer "*scratch*"

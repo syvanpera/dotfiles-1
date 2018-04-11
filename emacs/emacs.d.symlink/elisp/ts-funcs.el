@@ -5,11 +5,15 @@
 (defun ts/toggle-relative-line-numbers ()
   "Toggles between relative and absolute line numbering."
   (interactive)
-  (display-line-numbers-mode)
-  (if (eq display-line-numbers-type 'relative)
-      (setq display-line-numbers-type t)
-    (setq display-line-numbers-type 'relative))
-  (display-line-numbers-mode))
+  (if (eq display-line-numbers 'relative)
+      (ts/line-numbers-absolute)
+    (ts/line-numbers-relative)))
+
+(defun ts/line-numbers-absolute ()
+  (setq-local display-line-numbers t))
+
+(defun ts/line-numbers-relative ()
+  (setq-local display-line-numbers 'relative))
 
 (defun ts/minibuffer-keyboard-quit ()
   "Abort recursive edit.

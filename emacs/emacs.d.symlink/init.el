@@ -41,6 +41,10 @@
 (eval-when-compile
   (require 'use-package))
 
+;; (use-package benchmark-init
+;;   :config
+;;   (add-hook 'after-init-hook 'benchmark-init/deactivate))
+
 (add-to-list 'load-path (expand-file-name "elisp" user-emacs-directory))
 (add-to-list 'load-path (expand-file-name "elisp/vendor" user-emacs-directory))
 
@@ -106,7 +110,7 @@
       prettify-symbols-unprettify-at-point t
       superword-mode t
       desktop-save-mode t
-      default-frame-alist '((font . "Cousine-12")))
+      default-frame-alist '((font . "Menlo-12")))
 
 (add-hook 'prog-mode-hook
           (lambda () (progn
@@ -127,15 +131,15 @@
 
 (add-hook 'emacs-lisp-mode-hook (lambda ()
                                   (setq show-paren-style 'parenthesis)
-                                  (push '("<=" . ?≤) prettify-symbols-alist)
-                                  (push '(">=" . ?≥) prettify-symbols-alist)
-                                  (push '("==" . ?≡) prettify-symbols-alist)
+                                  (push '("<=" . ?≤)  prettify-symbols-alist)
+                                  (push '(">=" . ?≥)  prettify-symbols-alist)
+                                  (push '("==" . ?≡)  prettify-symbols-alist)
                                   (push '("===" . ?≣) prettify-symbols-alist)
-                                  (push '("!=" . ?≠) prettify-symbols-alist)
+                                  (push '("!=" . ?≠)  prettify-symbols-alist)
                                   (push '("!==" . ?≢) prettify-symbols-alist)
-                                  (push '("->" . ?→) prettify-symbols-alist)
-                                  (push '("<-" . ?←) prettify-symbols-alist)
-                                  (push '("=>" . ?⇒) prettify-symbols-alist)))
+                                  (push '("->" . ?→)  prettify-symbols-alist)
+                                  (push '("<-" . ?←)  prettify-symbols-alist)
+                                  (push '("=>" . ?⇒)  prettify-symbols-alist)))
 
 (add-to-list 'display-buffer-alist
              `(,(rx bos "*helm" (* not-newline) "*" eos)
@@ -275,7 +279,9 @@
     (define-key evil-operator-state-map (kbd "C-g") 'ts/evil-keyboard-quit)
 
     (define-key evil-normal-state-map (kbd "C-s") 'save-buffer)
+    (define-key evil-insert-state-map (kbd "C-s") 'save-buffer)
     (define-key evil-normal-state-map (kbd "M-s") 'save-buffer)
+    (define-key evil-insert-state-map (kbd "M-s") 'save-buffer)
     (define-key evil-normal-state-map (kbd "M-a") 'mark-whole-buffer)
     (define-key evil-normal-state-map (kbd "M-q") 'evil-quit-all)
     (define-key evil-normal-state-map (kbd "M-c") 'evil-yank)
@@ -293,14 +299,13 @@
     (define-key evil-normal-state-map (kbd "go")  'find-file-at-point)
     (define-key evil-normal-state-map (kbd "gf")  'projectile-find-file-dwim)
     (define-key evil-normal-state-map (kbd "gF")  'projectile-find-file-dwim-other-window)
-    (define-key evil-normal-state-map (kbd "gc")  'sensible-defaults/comment-or-uncomment-region-or-line)
-    (define-key evil-visual-state-map (kbd "gc")  'sensible-defaults/comment-or-uncomment-region-or-line)
     (define-key evil-normal-state-map (kbd "M-√") (lambda () (interactive) (scroll-other-window 1)))
     (define-key evil-normal-state-map (kbd "M-ª") (lambda () (interactive) (scroll-other-window-down 1)))
     (define-key evil-normal-state-map (kbd "M-ƒ") 'scroll-other-window)
     (define-key evil-normal-state-map (kbd "M-›") 'scroll-other-window-down)
     (define-key evil-normal-state-map (kbd "M-k") 'move-line-up)
     (define-key evil-normal-state-map (kbd "M-j") 'move-line-down)
+    (define-key evil-motion-state-map (kbd "gc")  'sensible-defaults/comment-or-uncomment-region-or-line)
 
     ;; (define-key compilation-mode-map (kbd "C-h") 'evil-window-left)
     ;; (define-key compilation-mode-map (kbd "C-h") 'evil-window-left)
@@ -1027,6 +1032,11 @@
   (eyebrowse-mode t)
   (eyebrowse-setup-opinionated-keys))
 
+(use-package w3m
+  :defer t)
+
+(use-package general)
+
 ;; (load "~/.ercrc.el")
 ;; (use-package erc
 ;;   :commands erc
@@ -1063,7 +1073,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(evil-visualstar eyebrowse evil-magit paradox try vi-tilde-fringe solaire-mode yahoo-weather avy tide indium highlight-indent-guides engine-mode coffee-mode flycheck persistent-scratch smartparens htmlize ox-twbs org-bullets git-gutter+ git-timemachine magit eshell-z eshell-git-prompt shell-pop expand-region js2-refactor rjsx-mode web-mode lua-mode markdown-mode company spaceline-all-the-icons spaceline powerline hide-mode-line evil-mu4e mu4e-alert which-key helm-descbinds helm-dash helm-google helm-projectile helm-ag helm neotree doom-themes all-the-icons rainbow-delimiters rainbow-mode evil-surround evil-leader evil exec-path-from-shell dashboard use-package))
+   '(general esup evil-visualstar eyebrowse evil-magit paradox try vi-tilde-fringe solaire-mode yahoo-weather avy tide indium highlight-indent-guides engine-mode coffee-mode flycheck persistent-scratch smartparens htmlize ox-twbs org-bullets git-gutter+ git-timemachine magit eshell-z eshell-git-prompt shell-pop expand-region js2-refactor rjsx-mode web-mode lua-mode markdown-mode company spaceline-all-the-icons spaceline powerline hide-mode-line evil-mu4e mu4e-alert which-key helm-descbinds helm-dash helm-google helm-projectile helm-ag helm neotree doom-themes all-the-icons rainbow-delimiters rainbow-mode evil-surround evil-leader evil exec-path-from-shell dashboard use-package))
  '(paradox-github-token t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

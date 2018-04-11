@@ -32,7 +32,7 @@
         ("gnu"          . "http://elpa.gnu.org/packages/")
         ("org"          . "http://orgmode.org/elpa/")
         ("marmalade"    . "http://marmalade-repo.org/packages/")))
-(package-initialize)
+;; (package-initialize)
 
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
@@ -102,9 +102,10 @@
       display-time-24hr-format t
       custom-safe-themes t
       show-paren-when-point-inside-paren t
-      show-paren-mode t
+      show-paren-mode nil
       prettify-symbols-unprettify-at-point t
       superword-mode t
+      desktop-save-mode t
       default-frame-alist '((font . "Cousine-12")))
 
 (add-hook 'prog-mode-hook (lambda () (setq-local show-trailing-whitespace t)))
@@ -141,19 +142,21 @@
                (inhibit-same-window . t)
                (window-height . 0.3)))
 
+(global-set-key (kbd "M-h") (lookup-key global-map (kbd "C-h")))
+
 (defun display-startup-echo-area-message ()
   "Startup message."
   (message "Another Visitor! Stay awhile! Stay FOREVER!!!!!!!!!!!!"))
 
-(use-package dashboard
-  :init
-  (setq dashboard-items '((recents  . 5)
-                          (bookmarks . 5)
-                          (projects . 5)
-                          (agenda . 5))
-        dashboard-startup-banner 'official)
-  :config
-  (dashboard-setup-startup-hook))
+;; (use-package dashboard
+;;   :init
+;;   (setq dashboard-items '((recents  . 5)
+;;                           (bookmarks . 5)
+;;                           (projects . 5)
+;;                           (agenda . 5))
+;;         dashboard-startup-banner 'official)
+;;   :config
+;;   (dashboard-setup-startup-hook))
 
 (use-package exec-path-from-shell
   :config
@@ -162,7 +165,9 @@
 
 (use-package evil
   :init
-  (setq evil-want-integration nil)
+  (setq evil-want-integration nil
+        evil-vsplit-window-right t
+        evil-split-window-below t)
 
   :config
   (progn
@@ -188,7 +193,6 @@
         "fe"    'neotree-toggle
         "ff"    'helm-find-files
         "fo"    'ts/helm-find-org-files
-        "fs"    'ts/open-create-scratch-buffer
         "fr"    'helm-recentf
         "xx"    'flycheck-mode
         "xl"    'flycheck-list-errors
@@ -199,6 +203,9 @@
         "bb"    'helm-buffers-list
         "bk"    'kill-buffer
         "br"    'rename-buffer
+        "bs"    'ts/open-create-scratch-buffer
+        "bm"    (lambda () (interactive) (switch-to-buffer "*Messages*"))
+        "bw"    (lambda () (interactive) (switch-to-buffer "*Warnings*"))
         "pp"    'helm-projectile-switch-project
         "pf"    'ts/contextual-helm-find-files
         "pr"    'projectile-run-project
@@ -223,7 +230,16 @@
         "oh"    'helm-org-agenda-files-headings
         "or"    'org-refile
         "op"    (lambda () (interactive) (ts/load-project-org "veikkaus"))
-        "ob"    'org-switchb))
+        "ob"    'org-switchb
+        "wc"    'eyebrowse-create-window-config
+        "wd"    'eyebrowse-close-window-config
+        "wr"    'eyebrowse-rename-window-config
+        "wn"    'eyebrowse-next-window-config
+        "wp"    'eyebrowse-prev-window-config
+        "wj"    'eyebrowse-next-window-config
+        "wk"    'eyebrowse-prev-window-config
+        "wl"    'eyebrowse-next-window-config
+        "wh"    'eyebrowse-prev-window-config))
 
     (evil-mode t)
 
@@ -277,6 +293,7 @@
     (define-key evil-normal-state-map (kbd "gf")  'projectile-find-file-dwim)
     (define-key evil-normal-state-map (kbd "gF")  'projectile-find-file-dwim-other-window)
     (define-key evil-normal-state-map (kbd "gc")  'sensible-defaults/comment-or-uncomment-region-or-line)
+    (define-key evil-visual-state-map (kbd "gc")  'sensible-defaults/comment-or-uncomment-region-or-line)
     (define-key evil-normal-state-map (kbd "M-√") (lambda () (interactive) (scroll-other-window 1)))
     (define-key evil-normal-state-map (kbd "M-ª") (lambda () (interactive) (scroll-other-window-down 1)))
     (define-key evil-normal-state-map (kbd "M-ƒ") 'scroll-other-window)
@@ -340,6 +357,11 @@
     (evil-define-key 'normal helm-ag-mode-map (kbd "o") 'helm-ag-mode-jump)
     (evil-define-key 'normal helm-ag-mode-map (kbd "O") 'helm-ag-mode-jump-other-window)
 
+    (evil-define-key 'normal org-mode-map (kbd "gh") 'org-shiftleft)
+    (evil-define-key 'normal org-mode-map (kbd "gl") 'org-shiftright)
+    (evil-define-key 'normal org-mode-map (kbd "gk") 'org-shiftup)
+    (evil-define-key 'normal org-mode-map (kbd "gj") 'org-shiftdown)
+
     (evil-define-key 'normal custom-mode-map (kbd "q") 'Custom-buffer-done)
 
     (evil-define-key 'motion tide-mode-map
@@ -377,6 +399,11 @@
   :after evil
   :config
   (global-evil-surround-mode 1))
+
+(use-package evil-visualstar
+  :after evil
+  :config
+  (global-evil-visualstar-mode 1))
 
 (use-package rainbow-mode
   :defer t
@@ -529,7 +556,6 @@
         helm-ag-insert-at-point 'symbol))
 
 (use-package helm-projectile
-  :defer t
   :init
   (setq helm-projectile-fuzzy-match t))
 
@@ -577,19 +603,19 @@
         mu4e-drafts-folder "/Gmail/Drafts"
         mu4e-trash-folder "/Gmail/Trash"
         mu4e-sent-messages-behavior 'delete)
+  (setq message-send-mail-function 'smtpmail-send-it
+        smtpmail-stream-type 'starttls
+        smtpmail-default-smtp-server "smtp.gmail.com"
+        smtpmail-smtp-server "smtp.gmail.com"
+        smtpmail-smtp-service 587)
   :config
   (require 'org-mu4e)
   (setq org-mu4e-link-query-in-headers-mode nil))
-;;       mu4e-get-mail-command "offlineimap"
-;;       mu4e-update-interval 600
-;;       mu4e-view-show-images t
-;;       mu4e-html2text-command "textutil -stdin -format html -convert txt -stdout")
-;; ;; configuration for sending mail
-;; (setq message-send-mail-function 'smtpmail-send-it
-;;       smtpmail-stream-type 'starttls
-;;       smtpmail-default-smtp-server "smtp.gmail.com"
-;;       smtpmail-smtp-server "smtp.gmail.com"
-;;       smtpmail-smtp-service 587)
+  ;;       mu4e-get-mail-command "offlineimap"
+  ;;       mu4e-update-interval 600
+  ;;       mu4e-view-show-images t
+  ;;       mu4e-html2text-command "textutil -stdin -format html -convert txt -stdout")
+  ;; ;; configuration for sending mail
 
 (use-package mu4e-alert
   :init
@@ -598,8 +624,8 @@
         (concat
          "flag:unread maildir:/Houston/INBOX "
          "OR "
-         "flag:unread maildir:/Gmail/INBOX")
-        mu4e-alert-modeline-formatter 'ts/mu4e-alert-modeline-formatter)
+         "flag:unread maildir:/Gmail/INBOX"))
+        ;; mu4e-alert-modeline-formatter 'ts/mu4e-alert-modeline-formatter)
   (mu4e-alert-enable-mode-line-display)
   (mu4e-alert-enable-notifications)
   ;; (defun gjstein-refresh-mu4e-alert-mode-line ()
@@ -637,7 +663,8 @@
   :load-path "site-lisp/spaceline-all-the-icons.el"
   :init
   (setq spaceline-all-the-icons-highlight-file-name t
-        spaceline-all-the-icons-separator-type 'wave)
+        spaceline-all-the-icons-separator-type 'wave
+        spaceline-all-the-icons-icon-set-eyebrowse-slot 'square)
   :config
   (progn
     (spaceline-all-the-icons-theme)
@@ -648,8 +675,8 @@
     (spaceline-toggle-all-the-icons-buffer-position-on)
     (spaceline-toggle-all-the-icons-region-info-on)
     (spaceline-toggle-all-the-icons-sunrise-off)
-    (spaceline-toggle-all-the-icons-sunset-off)
-    (spaceline-all-the-icons-theme 'mu4e-alert-segment)))
+    (spaceline-toggle-all-the-icons-sunset-off)))
+    ;; (spaceline-all-the-icons-theme 'mu4e-alert-segment)))
 
 (use-package company
   :config
@@ -720,13 +747,13 @@
 (use-package eshell-z)
 
 (use-package magit
-  ;; :bind (:map magit-status-mode-map
-  ;;             ("C-h" . evil-window-left)
-  ;;             ("C-j" . evil-window-down)
-  ;;             ("C-k" . evil-window-up)
-  ;;             ("C-l" . evil-window-right)
-  ;;             ("j"   . magit-section-forward)
-  ;;             ("k"   . magit-section-backward))
+  :bind (:map magit-status-mode-map
+              ("C-h" . evil-window-left)
+              ("C-j" . evil-window-down)
+              ("C-k" . evil-window-up)
+              ("C-l" . evil-window-right)
+              ("j"   . magit-section-forward)
+              ("k"   . magit-section-backward))
     ;; (evil-define-key 'normal magit-status-mode-map (kbd "M-j") 'magit-section-forward-sibling)
     ;; (evil-define-key 'normal magit-status-mode-map (kbd "M-k") 'magit-section-backward-sibling)
     ;; (evil-define-key 'normal magit-status-mode-map (kbd "C-n") 'magit-section-forward-sibling)
@@ -738,8 +765,8 @@
   :config
   (magit-define-popup-switch 'magit-pull-popup ?r "Rebase" "--rebase"))
 
-;; (use-package evil-magit
-;;   :after magit)
+(use-package evil-magit
+  :after magit)
 
 (use-package git-timemachine
   :defer t
@@ -782,11 +809,7 @@
          ("C-S-H" . org-shiftcontrolleft)
          ("C-S-L" . org-shiftcontrolright)
          ("C-S-K" . org-shiftcontrolup)
-         ("C-S-J" . org-shiftcontroldown)
-         ("gh"    . org-shiftleft)
-         ("gl"    . org-shiftright)
-         ("gk"    . org-shiftup)
-         ("gj"    . org-shiftdown))
+         ("C-S-J" . org-shiftcontroldown))
   :config
   (progn
     (setq org-directory "~/Google Drive/org"
@@ -815,8 +838,8 @@
           org-log-done 'time
           org-treat-S-cursor-todo-selection-as-state-change nil
           org-startup-indented 'indent
-          org-ellipsis "…")
-    ;; org-ellipsis "⤵")
+          ;; org-ellipsis "…"
+          org-ellipsis " ⤵")
     ;; org-todo-keywords '((sequence "☛ TODO(t)" "|" "✔ DONE(d)")
     ;;                     (sequence "⚑ WAITING(w@)" "|")
     ;;                     (sequence "|" "✘ CANCELED(c@)")))
@@ -837,7 +860,7 @@
              "* STARTED %^{Task}"
              :clock-in :clock-resume :kill-buffer t)
             ("e" "Emacs task" entry
-             (file+headline "emacs/tasks.org" "Emacs tasks")
+             (file+headline "emacs.org" "Tasks")
              "* TODO %^{Task}\n\n"
              :immediate-finish t :kill-buffer t)))))
 
@@ -880,10 +903,10 @@
 (use-package flycheck
   :defer t
   :hook (prog-mode . flycheck-mode)
-  :init
+  :config
   (setq-default flycheck-disabled-checkers
                 (append flycheck-disabled-checkers
-                        '(javascript-jshint)))
+                        '(javascript-jshint emacs-lisp-checkdoc)))
   :config
   (progn
     (define-fringe-bitmap 'my-flycheck-fringe-indicator
@@ -990,6 +1013,19 @@
 
 (use-package try)
 
+(use-package paradox
+  :config
+  (paradox-enable))
+
+(use-package eyebrowse
+  :init
+  (setq eyebrowse-new-workspace t
+        eyebrowse-wrap-around t)
+
+  :config
+  (eyebrowse-mode t)
+  (eyebrowse-setup-opinionated-keys))
+
 ;; (load "~/.ercrc.el")
 ;; (use-package erc
 ;;   :commands erc
@@ -1026,8 +1062,8 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(try vi-tilde-fringe solaire-mode yahoo-weather avy tide indium highlight-indent-guides engine-mode coffee-mode flycheck persistent-scratch smartparens htmlize ox-twbs org-bullets git-gutter+ git-timemachine magit eshell-z eshell-git-prompt shell-pop expand-region js2-refactor rjsx-mode web-mode lua-mode markdown-mode company spaceline-all-the-icons spaceline powerline hide-mode-line evil-mu4e mu4e-alert which-key helm-descbinds helm-dash helm-google helm-projectile helm-ag helm neotree doom-themes all-the-icons rainbow-delimiters rainbow-mode evil-surround evil-leader evil exec-path-from-shell dashboard use-package))
- '(powerline-height 2))
+   '(evil-visualstar eyebrowse evil-magit paradox try vi-tilde-fringe solaire-mode yahoo-weather avy tide indium highlight-indent-guides engine-mode coffee-mode flycheck persistent-scratch smartparens htmlize ox-twbs org-bullets git-gutter+ git-timemachine magit eshell-z eshell-git-prompt shell-pop expand-region js2-refactor rjsx-mode web-mode lua-mode markdown-mode company spaceline-all-the-icons spaceline powerline hide-mode-line evil-mu4e mu4e-alert which-key helm-descbinds helm-dash helm-google helm-projectile helm-ag helm neotree doom-themes all-the-icons rainbow-delimiters rainbow-mode evil-surround evil-leader evil exec-path-from-shell dashboard use-package))
+ '(paradox-github-token t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

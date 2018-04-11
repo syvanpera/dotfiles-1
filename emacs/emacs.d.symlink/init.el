@@ -147,8 +147,6 @@
                (inhibit-same-window . t)
                (window-height . 0.3)))
 
-(global-set-key (kbd "M-h") (lookup-key global-map (kbd "C-h")))
-
 (defun display-startup-echo-area-message ()
   "Startup message."
   (message "Another Visitor! Stay awhile! Stay FOREVER!!!!!!!!!!!!"))
@@ -168,11 +166,112 @@
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)))
 
+(use-package general
+  :config
+  ;; Misc global keybindings
+  (general-define-key
+   "M-h"         (lookup-key global-map (kbd "C-h"))
+   "M-v"         'clipboard-yank
+   "M-S-<left>"  'shrink-window-horizontally
+   "M-S-<right>" 'enlarge-window-horizontally
+   "M-S-<down>"  'shrink-window
+   "M-S-<up>"    'enlarge-window)
+
+  ;; Ensure ESC quits in all modes: http://stackoverflow.com/a/10166400/61435
+  (general-define-key [escape] 'evil-exit-emacs-state)
+  (general-define-key :states 'motion [escape] 'keyboard-quit)
+  (general-define-key
+   :keymaps '(minibuffer-local-map
+              minibuffer-local-ns-map
+              minibuffer-local-completion-map
+              minibuffer-local-must-match-map
+              minibuffer-local-isearch-map)
+   [escape] 'ts/minibuffer-keyboard-quit)
+
+  (general-define-key
+   :states '(motion insert) "C-g" 'ts/evil-keyboard-quit)
+
+  (general-define-key
+   :prefix "C-c"
+   "y" 'clipboard-yank
+   "s" 'ts/contextual-shell-pop)
+
+  (general-define-key
+   :states '(insert motion)
+   "C-s" 'save-buffer
+   "M-s" 'save-buffer
+   "M-y" 'helm-show-kill-ring
+   "C-s" 'save-buffer
+   "M-s" 'save-buffer
+   "M-a" 'mark-whole-buffer
+   "M-q" 'evil-quit-all
+   "M-c" 'evil-yank
+   "M-y" 'helm-show-kill-ring
+   "M-√" (lambda () (interactive) (scroll-other-window 1)) ; meta-shift-j
+   "M-ª" (lambda () (interactive) (scroll-other-window-down 1)) ; meta-shift-k
+   "M-ƒ" 'scroll-other-window ; meta-shift-f
+   "M-›" 'scroll-other-window-down ; meta-shift-b
+   "M-k" 'move-line-up
+   "M-j" 'move-line-down
+   "M-u" 'undo-tree-visualize
+   "C-h" 'evil-window-left
+   "C-j" 'evil-window-down
+   "C-k" 'evil-window-up
+   "C-l" 'evil-window-right
+   "C-r" 'undo-tree-redo)
+
+  (general-define-key
+   :states 'motion
+   "u"   'undo-tree-undo
+   "go"  'find-file-at-point
+   "gf"  'projectile-find-file-dwim
+   "gF"  'projectile-find-file-dwim-other-window
+   "gc"  'sensible-defaults/comment-or-uncomment-region-or-line)
+
+  (general-define-key
+   :states 'motion
+   :keymaps '(eww-mode-map diff-mode-map)
+   "q" 'quit-window)
+
+  (general-define-key
+   :states 'motion
+   :keymaps 'custom-mode-map
+   "q" 'Custom-buffer-done)
+
+  (general-define-key
+   :states 'motion
+   :keymaps 'js-mode-map
+   "M-k" 'js2r-move-line-up
+   "M-j" 'js2r-move-line-down)
+
+  (general-define-key
+   :states 'motion
+   :keymaps 'help-mode-map
+   "C-h" 'evil-window-left
+   "C-j" 'evil-window-down
+   "C-k" 'evil-window-up
+   "C-l" 'evil-window-right)
+
+  ;; (general-define-key
+  ;;  :states 'motion
+  ;;  :keymaps 'eshell-mode-map
+  ;;  "i" 'ts/eshell-evil-input-mode
+  ;;  "q" 'shell-pop)
+
+  ;; (general-define-key
+  ;;  :states 'insert
+  ;;  :keymaps 'eshell-mode-map
+  ;;  "C-a" 'eshell-bol
+  ;;  "C-p" 'eshell-previous-matching-input-from-input
+  ;;  "C-n" 'eshell-next-matching-input-from-input
+  ;;  "C-r" 'helm-eshell-history)
+  )
+
 (use-package evil
   :init
   (setq evil-want-integration nil
         evil-vsplit-window-right t
-        evil-split-window-below t)
+        evil-split-window-below nil)
 
   :config
   (progn
@@ -251,155 +350,7 @@
     ;; Some commands are just not meant to be repeated
     (mapc 'evil-declare-not-repeat '(undo-tree-undo undo-tree-redo))
 
-    (add-to-list 'evil-normal-state-modes 'Custom-mode)
-
-    (define-key global-map "\C-cy"        'clipboard-yank)
-    (define-key global-map "\C-cs"        'ts/contextual-shell-pop)
-
-    (define-key global-map (kbd "M-v")         'clipboard-yank)
-    (define-key global-map (kbd "M-S-<left>")  'shrink-window-horizontally)
-    (define-key global-map (kbd "M-S-<right>") 'enlarge-window-horizontally)
-    (define-key global-map (kbd "M-S-<down>")  'shrink-window)
-    (define-key global-map (kbd "M-S-<up>")    'enlarge-window)
-
-    ;; Ensure ESC quits in all modes: http://stackoverflow.com/a/10166400/61435
-    (global-set-key [escape]                             'evil-exit-emacs-state)
-    (define-key evil-normal-state-map [escape]           'keyboard-quit)
-    (define-key evil-visual-state-map [escape]           'keyboard-quit)
-    (define-key minibuffer-local-map [escape]            'ts/minibuffer-keyboard-quit)
-    (define-key minibuffer-local-ns-map [escape]         'ts/minibuffer-keyboard-quit)
-    (define-key minibuffer-local-completion-map [escape] 'ts/minibuffer-keyboard-quit)
-    (define-key minibuffer-local-must-match-map [escape] 'ts/minibuffer-keyboard-quit)
-    (define-key minibuffer-local-isearch-map [escape]    'ts/minibuffer-keyboard-quit)
-
-    (define-key evil-normal-state-map   (kbd "C-g") 'ts/evil-keyboard-quit)
-    (define-key evil-motion-state-map   (kbd "C-g") 'ts/evil-keyboard-quit)
-    (define-key evil-insert-state-map   (kbd "C-g") 'ts/evil-keyboard-quit)
-    (define-key evil-window-map         (kbd "C-g") 'ts/evil-keyboard-quit)
-    (define-key evil-operator-state-map (kbd "C-g") 'ts/evil-keyboard-quit)
-
-    (define-key evil-normal-state-map (kbd "C-s") 'save-buffer)
-    (define-key evil-insert-state-map (kbd "C-s") 'save-buffer)
-    (define-key evil-normal-state-map (kbd "M-s") 'save-buffer)
-    (define-key evil-insert-state-map (kbd "M-s") 'save-buffer)
-    (define-key evil-normal-state-map (kbd "M-a") 'mark-whole-buffer)
-    (define-key evil-normal-state-map (kbd "M-q") 'evil-quit-all)
-    (define-key evil-normal-state-map (kbd "M-c") 'evil-yank)
-    ;; (define-key evil-normal-state-map (kbd "M-v") 'clipboard-yank)
-    ;; (define-key evil-insert-state-map (kbd "M-v") 'clipboard-yank)
-    (define-key evil-normal-state-map (kbd "M-y") 'helm-show-kill-ring)
-    (define-key evil-insert-state-map (kbd "M-y") 'helm-show-kill-ring)
-    (define-key evil-normal-state-map (kbd "C-h") 'evil-window-left)
-    (define-key evil-normal-state-map (kbd "C-j") 'evil-window-down)
-    (define-key evil-normal-state-map (kbd "C-k") 'evil-window-up)
-    (define-key evil-normal-state-map (kbd "C-l") 'evil-window-right)
-    (define-key evil-normal-state-map (kbd "u")   'undo-tree-undo)
-    (define-key evil-normal-state-map (kbd "M-u") 'undo-tree-visualize)
-    (define-key evil-normal-state-map (kbd "C-r") 'undo-tree-redo)
-    (define-key evil-normal-state-map (kbd "go")  'find-file-at-point)
-    (define-key evil-normal-state-map (kbd "gf")  'projectile-find-file-dwim)
-    (define-key evil-normal-state-map (kbd "gF")  'projectile-find-file-dwim-other-window)
-    (define-key evil-normal-state-map (kbd "M-√") (lambda () (interactive) (scroll-other-window 1)))
-    (define-key evil-normal-state-map (kbd "M-ª") (lambda () (interactive) (scroll-other-window-down 1)))
-    (define-key evil-normal-state-map (kbd "M-ƒ") 'scroll-other-window)
-    (define-key evil-normal-state-map (kbd "M-›") 'scroll-other-window-down)
-    (define-key evil-normal-state-map (kbd "M-k") 'move-line-up)
-    (define-key evil-normal-state-map (kbd "M-j") 'move-line-down)
-    (define-key evil-motion-state-map (kbd "gc")  'sensible-defaults/comment-or-uncomment-region-or-line)
-
-    ;; (define-key compilation-mode-map (kbd "C-h") 'evil-window-left)
-    ;; (define-key compilation-mode-map (kbd "C-h") 'evil-window-left)
-    ;; (define-key compilation-mode-map (kbd "C-l") 'evil-window-right)
-    ;; (define-key compilation-mode-map (kbd "C-k") 'evil-window-up)
-    ;; (define-key compilation-mode-map (kbd "C-j") 'evil-window-down)
-
-    (evil-define-key 'normal eww-mode-map (kbd "q") 'quit-window)
-    (evil-define-key 'normal diff-mode-map (kbd "q") 'quit-window)
-
-    (evil-define-key 'normal dashboard-mode-map (kbd "C-k") 'widget-backward)
-
-    ;; (evil-define-key 'normal paredit-mode-map (kbd "M-{") 'paredit-wrap-curly)
-
-    (evil-define-key 'normal js-mode-map (kbd "M-k") 'js2r-move-line-up)
-    (evil-define-key 'normal js-mode-map (kbd "M-j") 'js2r-move-line-down)
-
-    (evil-define-key 'normal neotree-mode-map (kbd "TAB") 'neotree-enter)
-    (evil-define-key 'normal neotree-mode-map (kbd "SPC") 'neotree-quick-look)
-    (evil-define-key 'normal neotree-mode-map (kbd "o")   'neotree-enter)
-    (evil-define-key 'normal neotree-mode-map (kbd "O")   'neotree-enter-horizontal-split)
-    (evil-define-key 'normal neotree-mode-map (kbd "q")   'neotree-hide)
-    (evil-define-key 'normal neotree-mode-map (kbd "c")   'neotree-create-node)
-    (evil-define-key 'normal neotree-mode-map (kbd "r")   'neotree-rename-node)
-    (evil-define-key 'normal neotree-mode-map (kbd "d")   'neotree-delete-node)
-    (evil-define-key 'normal neotree-mode-map (kbd "H")   'neotree-hidden-file-toggle)
-    (evil-define-key 'normal neotree-mode-map (kbd "z")   'neotree-stretch-toggle)
-    (evil-define-key 'normal neotree-mode-map (kbd "R")   'neotree-refresh)
-    (evil-define-key 'normal neotree-mode-map (kbd "RET") 'neotree-enter)
-
-    ;; (evil-define-key 'normal evil-treemacs-state-map (kbd "C-l") 'evil-window-right)
-
-    (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "j")   'undo-tree-visualize-redo)
-    (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "k")   'undo-tree-visualize-undo)
-    (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "l")   'undo-tree-visualize-switch-branch-right)
-    (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "h")   'undo-tree-visualize-switch-branch-left)
-    (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "C-h") 'evil-window-left)
-    (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "C-j") 'evil-window-down)
-    (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "C-k") 'evil-window-up)
-    (evil-define-key 'motion undo-tree-visualizer-mode-map (kbd "C-l") 'evil-window-right)
-
-    (evil-define-key 'motion help-mode-map (kbd "C-h") 'evil-window-left)
-    (evil-define-key 'motion help-mode-map (kbd "C-j") 'evil-window-down)
-    (evil-define-key 'motion help-mode-map (kbd "C-k") 'evil-window-up)
-    (evil-define-key 'motion help-mode-map (kbd "C-l") 'evil-window-right)
-
-    (evil-define-key 'normal dashboard-mode-map (kbd "j") 'widget-forward)
-    (evil-define-key 'normal dashboard-mode-map (kbd "k") 'widget-backward)
-
-    (evil-define-key 'normal flycheck-error-list-mode-map (kbd "j")   'flycheck-error-list-next-error)
-    (evil-define-key 'normal flycheck-error-list-mode-map (kbd "k")   'flycheck-error-list-previous-error)
-    (evil-define-key 'normal flycheck-error-list-mode-map (kbd "q")   'kill-buffer-and-window)
-    (evil-define-key 'normal flycheck-error-list-mode-map (kbd "RET") 'flycheck-error-list-goto-error)
-
-    (evil-define-key 'normal helm-ag-mode-map (kbd "o") 'helm-ag-mode-jump)
-    (evil-define-key 'normal helm-ag-mode-map (kbd "O") 'helm-ag-mode-jump-other-window)
-
-    (evil-define-key 'normal org-mode-map (kbd "gh") 'org-shiftleft)
-    (evil-define-key 'normal org-mode-map (kbd "gl") 'org-shiftright)
-    (evil-define-key 'normal org-mode-map (kbd "gk") 'org-shiftup)
-    (evil-define-key 'normal org-mode-map (kbd "gj") 'org-shiftdown)
-
-    (evil-define-key 'normal custom-mode-map (kbd "q") 'Custom-buffer-done)
-
-    (evil-define-key 'motion tide-mode-map
-      (kbd "gd")  'tide-jump-to-definition
-      (kbd "C-o") 'tide-jump-back
-      (kbd "C-t") 'tide-jump-back
-      (kbd "K")   'tide-documentation-at-point)
-
-    (evil-define-key 'normal tide-references-mode-map
-      (kbd "gj")       'tide-find-next-reference
-      (kbd "gk")       'tide-find-previous-reference
-      (kbd "C-j")      'tide-find-next-reference
-      (kbd "C-k")      'tide-find-previous-reference
-      (kbd "C-l")      'tide-goto-reference
-      (kbd "<return>") 'tide-goto-reference
-      (kbd "q")        'quit-window)
-
-    (evil-define-key 'normal tide-project-errors-mode-map
-      (kbd "gj")       'tide-find-next-error
-      (kbd "gk")       'tide-find-previous-error
-      (kbd "C-j")      'tide-find-next-error
-      (kbd "C-k")      'tide-find-previous-error
-      (kbd "C-l")      'tide-goto-error
-      (kbd "<return>") 'tide-goto-error
-      (kbd "q")        'quit-window)
-
-    (evil-define-key 'normal eshell-mode-map (kbd "i")   'ts/eshell-evil-input-mode)
-    (evil-define-key 'normal eshell-mode-map (kbd "q")   'shell-pop)
-    (evil-define-key 'insert eshell-mode-map (kbd "C-a") 'eshell-bol)
-    (evil-define-key 'insert eshell-mode-map (kbd "C-p") 'eshell-previous-matching-input-from-input)
-    (evil-define-key 'insert eshell-mode-map (kbd "C-n") 'eshell-next-matching-input-from-input)
-    (evil-define-key 'insert eshell-mode-map (kbd "C-r") 'helm-eshell-history)))
+    (add-to-list 'evil-normal-state-modes 'Custom-mode)))
 
 (use-package evil-surround
   :after evil
@@ -442,7 +393,6 @@
   (setq doom-themes-enable-bold t
         doom-themes-enable-italic t
         doom-vibrant-brighter-modeline t)
-
   :config
   (progn
     (load-theme 'doom-vibrant t)
@@ -453,101 +403,59 @@
 
 (use-package neotree
   :defer t
+  :general
+  (:states 'normal
+   :keymaps 'neotree-mode-map
+   "TAB" 'neotree-enter
+   "SPC" 'neotree-quick-look
+   "o"   'neotree-enter
+   "O"   'neotree-enter-horizontal-split
+   "q"   'neotree-hide
+   "c"   'neotree-create-node
+   "r"   'neotree-rename-node
+   "d"   'neotree-delete-node
+   "H"   'neotree-hidden-file-toggle
+   "z"   'neotree-stretch-toggle
+   "R"   'neotree-refresh
+   "RET" 'neotree-enter)
   :init
   (setq neo-smart-open t
         neo-theme (if (display-graphic-p) 'icons 'arrow)))
 
-;; (use-package treemacs
-;;   :ensure t
-;;   :defer t
-;;   :config
-;;   (progn
-;;     (use-package treemacs-evil
-;;       :ensure t
-;;       :demand t)
-;;     (setq treemacs-change-root-without-asking nil
-;;           treemacs-collapse-dirs              (if (executable-find "python") 3 0)
-;;           treemacs-file-event-delay           5000
-;;           treemacs-follow-after-init          t
-;;           treemacs-follow-recenter-distance   0.1
-;;           treemacs-goto-tag-strategy          'refetch-index
-;;           treemacs-indentation                2
-;;           treemacs-indentation-string         " "
-;;           treemacs-is-never-other-window      nil
-;;           treemacs-never-persist              nil
-;;           treemacs-no-png-images              nil
-;;           treemacs-recenter-after-file-follow nil
-;;           treemacs-recenter-after-tag-follow  nil
-;;           treemacs-show-hidden-files          t
-;;           treemacs-silent-filewatch           nil
-;;           treemacs-silent-refresh             nil
-;;           treemacs-sorting                    'alphabetic-desc
-;;           treemacs-tag-follow-cleanup         t
-;;           treemacs-tag-follow-delay           1.5
-;;           treemacs-width                      35)
-
-;;     (treemacs-follow-mode t)
-;;     (treemacs-filewatch-mode t)
-;;     (pcase (cons (not (null (executable-find "git")))
-;;                  (not (null (executable-find "python3"))))
-;;       (`(t . t)
-;;        (treemacs-git-mode 'extended))
-;;       (`(t . _)
-;;        (treemacs-git-mode 'simple))))
-;;   :bind
-;;   (:map global-map
-;;         ([f8]         . treemacs-toggle)
-;;         ("M-0"        . treemacs-select-window)
-;;         ("C-c 1"      . treemacs-delete-other-windows)
-;;         ("M-m ft"     . treemacs-toggle)
-;;         ("M-m fT"     . treemacs)
-;;         ("M-m fB"     . treemacs-bookmark)
-;;         ("M-m f C-t"  . treemacs-find-file)
-;;         ("M-m f M-t"  . treemacs-find-tag)))
-
-;; (use-package treemacs-projectile
-;;   :defer t
-;;   :ensure t
-;;   :config
-;;   (setq treemacs-header-function #'treemacs-projectile-create-header)
-;;   :bind (:map global-map
-;;               ("M-m fP" . treemacs-projectile)
-;;               ("M-m fp" . treemacs-projectile-toggle)))
-
 (use-package helm
   :defer t
-  :bind (("M-x" . helm-M-x)
-         ("C-x C-b" . helm-mini)
-         ("M-P" . helm-M-x)
-         ("M-r" . helm-recentf)
-         :map helm-map
-         ("C-j" . helm-next-line)
-         ("C-k" . helm-previous-line)
-         ("C-f" . helm-next-page)
-         ("C-b" . helm-previous-page)
-         ("C-h" . helm-next-source)
-         ("C-v" . helm-toggle-visible-mark)
-         ("C-p" . helm-copy-to-buffer)
-         ("C-l" . helm-confirm-and-exit-minibuffer)
-         ("ESC" . helm-keyboard-quit)
-         ("C-S-H" . describe-key)
-         ("C-S-V" . clipboard-yank)
-         :map helm-find-files-map
-         ("C-l" . helm-execute-persistent-action)
-         ("C-h" . helm-find-files-up-one-level)
-         :map helm-buffer-map
-         ("C-d" . helm-buffer-run-kill-buffers)
-         :map helm-read-file-map
-         ("C-l" . helm-execute-persistent-action)
-         ("C-h" . helm-find-files-up-one-level)
-         ("C-S-H" . describe-key))
+  :general
+  ("M-x"     'helm-M-x
+   "C-x C-b" 'helm-mini
+   "M-P"     'helm-M-x
+   "M-r"     'helm-recentf)
+  (:keymaps 'helm-map
+   "C-j" 'helm-next-line
+   "C-k" 'helm-previous-line
+   "C-f" 'helm-next-page
+   "C-b" 'helm-previous-page
+   "C-h" 'helm-next-source
+   "C-v" 'helm-toggle-visible-mark
+   "C-p" 'helm-copy-to-buffer
+   "C-l" 'helm-confirm-and-exit-minibuffer
+   "ESC" 'helm-keyboard-quit
+   "C-S-H" 'describe-key
+   "C-S-V" 'clipboard-yank)
+  (:keymaps 'helm-find-files-map
+   "C-l" 'helm-execute-persistent-action
+   "C-h" 'helm-find-files-up-one-level)
+  (:keymaps 'helm-buffer-map
+   "C-d" 'helm-buffer-run-kill-buffers)
+  (:keymaps 'helm-read-file-map
+   "C-l" 'helm-execute-persistent-action
+   "C-h" 'helm-find-files-up-one-level
+   "C-S-H" 'describe-key)
   :init
   (setq helm-buffers-fuzzy-matching t
         helm-autoresize-mode t
         helm-split-window-inside-p t
         helm-commands-using-frame nil
         helm-display-buffer-default-height 15)
-
   :config
   (progn
     (helm-mode t)
@@ -555,7 +463,12 @@
 
 (use-package helm-ag
   :defer t
-  :bind ("∫" . ts/contextual-helm-ag)
+  :general
+  ("∫" 'ts/contextual-helm-ag)
+  (:states 'normal
+   :keymaps 'helm-ag-mode-map
+   "o" 'helm-ag-mode-jump
+   "O" 'helm-ag-mode-jump-other-window)
   :init
   (setq helm-ag-base-command "ag --nocolor --nogroup"
         ;; helm-ag-command-option "-C2"
@@ -577,6 +490,17 @@
   :defer t)
 
 (use-package undo-tree
+  :general
+  (:states 'motion
+   :keymaps 'undo-tree-visualizer-mode-map
+   "j"   'undo-tree-visualize-redo
+   "k"   'undo-tree-visualize-undo
+   "l"   'undo-tree-visualize-switch-branch-right
+   "h"   'undo-tree-visualize-switch-branch-left
+   "C-h" 'evil-window-left
+   "C-j" 'evil-window-down
+   "C-k" 'evil-window-up
+   "C-l" 'evil-window-right)
   :config
   (global-undo-tree-mode))
 
@@ -601,7 +525,8 @@
     (which-key-declare-prefixes ", t" "toggle")))
 
 (use-package mu4e
-  :bind ("C-c m" . mu4e)
+  :general
+  ("C-c m" 'mu4e)
   :load-path "/usr/local/share/emacs/site-lisp/mu/mu4e"
   :init
   (setq mu4e-maildir "~/Mail"
@@ -617,11 +542,11 @@
   :config
   (require 'org-mu4e)
   (setq org-mu4e-link-query-in-headers-mode nil))
-  ;;       mu4e-get-mail-command "offlineimap"
-  ;;       mu4e-update-interval 600
-  ;;       mu4e-view-show-images t
-  ;;       mu4e-html2text-command "textutil -stdin -format html -convert txt -stdout")
-  ;; ;; configuration for sending mail
+;;       mu4e-get-mail-command "offlineimap"
+;;       mu4e-update-interval 600
+;;       mu4e-view-show-images t
+;;       mu4e-html2text-command "textutil -stdin -format html -convert txt -stdout")
+;; ;; configuration for sending mail
 
 (use-package mu4e-alert
   :init
@@ -631,7 +556,7 @@
          "flag:unread maildir:/Houston/INBOX "
          "OR "
          "flag:unread maildir:/Gmail/INBOX"))
-        ;; mu4e-alert-modeline-formatter 'ts/mu4e-alert-modeline-formatter)
+  ;; mu4e-alert-modeline-formatter 'ts/mu4e-alert-modeline-formatter)
   (mu4e-alert-enable-mode-line-display)
   (mu4e-alert-enable-notifications)
   ;; (defun gjstein-refresh-mu4e-alert-mode-line ()
@@ -646,7 +571,7 @@
   :after mu4e)
 
 (use-package hide-mode-line
-  :hook ((dashboard-mode fundamental-mode) . hide-mode-line-mode))
+  :hook (fundamental-mode . hide-mode-line-mode))
 
 (use-package powerline
   :init
@@ -682,7 +607,7 @@
     (spaceline-toggle-all-the-icons-region-info-on)
     (spaceline-toggle-all-the-icons-sunrise-off)
     (spaceline-toggle-all-the-icons-sunset-off)))
-    ;; (spaceline-all-the-icons-theme 'mu4e-alert-segment)))
+;; (spaceline-all-the-icons-theme 'mu4e-alert-segment)))
 
 (use-package company
   :config
@@ -712,8 +637,7 @@
   :config
   (progn
     (add-to-list 'auto-mode-alist '("\\.lua$" . lua-mode))
-    (add-to-list 'interpreter-mode-alist '("lua" . lua-mode))
-    ))
+    (add-to-list 'interpreter-mode-alist '("lua" . lua-mode))))
 
 (use-package web-mode
   :defer t
@@ -739,8 +663,9 @@
 
 (use-package expand-region
   :defer t
-  :bind (("M-+" . 'er/expand-region)
-         ("M--" . 'er/contract-region)))
+  :general
+  ("M-+" 'er/expand-region
+   "M--" 'er/contract-region))
 
 (use-package shell-pop
   :init
@@ -753,19 +678,14 @@
 (use-package eshell-z)
 
 (use-package magit
-  :bind (:map magit-status-mode-map
-              ("C-h" . evil-window-left)
-              ("C-j" . evil-window-down)
-              ("C-k" . evil-window-up)
-              ("C-l" . evil-window-right)
-              ("j"   . magit-section-forward)
-              ("k"   . magit-section-backward))
-    ;; (evil-define-key 'normal magit-status-mode-map (kbd "M-j") 'magit-section-forward-sibling)
-    ;; (evil-define-key 'normal magit-status-mode-map (kbd "M-k") 'magit-section-backward-sibling)
-    ;; (evil-define-key 'normal magit-status-mode-map (kbd "C-n") 'magit-section-forward-sibling)
-    ;; (evil-define-key 'normal magit-status-mode-map (kbd "C-p") 'magit-section-backward-sibling)
-
-
+  :general
+  (:keymaps 'magit-status-mode-map
+   "C-h" 'evil-window-left
+   "C-j" 'evil-window-down
+   "C-k" 'evil-window-up
+   "C-l" 'evil-window-right
+   "j"   'magit-section-forward
+   "k"   'magit-section-backward)
   :init
   (setq git-commit-summary-max-length 50)
   :config
@@ -793,29 +713,36 @@
 
 (use-package org
   :defer t
-  :bind (("C-c l"       . org-store-link)
-         ("C-c a"       . org-agenda)
-         ("C-c c"       . org-capture)
-         ("C-c C-x C-i" . org-clock-in)
-         ("C-c C-x C-o" . org-clock-out)
-         :map org-mode-map
-         ("C-h"   . evil-window-left)
-         ("C-h"   . evil-window-left)
-         ("C-l"   . evil-window-right)
-         ("C-k"   . evil-window-up)
-         ("C-j"   . evil-window-down)
-         ("M-h"   . org-metaleft)
-         ("M-l"   . org-metaright)
-         ("M-k"   . org-metaup)
-         ("M-j"   . org-metadown)
-         ("M-H"   . org-shiftmetaleft)
-         ("M-L"   . org-shiftmetaright)
-         ("M-K"   . org-shiftmetaup)
-         ("M-J"   . org-shiftmetadown)
-         ("C-S-H" . org-shiftcontrolleft)
-         ("C-S-L" . org-shiftcontrolright)
-         ("C-S-K" . org-shiftcontrolup)
-         ("C-S-J" . org-shiftcontroldown))
+  :general
+  (:prefix "C-c"
+   "l" 'org-store-link
+   "a" 'org-agenda
+   "c" 'org-capture
+   "C-x C-i" 'org-clock-in
+   "C-x C-o" 'org-clock-out)
+  (:states 'motion
+   :keymaps 'org-mode-map
+   "gh"    'org-shiftleft
+   "gl"    'org-shiftright
+   "gk"    'org-shiftup
+   "gj"    'org-shiftdown
+   "C-h"   'evil-window-left
+   "C-h"   'evil-window-left
+   "C-l"   'evil-window-right
+   "C-k"   'evil-window-up
+   "C-j"   'evil-window-down
+   "M-h"   'org-metaleft
+   "M-l"   'org-metaright
+   "M-k"   'org-metaup
+   "M-j"   'org-metadown
+   "M-H"   'org-shiftmetaleft
+   "M-L"   'org-shiftmetaright
+   "M-K"   'org-shiftmetaup
+   "M-J"   'org-shiftmetadown
+   "C-S-H" 'org-shiftcontrolleft
+   "C-S-L" 'org-shiftcontrolright
+   "C-S-K" 'org-shiftcontrolup
+   "C-S-J" 'org-shiftcontroldown)
   :config
   (progn
     (setq org-directory "~/Google Drive/org"
@@ -883,25 +810,6 @@
 (use-package htmlize
   :defer t)
 
-;; (use-package smartparens
-;;   :defer t
-;;   :hook ((prog-mode . show-smartparens-mode)
-;;          (prog-mode . smartparens-mode)))
-
-;; (use-package paredit
-;;   :config
-;;   (add-hook 'emacs-lisp-mode-hook                  'enable-paredit-mode)
-;;   (add-hook 'lisp-mode-hook                        'enable-paredit-mode)
-;;   (add-hook 'eval-expression-minibuffer-setup-hook 'enable-paredit-mode)
-;;   (add-hook 'ielm-mode-hook                        'enable-paredit-mode)
-;;   (add-hook 'lisp-mode-hook                        'enable-paredit-mode)
-;;   (add-hook 'lisp-interaction-mode-hook            'enable-paredit-mode)
-;;   (add-hook 'scheme-mode-hook                      'enable-paredit-mode)
-;;   (add-hook 'js-mode-hook                          'ts/paredit-nonlisp))
-
-;; (use-package evil-paredit
-;;   :hook (paredit-mode . evil-paredit-mode))
-
 (use-package persistent-scratch
   :config
   (persistent-scratch-setup-default))
@@ -909,6 +817,13 @@
 (use-package flycheck
   :defer t
   :hook (prog-mode . flycheck-mode)
+  :general
+  (:states 'motion
+   :keymaps 'flycheck-error-list-mode-map
+   "j"   'flycheck-error-list-next-error
+   "k"   'flycheck-error-list-previous-error
+   "q"   'kill-buffer-and-window
+   "RET" 'flycheck-error-list-goto-error)
   :config
   (setq-default flycheck-disabled-checkers
                 (append flycheck-disabled-checkers
@@ -988,6 +903,31 @@
 (use-package tide
   :defer t
   :hook ((js2-mode rjsx-mode) . setup-tide-mode)
+  :general
+  (:states 'motion
+   :keymaps 'tide-mode-map
+   "gd"  'tide-jump-to-definition
+   "C-o" 'tide-jump-back
+   "C-t" 'tide-jump-back
+   "K"   'tide-documentation-at-point)
+  (:states 'motion
+   :keymaps 'tide-references-mode-map
+   "gj"       'tide-find-next-reference
+   "gk"       'tide-find-previous-reference
+   "C-j"      'tide-find-next-reference
+   "C-k"      'tide-find-previous-reference
+   "C-l"      'tide-goto-reference
+   "<return>" 'tide-goto-reference
+   "q"        'quit-window)
+  (:states 'motion
+   :keymaps 'tide-project-errors-mode-map
+   "gj"       'tide-find-next-error
+   "gk"       'tide-find-previous-error
+   "C-j"      'tide-find-next-error
+   "C-k"      'tide-find-previous-error
+   "C-l"      'tide-goto-error
+   "<return>" 'tide-goto-error
+   "q"        'quit-window)
   :init
   (setq tide-tsserver-executable "/usr/local/bin/tsserver")
   :config
@@ -1029,13 +969,10 @@
         eyebrowse-wrap-around t)
 
   :config
-  (eyebrowse-mode t)
-  (eyebrowse-setup-opinionated-keys))
+  (eyebrowse-mode t))
 
 (use-package w3m
   :defer t)
-
-(use-package general)
 
 ;; (load "~/.ercrc.el")
 ;; (use-package erc
@@ -1055,17 +992,6 @@
 ;;   :config
 ;;   (erc-services-mode 1))
 
-;; (use-package evil-org
-;;   :after (evil org)
-;;   :config
-;;   (progn
-;;     (add-hook 'org-mode-hook 'evil-org-mode)
-;;     (add-hook 'evil-org-mode-hook
-;;               (lambda ()
-;;                 (evil-org-set-key-theme (evil-org-set-key-theme '(textobjects insert navigation additional shift todo heading)))))
-;;     (require 'evil-org-agenda)
-;;     (evil-org-agenda-set-keys)))
-
 (provide 'init)
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -1073,8 +999,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(general esup evil-visualstar eyebrowse evil-magit paradox try vi-tilde-fringe solaire-mode yahoo-weather avy tide indium highlight-indent-guides engine-mode coffee-mode flycheck persistent-scratch smartparens htmlize ox-twbs org-bullets git-gutter+ git-timemachine magit eshell-z eshell-git-prompt shell-pop expand-region js2-refactor rjsx-mode web-mode lua-mode markdown-mode company spaceline-all-the-icons spaceline powerline hide-mode-line evil-mu4e mu4e-alert which-key helm-descbinds helm-dash helm-google helm-projectile helm-ag helm neotree doom-themes all-the-icons rainbow-delimiters rainbow-mode evil-surround evil-leader evil exec-path-from-shell dashboard use-package))
- '(paradox-github-token t))
+   '(yahoo-weather which-key web-mode w3m vi-tilde-fringe use-package try tide spaceline-all-the-icons solaire-mode smartparens shell-pop rjsx-mode rainbow-mode rainbow-delimiters persistent-scratch paradox ox-twbs org-bullets neotree mu4e-alert markdown-mode lua-mode js2-refactor indium htmlize highlight-indent-guides hide-mode-line helm-projectile helm-google helm-descbinds helm-dash helm-ag git-timemachine git-gutter+ general eyebrowse expand-region exec-path-from-shell evil-visualstar evil-surround evil-mu4e evil-magit evil-leader esup eshell-z eshell-git-prompt engine-mode doom-themes dashboard coffee-mode benchmark-init avy)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

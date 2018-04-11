@@ -57,6 +57,7 @@
       user-mail-address "tuomo.syvanpera@gmail.com")
 
 (require 'ts-funcs)
+(require 'ts-redefs)
 
 (defconst ts/theme-directory (concat user-emacs-directory "themes"))
 
@@ -140,6 +141,8 @@
                                   (push '("->" . ?→)  prettify-symbols-alist)
                                   (push '("<-" . ?←)  prettify-symbols-alist)
                                   (push '("=>" . ?⇒)  prettify-symbols-alist)))
+(add-hook 'emacs-lisp-mode-hook
+          (lambda () (setq-local lisp-indent-function #'Fuco1/lisp-indent-function)))
 
 (add-to-list 'display-buffer-alist
              `(,(rx bos "*helm" (* not-newline) "*" eos)

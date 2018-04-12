@@ -209,7 +209,7 @@
   (general-create-definer ts-error-leader-def   :prefix ts-error-leader)
   (general-create-definer ts-toggle-leader-def  :prefix ts-toggle-leader)
 
-  (ts-local-leader-def   'normal "" '(nil :which-key "local leader"))
+  (ts-local-leader-def   'normal "" '(nil :which-key "mode-local"))
   (ts-buffer-leader-def  'normal "" '(nil :which-key "buffer"))
   (ts-file-leader-def    'normal "" '(nil :which-key "file"))
   (ts-help-leader-def    'normal "" '(nil :which-key "help"))
@@ -228,6 +228,15 @@
     "q"   'ts/kill-window-or-buffer
     "v"   'ts/edit-configuration
     "u"   'ts/load-configuration)
+
+  (ts-local-leader-def
+    :states 'motion
+    :keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map)
+    "e"  '(nil :which-key "evaluate")
+    "eb" 'eval-buffer
+    "er" 'eval-region
+    "ed" 'eval-defun
+    "es" 'eval-last-sexp)
 
   (ts-toggle-leader-def 'normal
     "l"  'display-line-numbers-mode
@@ -1065,7 +1074,8 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(helm-swoop yahoo-weather which-key web-mode w3m vi-tilde-fringe use-package try tide spaceline-all-the-icons solaire-mode smartparens shell-pop rjsx-mode rainbow-mode rainbow-delimiters persistent-scratch paradox ox-twbs org-bullets neotree mu4e-alert markdown-mode lua-mode js2-refactor indium htmlize highlight-indent-guides hide-mode-line helm-projectile helm-google helm-descbinds helm-dash helm-ag git-timemachine git-gutter+ general eyebrowse expand-region exec-path-from-shell evil-visualstar evil-surround evil-mu4e evil-magit evil-leader esup eshell-z eshell-git-prompt engine-mode doom-themes dashboard coffee-mode benchmark-init avy))
+   '(deferred helm-swoop yahoo-weather which-key web-mode w3m vi-tilde-fringe use-package try tide spaceline-all-the-icons solaire-mode smartparens shell-pop rjsx-mode rainbow-mode rainbow-delimiters persistent-scratch paradox ox-twbs org-bullets neotree mu4e-alert markdown-mode lua-mode js2-refactor indium htmlize highlight-indent-guides hide-mode-line helm-projectile helm-google helm-descbinds helm-dash helm-ag git-timemachine git-gutter+ general eyebrowse expand-region exec-path-from-shell evil-visualstar evil-surround evil-mu4e evil-magit evil-leader esup eshell-z eshell-git-prompt engine-mode doom-themes dashboard coffee-mode benchmark-init avy))
+ '(paradox-github-token t)
  '(safe-local-variable-values '((projectile-project-run-cmd . "yarn start"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

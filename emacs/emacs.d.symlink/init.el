@@ -507,12 +507,13 @@
   :defer t)
 
 (use-package helm-dash
-  :defer t
   :init
   (setq helm-dash-browser-func 'eww))
 
 (use-package helm-descbinds
   :defer t)
+
+(use-package helm-swoop)
 
 (use-package undo-tree
   :general
@@ -1064,7 +1065,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(yahoo-weather which-key web-mode w3m vi-tilde-fringe use-package try tide spaceline-all-the-icons solaire-mode smartparens shell-pop rjsx-mode rainbow-mode rainbow-delimiters persistent-scratch paradox ox-twbs org-bullets neotree mu4e-alert markdown-mode lua-mode js2-refactor indium htmlize highlight-indent-guides hide-mode-line helm-projectile helm-google helm-descbinds helm-dash helm-ag git-timemachine git-gutter+ general eyebrowse expand-region exec-path-from-shell evil-visualstar evil-surround evil-mu4e evil-magit evil-leader esup eshell-z eshell-git-prompt engine-mode doom-themes dashboard coffee-mode benchmark-init avy))
+   '(helm-swoop yahoo-weather which-key web-mode w3m vi-tilde-fringe use-package try tide spaceline-all-the-icons solaire-mode smartparens shell-pop rjsx-mode rainbow-mode rainbow-delimiters persistent-scratch paradox ox-twbs org-bullets neotree mu4e-alert markdown-mode lua-mode js2-refactor indium htmlize highlight-indent-guides hide-mode-line helm-projectile helm-google helm-descbinds helm-dash helm-ag git-timemachine git-gutter+ general eyebrowse expand-region exec-path-from-shell evil-visualstar evil-surround evil-mu4e evil-magit evil-leader esup eshell-z eshell-git-prompt engine-mode doom-themes dashboard coffee-mode benchmark-init avy))
  '(safe-local-variable-values '((projectile-project-run-cmd . "yarn start"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

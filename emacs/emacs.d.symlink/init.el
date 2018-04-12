@@ -240,11 +240,12 @@
   (ts-buffer-leader-def 'normal
     "k"  'kill-buffer
     "r"  'rename-buffer
-    "s"  'ts/open-create-scratch-buffer
-    "m"  (lambda () (interactive) (switch-to-buffer "*Messages*"))
-    "w"  (lambda () (interactive) (switch-to-buffer "*Warnings*")))
+    "s"  '(ts/open-create-scratch-buffer :which-key "scratch")
+    "m"  '((lambda () (interactive) (switch-to-buffer "*Messages*")) :which-key "messages")
+    "w"  '((lambda () (interactive) (switch-to-buffer "*Warnings*")) :which-key "warnings"))
 
   (ts-help-leader-def 'normal
+    "a"  'helm-apropos
     "k"  'describe-key
     "v"  'describe-variable
     "f"  'describe-function
@@ -295,16 +296,13 @@
    "M-›" 'scroll-other-window-down ; meta-shift-b
    "M-k" 'move-line-up
    "M-j" 'move-line-down
-   "M-u" 'undo-tree-visualize
    "C-h" 'evil-window-left
    "C-j" 'evil-window-down
    "C-k" 'evil-window-up
-   "C-l" 'evil-window-right
-   "C-r" 'undo-tree-redo)
+   "C-l" 'evil-window-right)
 
   (general-define-key
    :states 'motion
-   "u"   'undo-tree-undo
    "go"  'find-file-at-point
    "gf"  'projectile-find-file-dwim
    "gF"  'projectile-find-file-dwim-other-window
@@ -423,10 +421,10 @@
    "RET"    'neotree-enter)
   (:states 'normal
    :prefix ts-leader
-   "n"      'ts/contextual-neotree-toggle)
+   "t"      'ts/contextual-neotree-toggle)
   (:states 'normal
    :prefix ts-file-leader
-   "n"      'neotree-toggle)
+   "t"      'neotree-toggle)
   :init
   (setq neo-smart-open t
         neo-theme (if (display-graphic-p) 'icons 'arrow)))
@@ -524,6 +522,9 @@
    "k"   'undo-tree-visualize-undo
    "l"   'undo-tree-visualize-switch-branch-right
    "h"   'undo-tree-visualize-switch-branch-left
+   "u"   'undo-tree-undo
+   "M-u" 'undo-tree-visualize
+   "C-r" 'undo-tree-redo
    "C-h" 'evil-window-left
    "C-j" 'evil-window-down
    "C-k" 'evil-window-up
@@ -538,10 +539,9 @@
    "r" 'projectile-run-project
    "t" 'projectile-test-project
    "s" 'ts/projectile-shell-pop
-   "o" (lambda () (interactive) (ts/load-project-org "veikkaus")))
+   "o" '((lambda () (interactive) (ts/load-project-org "veikkaus")) :which-key "ts/load-project-org"))
   :init
   (setq projectile-enable-caching t)
-
   :config
   (projectile-global-mode))
 
@@ -704,6 +704,7 @@
    "k"   'magit-section-backward)
   (:states 'normal
    :prefix ts-git-leader
+   "c"  'magit-checkout
    "s"  'magit-status
    "l"  'magit-log-current
    "b"  'magit-blame)
@@ -753,7 +754,9 @@
    "gh"      'org-shiftleft
    "gl"      'org-shiftright
    "gk"      'org-shiftup
-   "gj"      'org-shiftdown
+   "gj"      'org-shiftdown)
+  (:states '(motion insert)
+   :keymaps 'org-mode-map
    "C-h"     'evil-window-left
    "C-h"     'evil-window-left
    "C-l"     'evil-window-right

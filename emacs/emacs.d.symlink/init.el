@@ -532,15 +532,16 @@
 
 (use-package undo-tree
   :general
+  (:states 'normal
+   "u"   'undo-tree-undo
+   "C-r" 'undo-tree-redo
+   "M-u" 'undo-tree-visualize)
   (:states 'motion
    :keymaps 'undo-tree-visualizer-mode-map
    "j"   'undo-tree-visualize-redo
    "k"   'undo-tree-visualize-undo
    "l"   'undo-tree-visualize-switch-branch-right
    "h"   'undo-tree-visualize-switch-branch-left
-   "u"   'undo-tree-undo
-   "M-u" 'undo-tree-visualize
-   "C-r" 'undo-tree-redo
    "C-h" 'evil-window-left
    "C-j" 'evil-window-down
    "C-k" 'evil-window-up

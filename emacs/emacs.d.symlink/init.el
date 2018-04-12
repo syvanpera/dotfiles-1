@@ -111,7 +111,7 @@
       prettify-symbols-unprettify-at-point t
       superword-mode t
       desktop-save-mode t
-      default-frame-alist '((font . "Iosevka-12")))
+      default-frame-alist '((font . "Source Code Pro-12")))
 
 (add-hook 'prog-mode-hook
           (lambda () (progn
@@ -157,7 +157,7 @@
                display-buffer-in-side-window)
               (side . bottom)
               (reusable-frames . visible)
-              (window-height . 0.33)))
+              (window-height . 0.3)))
 
 (defun display-startup-echo-area-message ()
   "Startup message."
@@ -865,7 +865,7 @@
   :defer t
   :hook (prog-mode . flycheck-mode)
   :general
-  (:states 'motion
+  (:states 'normal
    :keymaps 'flycheck-error-list-mode-map
    "j"   'flycheck-error-list-next-error
    "k"   'flycheck-error-list-previous-error

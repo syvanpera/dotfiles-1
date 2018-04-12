@@ -1,3 +1,7 @@
+;;; ts-redefs.el --- Some redefinitions of built-in functions.
+
+;;; Code:
+
 ;; redefines the silly indent of keyword lists
 ;; before
 ;;   (:foo bar

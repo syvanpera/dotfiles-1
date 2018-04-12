@@ -1,6 +1,14 @@
-;;; init.el --- My magnificent Emacs configuration
+;;; ts-funcs.el --- Misc functions
 
 ;;; Code:
+
+(defun ts/line-numbers-absolute ()
+  "Set absolute line numbering."
+  (setq-local display-line-numbers t))
+
+(defun ts/line-numbers-relative ()
+  "Set relative line numbering."
+  (setq-local display-line-numbers 'relative))
 
 (defun ts/toggle-relative-line-numbers ()
   "Toggles between relative and absolute line numbering."
@@ -8,12 +16,6 @@
   (if (eq display-line-numbers 'relative)
       (ts/line-numbers-absolute)
     (ts/line-numbers-relative)))
-
-(defun ts/line-numbers-absolute ()
-  (setq-local display-line-numbers t))
-
-(defun ts/line-numbers-relative ()
-  (setq-local display-line-numbers 'relative))
 
 (defun ts/minibuffer-keyboard-quit ()
   "Abort recursive edit.
@@ -25,36 +27,6 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
     (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
     (abort-recursive-edit)))
 
-(defconst ts/not-to-kill-buffer-list '("*scratch*" "*Messages*" "*Warnings*" "*dashboard*"))
-
-(defun ts/kill-window-or-buffer ()
-  "Kills the current window if more than one with same buffer open, otherwise kills the buffer."
-  (interactive)
-  (if (member (buffer-name (current-buffer)) ts/not-to-kill-buffer-list)
-      (if (= 1 (length (window-list)))
-          (bury-buffer)
-        (delete-window))
-    (if (= 1 (length (get-buffer-window-list (current-buffer))))
-        (kill-buffer-and-window)
-      (delete-window))))
-
-(defun ts/alternate-buffer (&optional window)
-  "Switch back and forth between current and last buffer in the current window."
-  (interactive)
-  (let ((current-buffer (window-buffer window))
-        (buffer-predicate
-         (frame-parameter (window-frame window) 'buffer-predicate)))
-    ;; switch to first buffer previously shown in this window that matches
-    ;; frame-parameter `buffer-predicate'
-    (switch-to-buffer
-     (or (cl-find-if (lambda (buffer)
-                       (and (not (eq buffer current-buffer))
-                            (or (null buffer-predicate)
-                                (funcall buffer-predicate buffer))))
-                     (mapcar #'car (window-prev-buffers window)))
-         ;; `other-buffer' honors `buffer-predicate' so no need to filter
-         (other-buffer current-buffer t)))))
-
 (defun ts/hide-cursor-in-helm-buffer ()
   "Hide the cursor in helm buffers."
   (with-helm-buffer
@@ -64,11 +36,6 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   "Opens Emacs configuration file."
   (interactive)
   (find-file user-init-file))
-
-(defun ts/load-project-org (project-name)
-  "Open project specific org file."
-  (interactive)
-  (find-file (expand-file-name (format "projects/%s.org" project-name) org-directory)))
 
 (defun ts/load-configuration ()
   "Load the Emacs configuration file."
@@ -116,38 +83,16 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (and evil-mode (evil-force-normal-state))
   (keyboard-quit))
 
-(defun ts/org-agenda-show-agenda-and-todo (&optional arg)
-  (interactive "P")
-  (org-agenda arg "n"))
-
 (defun ts/eshell-evil-input-mode ()
   (interactive)
   (eshell-return-to-prompt)
   (evil-insert nil))
-
-(defun ts/helm-find-org-files ()
-  (interactive)
-  (message org-directory)
-  (helm-find-files-1 (concat org-directory "/")))
 
 (defun ts/projectile-shell-pop ()
   "Open a term buffer at projectile project root."
   (interactive)
   (let ((default-directory (projectile-project-root)))
     (call-interactively 'shell-pop)))
-
-(defun ts/open-create-scratch-buffer ()
-  "Opens (and creates) a scratch buffer."
-  (interactive)
-  (switch-to-buffer (get-buffer-create "*scratch*"))
-  (lisp-interaction-mode))
-
-(defun ts/contextual-treemacs-toggle ()
-  "Open Treemacs with project root as the root directory if inside a project."
-  (interactive)
-  (if (projectile-project-p)
-      (treemacs)
-    (treemacs-projectile)))
 
 (defun ts/contextual-neotree-toggle ()
   "Open Neotree with project root as the root directory if inside a project."
@@ -167,10 +112,6 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
             (neotree-dir project-dir))
         (if file-name
             (neotree-find file-name))))))
-
-(defun ts/open-org-inbox ()
-  (interactive)
-  (find-file org-default-notes-file))
 
 (defun ts/mu4e-alert-modeline-formatter (mail-count)
   "Mu4e-alert modeline formatter for spaceline-all-the-icons."

@@ -57,6 +57,8 @@
       user-mail-address "tuomo.syvanpera@gmail.com")
 
 (require 'ts-funcs)
+(require 'ts-buffer)
+(require 'ts-org)
 (require 'ts-redefs)
 
 (defconst ts/theme-directory (concat user-emacs-directory "themes"))
@@ -153,11 +155,11 @@
 
 (add-to-list 'display-buffer-alist
              `(,(rx bos "*Flycheck errors*" eos)
-              (display-buffer-reuse-window
-               display-buffer-in-side-window)
-              (side . bottom)
-              (reusable-frames . visible)
-              (window-height . 0.3)))
+               (display-buffer-reuse-window
+                display-buffer-in-side-window)
+               (side . bottom)
+               (reusable-frames . visible)
+               (window-height . 0.3)))
 
 (defun display-startup-echo-area-message ()
   "Startup message."
@@ -236,7 +238,10 @@
     "eb" 'eval-buffer
     "er" 'eval-region
     "ed" 'eval-defun
-    "es" 'eval-last-sexp)
+    "es" 'eval-last-sexp
+    "i"  '(nil :which-key "indent")
+    "iu" 'ts/untabify-buffer
+    "ib" 'ts/indent-buffer)
 
   (ts-toggle-leader-def 'normal
     "l"  'display-line-numbers-mode
@@ -250,6 +255,7 @@
     "k"  'kill-buffer
     "r"  'rename-buffer
     "s"  '(ts/open-create-scratch-buffer :which-key "scratch")
+    "n"  '(ts/create-scratch-buffer :which-key "new-scratch")
     "m"  '((lambda () (interactive) (switch-to-buffer "*Messages*")) :which-key "messages")
     "w"  '((lambda () (interactive) (switch-to-buffer "*Warnings*")) :which-key "warnings"))
 
@@ -710,6 +716,8 @@
    "C-j" 'evil-window-down
    "C-k" 'evil-window-up
    "C-l" 'evil-window-right
+   "M-j" 'magit-section-forward-sibling
+   "M-k" 'magit-section-backward-sibling
    "j"   'magit-section-forward
    "k"   'magit-section-backward)
   (:states 'normal

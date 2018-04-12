@@ -191,6 +191,12 @@
 ;;   :config
 ;;   (dashboard-setup-startup-hook))
 
+
+;; Generic elisp library packages
+(use-package s)
+(use-package f)
+(use-package dash)
+
 (use-package exec-path-from-shell
   :config
   (when (memq window-system '(mac ns x))
@@ -500,6 +506,14 @@
   :config
   (helm-mode t)
   (add-hook 'helm-after-initialize-hook 'ts/hide-cursor-in-helm-buffer))
+
+(use-package helm-org-rifle
+  :defer t
+  :commands helm-org-rifle
+  :general
+  (:states 'normal
+   :prefix ts-org-leader
+   "s" 'helm-org-rifle-org-directory))
 
 (use-package helm-ag
   :defer t
@@ -1083,7 +1097,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(deferred helm-swoop yahoo-weather which-key web-mode w3m vi-tilde-fringe use-package try tide spaceline-all-the-icons solaire-mode smartparens shell-pop rjsx-mode rainbow-mode rainbow-delimiters persistent-scratch paradox ox-twbs org-bullets neotree mu4e-alert markdown-mode lua-mode js2-refactor indium htmlize highlight-indent-guides hide-mode-line helm-projectile helm-google helm-descbinds helm-dash helm-ag git-timemachine git-gutter+ general eyebrowse expand-region exec-path-from-shell evil-visualstar evil-surround evil-mu4e evil-magit evil-leader esup eshell-z eshell-git-prompt engine-mode doom-themes dashboard coffee-mode benchmark-init avy))
+   '(helm-org-rifle deferred helm-swoop yahoo-weather which-key web-mode w3m vi-tilde-fringe use-package try tide spaceline-all-the-icons solaire-mode smartparens shell-pop rjsx-mode rainbow-mode rainbow-delimiters persistent-scratch paradox ox-twbs org-bullets neotree mu4e-alert markdown-mode lua-mode js2-refactor indium htmlize highlight-indent-guides hide-mode-line helm-projectile helm-google helm-descbinds helm-dash helm-ag git-timemachine git-gutter+ general eyebrowse expand-region exec-path-from-shell evil-visualstar evil-surround evil-mu4e evil-magit evil-leader esup eshell-z eshell-git-prompt engine-mode doom-themes dashboard coffee-mode benchmark-init avy))
  '(paradox-github-token t)
  '(safe-local-variable-values '((projectile-project-run-cmd . "yarn start"))))
 (custom-set-faces

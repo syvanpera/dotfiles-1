@@ -111,7 +111,7 @@
       prettify-symbols-unprettify-at-point t
       superword-mode t
       desktop-save-mode t
-      default-frame-alist '((font . "Cousine-12")))
+      default-frame-alist '((font . "Iosevka-12")))
 
 (add-hook 'prog-mode-hook
           (lambda () (progn

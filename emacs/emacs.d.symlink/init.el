@@ -179,7 +179,7 @@
 (defvar ts-bookmark-leader (concat ts-leader " k"))
 
 ;; (load-theme 'misterioso)
-;; (load-theme 'misterioso-overrides)
+;; (load-theme 'ts-overrides)
 
 ;; (use-package dashboard
 ;;   :init
@@ -416,22 +416,23 @@
 ;;   (color-theme-sanityinc-tomorrow-eighties)
 ;;   (load-theme 'tomorrow-overrides))
 
-;; (use-package oceanic-theme
-;;   :config
-;;   (load-theme 'oceanic)
-;;   (load-theme 'oceanic-overrides))
-
-(use-package doom-themes
-  :init
-  (setq doom-themes-enable-bold t
-        doom-themes-enable-italic t
-        doom-vibrant-brighter-modeline t)
+(use-package oceanic-theme
   :config
-  (load-theme 'doom-vibrant t)
-  (doom-themes-visual-bell-config)
-  (doom-themes-neotree-config)
-  (doom-themes-org-config)
-  (load-theme 'doom-overrides))
+  (load-theme 'oceanic)
+  (load-theme 'ts-overrides))
+  ;; (load-theme 'oceanic-overrides))
+
+;; (use-package doom-themes
+;;   :init
+;;   (setq doom-themes-enable-bold t
+;;         doom-themes-enable-italic t
+;;         doom-vibrant-brighter-modeline t)
+;;   :config
+;;   (load-theme 'doom-vibrant t)
+;;   (doom-themes-visual-bell-config)
+;;   (doom-themes-neotree-config)
+;;   (doom-themes-org-config)
+;;   (load-theme 'doom-overrides))
 
 (use-package neotree
   :defer t
@@ -462,7 +463,9 @@
    "e"      'neotree-toggle)
   :init
   (setq neo-smart-open t
-        neo-theme (if (display-graphic-p) 'icons 'arrow)))
+        neo-theme (if (display-graphic-p) 'icons 'arrow))
+  :config
+  (add-hook 'neotree-enter-hook (lambda () (message "joo"))))
 
 (use-package helm
   :defer t

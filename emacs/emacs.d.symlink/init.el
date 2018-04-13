@@ -913,6 +913,8 @@
 
 (use-package persistent-scratch
   :config
+  (setq persistent-scratch-scratch-buffer-p-function
+        (lambda () (string-prefix-p "*scratch" (buffer-name))))
   (persistent-scratch-setup-default))
 
 (use-package flycheck

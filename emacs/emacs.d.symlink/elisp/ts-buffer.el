@@ -20,20 +20,28 @@
   (switch-to-buffer (get-buffer-create "*scratch*"))
   (lisp-interaction-mode))
 
-(defun ts/create-scratch-buffer nil
-  "Create a new scratch buffer to work in. (could be *scratch* - *scratch - X*)"
+(defun ts/create-named-sequential-buffer (name)
+  "Create a new empty buffer to work in."
   (interactive)
   (let ((n 0)
         bufname)
     (while (progn
-             (setq bufname (concat "*scratch"
-                                   (if (= n 0) "" (concat " - " (int-to-string n)))
-                                   "*"))
+             (setq bufname (format name (if (= n 0) "" (concat " - " (int-to-string n)))))
              (setq n (1+ n))
              (get-buffer bufname)))
     (switch-to-buffer (get-buffer-create bufname))
-    (emacs-lisp-mode)
     ))
+
+(defun ts/create-empty-buffer nil
+  "Create a new empty buffer to work in. (named *new* - *new - X*)"
+  (interactive)
+  (ts/create-named-sequential-buffer "*new%s*"))
+
+(defun ts/create-scratch-buffer nil
+  "Create a new scratch buffer to work in. (named *scratch* - *scratch - X*)"
+  (interactive)
+  (ts/create-named-sequential-buffer "*scratch%s*")
+  (emacs-lisp-mode))
 
 (defun ts/alternate-buffer (&optional window)
   "Switch back and forth between current and last buffer in the current frame."

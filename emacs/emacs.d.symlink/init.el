@@ -9,13 +9,10 @@
 (when (fboundp 'blink-cursor-mode) (blink-cursor-mode -1))
 (when (fboundp 'mouse-wheel-mode) (mouse-wheel-mode 1))
 
-(setq gc-cons-threshold 64000000)
+;; Reduce the frequency of garbage collection during startup
+(setq gc-cons-threshold 100000000)
 ;; restore after start-up
 (add-hook 'after-init-hook #'(lambda () (setq gc-cons-threshold 800000)))
-
-;; reduce the frequency of garbage collection by making it happen on
-;; each 50MB of allocated data (the default is on every 0.76MB)
-;; (setq gc-cons-threshold 50000000)
 
 ;; warn when opening files bigger than 100MB
 (setq large-file-warning-threshold 100000000)
@@ -117,13 +114,15 @@
 
 (add-hook 'prog-mode-hook
           (lambda () (progn
-                  (setq-local show-trailing-whitespace t)
-                  (hl-line-mode)
-                  (display-line-numbers-mode)
-                  (electric-pair-mode t)
-                  (electric-indent-mode t)
-                  (add-hook 'evil-insert-state-entry-hook 'ts/line-numbers-absolute nil t)
-                  (add-hook 'evil-insert-state-exit-hook 'ts/line-numbers-relative nil t))))
+                       (setq-local show-trailing-whitespace t)
+                       (hl-line-mode)
+                       (display-line-numbers-mode)
+                       (electric-pair-mode t)
+                       (electric-indent-mode t)
+                       (add-hook 'evil-insert-state-entry-hook 'ts/line-numbers-absolute nil t)
+                       (add-hook 'evil-insert-state-exit-hook 'ts/line-numbers-relative nil t))))
+
+(add-hook 'js2-mode-hook 'js2-refactor-mode)
 
 (global-prettify-symbols-mode t)
 
@@ -165,18 +164,19 @@
   "Startup message."
   (message "Another Visitor! Stay awhile! Stay FOREVER!!!!!!!!!!!!"))
 
-(defvar ts-leader         ",")
-(defvar ts-local-leader   (concat ts-leader " m"))
-(defvar ts-buffer-leader  (concat ts-leader " b"))
-(defvar ts-file-leader    (concat ts-leader " f"))
-(defvar ts-help-leader    (concat ts-leader " h"))
-(defvar ts-project-leader (concat ts-leader " p"))
-(defvar ts-git-leader     (concat ts-leader " g"))
-(defvar ts-window-leader  (concat ts-leader " w"))
-(defvar ts-org-leader     (concat ts-leader " o"))
-(defvar ts-jump-leader    (concat ts-leader " j"))
-(defvar ts-error-leader   (concat ts-leader " e"))
-(defvar ts-toggle-leader  (concat ts-leader " t"))
+(defvar ts-leader          ",")
+(defvar ts-local-leader    (concat ts-leader " m"))
+(defvar ts-buffer-leader   (concat ts-leader " b"))
+(defvar ts-file-leader     (concat ts-leader " f"))
+(defvar ts-help-leader     (concat ts-leader " h"))
+(defvar ts-project-leader  (concat ts-leader " p"))
+(defvar ts-git-leader      (concat ts-leader " g"))
+(defvar ts-window-leader   (concat ts-leader " w"))
+(defvar ts-org-leader      (concat ts-leader " o"))
+(defvar ts-jump-leader     (concat ts-leader " j"))
+(defvar ts-error-leader    (concat ts-leader " x"))
+(defvar ts-toggle-leader   (concat ts-leader " t"))
+(defvar ts-bookmark-leader (concat ts-leader " k"))
 
 ;; (load-theme 'misterioso)
 ;; (load-theme 'misterioso-overrides)
@@ -204,30 +204,32 @@
 
 (use-package general
   :config
-  (general-create-definer ts-leader-def         :prefix ts-leader)
-  (general-create-definer ts-local-leader-def   :prefix ts-local-leader)
-  (general-create-definer ts-buffer-leader-def  :prefix ts-buffer-leader)
-  (general-create-definer ts-file-leader-def    :prefix ts-file-leader)
-  (general-create-definer ts-help-leader-def    :prefix ts-help-leader)
-  (general-create-definer ts-project-leader-def :prefix ts-project-leader)
-  (general-create-definer ts-git-leader-def     :prefix ts-git-leader)
-  (general-create-definer ts-window-leader-def  :prefix ts-window-leader)
-  (general-create-definer ts-org-leader-def     :prefix ts-org-leader)
-  (general-create-definer ts-jump-leader-def    :prefix ts-jump-leader)
-  (general-create-definer ts-error-leader-def   :prefix ts-error-leader)
-  (general-create-definer ts-toggle-leader-def  :prefix ts-toggle-leader)
+  (general-create-definer ts-leader-def          :prefix ts-leader)
+  (general-create-definer ts-local-leader-def    :prefix ts-local-leader)
+  (general-create-definer ts-buffer-leader-def   :prefix ts-buffer-leader)
+  (general-create-definer ts-file-leader-def     :prefix ts-file-leader)
+  (general-create-definer ts-help-leader-def     :prefix ts-help-leader)
+  (general-create-definer ts-project-leader-def  :prefix ts-project-leader)
+  (general-create-definer ts-git-leader-def      :prefix ts-git-leader)
+  (general-create-definer ts-window-leader-def   :prefix ts-window-leader)
+  (general-create-definer ts-org-leader-def      :prefix ts-org-leader)
+  (general-create-definer ts-jump-leader-def     :prefix ts-jump-leader)
+  (general-create-definer ts-error-leader-def    :prefix ts-error-leader)
+  (general-create-definer ts-toggle-leader-def   :prefix ts-toggle-leader)
+  (general-create-definer ts-bookmark-leader-def :prefix ts-bookmark-leader)
 
-  (ts-local-leader-def   'normal "" '(nil :which-key "mode-local"))
-  (ts-buffer-leader-def  'normal "" '(nil :which-key "buffer"))
-  (ts-file-leader-def    'normal "" '(nil :which-key "file"))
-  (ts-help-leader-def    'normal "" '(nil :which-key "help"))
-  (ts-project-leader-def 'normal "" '(nil :which-key "project"))
-  (ts-git-leader-def     'normal "" '(nil :which-key "git"))
-  (ts-window-leader-def  'normal "" '(nil :which-key "window"))
-  (ts-org-leader-def     'normal "" '(nil :which-key "org"))
-  (ts-jump-leader-def    'normal "" '(nil :which-key "jump"))
-  (ts-error-leader-def   'normal "" '(nil :which-key "error"))
-  (ts-toggle-leader-def  'normal "" '(nil :which-key "toggle"))
+  (ts-local-leader-def    'normal "" '(nil :which-key "mode-local"))
+  (ts-buffer-leader-def   'normal "" '(nil :which-key "buffer"))
+  (ts-file-leader-def     'normal "" '(nil :which-key "file"))
+  (ts-help-leader-def     'normal "" '(nil :which-key "help"))
+  (ts-project-leader-def  'normal "" '(nil :which-key "project"))
+  (ts-git-leader-def      'normal "" '(nil :which-key "git"))
+  (ts-window-leader-def   'normal "" '(nil :which-key "window"))
+  (ts-org-leader-def      'normal "" '(nil :which-key "org"))
+  (ts-jump-leader-def     'normal "" '(nil :which-key "jump"))
+  (ts-error-leader-def    'normal "" '(nil :which-key "error"))
+  (ts-toggle-leader-def   'normal "" '(nil :which-key "toggle"))
+  (ts-bookmark-leader-def 'normal "" '(nil :which-key "bookmarks"))
 
   (ts-leader-def 'normal
     "TAB" 'ts/alternate-buffer
@@ -236,18 +238,6 @@
     "q"   'ts/kill-window-or-buffer
     "v"   'ts/edit-configuration
     "u"   'ts/load-configuration)
-
-  (ts-local-leader-def
-    :states 'motion
-    :keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map)
-    "e"  '(nil :which-key "evaluate")
-    "eb" 'eval-buffer
-    "er" 'eval-region
-    "ed" 'eval-defun
-    "es" 'eval-last-sexp
-    "i"  '(nil :which-key "indent")
-    "iu" 'ts/untabify-buffer
-    "ib" 'ts/indent-buffer)
 
   (ts-toggle-leader-def 'normal
     "l"  'display-line-numbers-mode
@@ -260,8 +250,10 @@
   (ts-buffer-leader-def 'normal
     "k"  'kill-buffer
     "r"  'rename-buffer
+    "e"  '((lambda () (interactive) (ielm)) :which-key "elisp-repl")
+    "n"  '(ts/create-empty-buffer :which-key "new-empty")
     "s"  '(ts/open-create-scratch-buffer :which-key "scratch")
-    "n"  '(ts/create-scratch-buffer :which-key "new-scratch")
+    "S"  '(ts/create-scratch-buffer :which-key "new-scratch")
     "m"  '((lambda () (interactive) (switch-to-buffer "*Messages*")) :which-key "messages")
     "w"  '((lambda () (interactive) (switch-to-buffer "*Warnings*")) :which-key "warnings"))
 
@@ -272,6 +264,11 @@
     "f"  'describe-function
     "w"  'where-is)
 
+  (ts-bookmark-leader-def 'normal
+    "s" 'bookmark-set
+    "l" 'list-bookmarks
+    "j" 'bookmark-jump)
+
   ;; Misc global keybindings
   (general-define-key
    "M-h"         (lookup-key global-map (kbd "C-h"))
@@ -279,7 +276,8 @@
    "M-S-<left>"  'shrink-window-horizontally
    "M-S-<right>" 'enlarge-window-horizontally
    "M-S-<down>"  'shrink-window
-   "M-S-<up>"    'enlarge-window)
+   "M-S-<up>"    'enlarge-window
+   "M-="         'ts/indent-buffer)
 
   ;; Ensure ESC quits in all modes: http://stackoverflow.com/a/10166400/61435
   (general-define-key [escape] 'evil-exit-emacs-state)
@@ -302,25 +300,31 @@
 
   (general-define-key
    :states '(insert motion)
-   "C-s" 'save-buffer
-   "M-s" 'save-buffer
-   "M-y" 'helm-show-kill-ring
-   "C-s" 'save-buffer
    "M-s" 'save-buffer
    "M-a" 'mark-whole-buffer
    "M-q" 'evil-quit-all
    "M-c" 'evil-yank
-   "M-y" 'helm-show-kill-ring
    "M-√" (lambda () (interactive) (scroll-other-window 1)) ; meta-shift-j
    "M-ª" (lambda () (interactive) (scroll-other-window-down 1)) ; meta-shift-k
    "M-ƒ" 'scroll-other-window ; meta-shift-f
    "M-›" 'scroll-other-window-down ; meta-shift-b
-   "M-k" 'move-line-up
-   "M-j" 'move-line-down
+   ;; TODO These don't actually work anymore
+   "M-K" 'move-line-up
+   "M-J" 'move-line-down)
+
+  (general-define-key
+   :states 'motion
    "C-h" 'evil-window-left
    "C-j" 'evil-window-down
    "C-k" 'evil-window-up
    "C-l" 'evil-window-right)
+
+  (general-define-key
+   :states 'insert
+   "C-h" 'evil-backward-char
+   "C-j" 'evil-next-line
+   "C-k" 'evil-previous-line
+   "C-l" 'evil-forward-char)
 
   (general-define-key
    :states 'motion
@@ -330,28 +334,33 @@
    "gc"  'sensible-defaults/comment-or-uncomment-region-or-line)
 
   (general-define-key
-   :states 'motion
-   :keymaps '(eww-mode-map diff-mode-map)
+   :states 'normal
+   :keymaps '(eww-mode-map diff-mode-map debugger-mode-map)
    "q" 'quit-window)
 
   (general-define-key
-   :states 'motion
+   :states 'normal
    :keymaps 'custom-mode-map
    "q" 'Custom-buffer-done)
 
   (general-define-key
    :states 'motion
    :keymaps 'js-mode-map
-   "M-k" 'js2r-move-line-up
-   "M-j" 'js2r-move-line-down)
+   "M-K" 'js2r-move-line-up
+   "M-J" 'js2r-move-line-down)
 
   (general-define-key
-   :states 'motion
+   :states 'normal
    :keymaps 'help-mode-map
    "C-h" 'evil-window-left
    "C-j" 'evil-window-down
    "C-k" 'evil-window-up
    "C-l" 'evil-window-right)
+
+  (general-define-key
+   :keymaps 'Custom-mode-map
+    "M-j" 'widget-forward
+    "M-k" 'widget-backward)
 
   ;; (general-define-key
   ;;  :states 'motion
@@ -372,8 +381,9 @@
   :init
   (setq evil-want-integration nil
         evil-vsplit-window-right t
-        evil-split-window-below nil)
-
+        evil-split-window-below nil
+        evil-move-beyond-eol t
+        evil-move-cursor-back t)
   :config
   (evil-mode t)
   ;; Some commands are just not meant to be repeated
@@ -442,10 +452,14 @@
    "RET"    'neotree-enter)
   (:states 'normal
    :prefix ts-leader
-   "t"      'ts/contextual-neotree-toggle)
+   "e"      'ts/contextual-neotree-toggle)
+  (:states 'normal
+   :keymaps 'neotree-mode-map
+   :prefix ts-leader
+   "e"      'ts/contextual-neotree-toggle)
   (:states 'normal
    :prefix ts-file-leader
-   "t"      'neotree-toggle)
+   "e"      'neotree-toggle)
   :init
   (setq neo-smart-open t
         neo-theme (if (display-graphic-p) 'icons 'arrow)))
@@ -456,7 +470,9 @@
   ("M-x"     'helm-M-x
    "C-x C-b" 'helm-mini
    "M-P"     'helm-M-x
-   "M-r"     'helm-recentf)
+   "M-r"     'helm-recentf
+   "M-y"     'helm-show-kill-ring
+   "M-b"     'helm-bookmarks)
   (:keymaps 'helm-map
    "C-j"     'helm-next-line
    "C-k"     'helm-previous-line
@@ -542,13 +558,21 @@
 (use-package helm-descbinds
   :defer t)
 
-(use-package helm-swoop)
+(use-package helm-swoop
+  :general
+  ("M-i" 'helm-swoop)
+  (:states 'motion
+   "M-i" 'helm-swoop-from-evil-search)
+  (:keymaps 'isearch-mode-map
+   "M-i" 'helm-swoop-from-isearch)
+  :init
+  (setq helm-swoop-use-fuzzy-match nil))
 
 (use-package undo-tree
   :general
   (:states 'normal
-   "u"   'undo-tree-undo
-   "C-r" 'undo-tree-redo
+   ;;  "u"   'undo-tree-undo
+   ;;  "C-r" 'undo-tree-redo
    "M-u" 'undo-tree-visualize)
   (:states 'motion
    :keymaps 'undo-tree-visualizer-mode-map
@@ -1010,6 +1034,7 @@
 
 (use-package avy
   :general
+  ("M-j" 'avy-goto-word-1)
   (:states 'normal
    :prefix ts-jump-leader
    "w" 'avy-goto-word-1
@@ -1043,8 +1068,7 @@
 
 (use-package eyebrowse
   :general
-  ("M-0" 'eyebrowse-switch-to-window-config-0
-   "M-1" 'eyebrowse-switch-to-window-config-1
+  ("M-1" 'eyebrowse-switch-to-window-config-1
    "M-2" 'eyebrowse-switch-to-window-config-2
    "M-3" 'eyebrowse-switch-to-window-config-3
    "M-4" 'eyebrowse-switch-to-window-config-4

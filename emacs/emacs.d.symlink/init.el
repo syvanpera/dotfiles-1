@@ -712,7 +712,6 @@
   (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
 
 (use-package rjsx-mode
-  :hook (js-mode . rjsx-mode)
   :config
   (add-to-list 'auto-mode-alist '("\\.jsx?\\'" . rjsx-mode))
   (add-hook 'js-mode-hook (lambda () (setq js2-strict-missing-semi-warning nil))))
@@ -786,6 +785,8 @@
    "r" 'git-gutter+-revert-hunk)
   :config
   (yas-global-mode t))
+
+(use-package htmlize)
 
 (use-package org
   :defer t
@@ -1107,7 +1108,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(yahoo-weather which-key web-mode w3m vi-tilde-fringe use-package try tide spaceline solaire-mode shell-pop rjsx-mode rainbow-mode rainbow-delimiters persistent-scratch paradox org-bullets oceanic-theme neotree mu4e-alert markdown-mode lua-mode js2-refactor indium highlight-indent-guides hide-mode-line helm-swoop helm-projectile helm-org-rifle helm-google helm-descbinds helm-dash helm-ag git-timemachine git-gutter+ general eyebrowse expand-region exec-path-from-shell evil-visualstar evil-surround evil-mu4e evil-magit eshell-z eshell-git-prompt engine-mode coffee-mode avy all-the-icons)))
+   '(htmlize yahoo-weather which-key web-mode w3m vi-tilde-fringe use-package try tide spaceline solaire-mode shell-pop rjsx-mode rainbow-mode rainbow-delimiters persistent-scratch paradox org-bullets oceanic-theme neotree mu4e-alert markdown-mode lua-mode js2-refactor indium highlight-indent-guides hide-mode-line helm-swoop helm-projectile helm-org-rifle helm-google helm-descbinds helm-dash helm-ag git-timemachine git-gutter+ general eyebrowse expand-region exec-path-from-shell evil-visualstar evil-surround evil-mu4e evil-magit eshell-z eshell-git-prompt engine-mode coffee-mode avy all-the-icons)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

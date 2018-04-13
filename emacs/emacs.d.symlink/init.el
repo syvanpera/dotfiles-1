@@ -277,7 +277,9 @@
    "M-S-<right>" 'enlarge-window-horizontally
    "M-S-<down>"  'shrink-window
    "M-S-<up>"    'enlarge-window
-   "M-="         'ts/indent-buffer)
+   "M-="         'ts/indent-buffer
+   "M-e"         'eval-region
+   "M-E"         'eval-buffer)
 
   ;; Ensure ESC quits in all modes: http://stackoverflow.com/a/10166400/61435
   (general-define-key [escape] 'evil-exit-emacs-state)

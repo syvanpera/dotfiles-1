@@ -465,9 +465,11 @@
    "e"      'neotree-toggle)
   :init
   (setq neo-smart-open t
+        neo-create-file-auto-open t
+        neo-vc-integration '(face)
         neo-theme (if (display-graphic-p) 'icons 'arrow))
   :config
-  (add-hook 'neotree-enter-hook (lambda () (message "joo"))))
+  (add-hook 'neo-enter-hook (lambda (type &rest args) (if (equal type 'file) (neotree-hide)))))
 
 (use-package helm
   :defer t

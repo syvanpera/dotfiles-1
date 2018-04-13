@@ -19,7 +19,7 @@
  '(flycheck-fringe-warning ((t (:foreground "DarkGoldenrod2"))))
  '(flycheck-fringe-info ((t (:foreground "#74af68"))))
  '(mode-line ((t (:background "#3d5958" :foreground "#ebf2ff" :box nil))))
- '(spaceline-evil-emacs ((t (:background "#3E3D32" :foreground "#3E3D31" :inherit 'mode-line))))
+ '(spaceline-evil-emacs ((t (:background "#cc99cc" :foreground "#3E3D31" :inherit 'mode-line))))
  '(spaceline-evil-normal ((t (:background "DarkGoldenrod2" :foreground "#3E3D31" :inherit 'mode-line))))
  '(spaceline-evil-visual ((t (:background "#338f86" :foreground "#ebf2ff" :inherit 'mode-line))))
  '(spaceline-evil-insert ((t (:background "#74af68" :foreground "#3E3D31" :inherit 'mode-line))))

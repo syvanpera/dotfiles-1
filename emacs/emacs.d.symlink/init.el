@@ -14,22 +14,18 @@
 ;; restore after start-up
 (add-hook 'after-init-hook #'(lambda () (setq gc-cons-threshold 800000)))
 
-;; warn when opening files bigger than 100MB
-(setq large-file-warning-threshold 100000000)
-
-(setq warning-minimum-level :emergency)
+;; warn when opening files bigger than 100MB and stop nagging about everything
+(setq large-file-warning-threshold 100000000
+      warning-minimum-level :emergency)
 
 (require 'package)
 
 (setq package-enable-at-startup nil
-      use-package-always-ensure t
       package-archives
-      '(("melpa"        . "http://melpa.org/packages/")
-        ("melpa-stable" . "http://stable.melpa.org/packages/")
-        ("gnu"          . "http://elpa.gnu.org/packages/")
-        ("org"          . "http://orgmode.org/elpa/")
-        ("marmalade"    . "http://marmalade-repo.org/packages/")))
-;; (package-initialize)
+      '(("org"          . "http://orgmode.org/elpa/")
+        ("melpa"        . "http://melpa.org/packages/")
+        ("gnu"          . "http://elpa.gnu.org/packages/")))
+(package-initialize)
 
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
@@ -37,6 +33,8 @@
 
 (eval-when-compile
   (require 'use-package))
+
+(setq use-package-always-ensure t)
 
 ;; (use-package benchmark-init
 ;;   :config
@@ -94,7 +92,6 @@
 (setq-default indent-tabs-mode nil
               standard-indent 2
               tab-width 2
-              indent-tabs-mode nil
               js-indent-level 2
               js2-basic-offset 2
               web-mode-markup-indent-offset 2
@@ -165,7 +162,7 @@
   (message "Another Visitor! Stay awhile! Stay FOREVER!!!!!!!!!!!!"))
 
 (defvar ts-leader          ",")
-(defvar ts-local-leader    (concat ts-leader " m"))
+(defvar ts-local-leader    (concat ts-leader " ,"))
 (defvar ts-buffer-leader   (concat ts-leader " b"))
 (defvar ts-file-leader     (concat ts-leader " f"))
 (defvar ts-help-leader     (concat ts-leader " h"))
@@ -177,20 +174,6 @@
 (defvar ts-error-leader    (concat ts-leader " x"))
 (defvar ts-toggle-leader   (concat ts-leader " t"))
 (defvar ts-bookmark-leader (concat ts-leader " k"))
-
-;; (load-theme 'misterioso)
-;; (load-theme 'ts-overrides)
-
-;; (use-package dashboard
-;;   :init
-;;   (setq dashboard-items '((recents  . 5)
-;;                           (bookmarks . 5)
-;;                           (projects . 5)
-;;                           (agenda . 5))
-;;         dashboard-startup-banner 'official)
-;;   :config
-;;   (dashboard-setup-startup-hook))
-
 
 ;; Generic elisp library packages
 (use-package s)
@@ -323,10 +306,11 @@
 
   (general-define-key
    :states 'insert
-   "C-h" 'evil-backward-char
-   "C-j" 'evil-next-line
-   "C-k" 'evil-previous-line
-   "C-l" 'evil-forward-char)
+   "C-h"   'evil-backward-char
+   "C-j"   'evil-next-line
+   "C-k"   'evil-previous-line
+   "C-l"   'evil-forward-char
+   "M-RET" 'comment-indent-new-line)
 
   (general-define-key
    :states 'motion
@@ -361,8 +345,8 @@
 
   (general-define-key
    :keymaps 'Custom-mode-map
-    "M-j" 'widget-forward
-    "M-k" 'widget-backward)
+   "M-j" 'widget-forward
+   "M-k" 'widget-backward)
 
   ;; (general-define-key
   ;;  :states 'motion
@@ -384,7 +368,7 @@
   (setq evil-want-integration nil
         evil-vsplit-window-right t
         evil-split-window-below nil
-        evil-move-beyond-eol nil
+        evil-move-beyond-eol t
         evil-move-cursor-back t)
   :config
   (evil-mode t)
@@ -410,8 +394,7 @@
   :defer t
   :hook (prog-mode . rainbow-delimiters-mode))
 
-(use-package all-the-icons
-  :defer t)
+(use-package all-the-icons)
 
 ;; (use-package color-theme-sanityinc-tomorrow
 ;;   :config
@@ -422,7 +405,7 @@
   :config
   (load-theme 'oceanic)
   (load-theme 'ts-overrides))
-  ;; (load-theme 'oceanic-overrides))
+;; (load-theme 'oceanic-overrides))
 
 ;; (use-package doom-themes
 ;;   :init
@@ -872,19 +855,19 @@
         org-log-done 'time
         org-treat-S-cursor-todo-selection-as-state-change nil
         org-startup-indented 'indent
-        ;; org-ellipsis "…"
-        org-ellipsis " ⤵")
-  ;; org-todo-keywords '((sequence "☛ TODO(t)" "|" "✔ DONE(d)")
-  ;;                     (sequence "⚑ WAITING(w@)" "|")
-  ;;                     (sequence "|" "✘ CANCELED(c@)")))
+        org-ellipsis "…"
+        ;; org-ellipsis " ⤵"
+        org-todo-keywords '((sequence "☛ TODO(t)" "|" "✔ DONE(d)")
+                            (sequence "⚑ WAITING(w@)" "|")
+                            (sequence "|" "✘ CANCELED(c@)")))
   (setq org-capture-templates
         '(("t" "Task" entry
            (file+headline org-default-notes-file "Refile")
-           "* TODO %^{Task}\n"
+           "* ☛ TODO %^{Task}\n"
            :immediate-finish t :kill-buffer t)
           ("b" "Bill" entry
            (file+headline "bills.org" "Bills")
-           "* TODO %^{Description}\n%a\nDUE DATE: %^{Deadline}t\n"
+           "* ☛ TODO %^{Description}\n%a\nDUE DATE: %^{Deadline}t\n"
            :immediate-finish t :kill-buffer t)
           ("s" "Snippet" entry
            (file+headline org-snippets-file "Snippets")
@@ -895,21 +878,14 @@
            :clock-in :clock-resume :kill-buffer t)
           ("e" "Emacs task" entry
            (file+headline "emacs.org" "Tasks")
-           "* TODO %^{Task}\n\n"
+           "* ☛ TODO %^{Task}\n\n"
            :immediate-finish t :kill-buffer t))))
 
 (use-package org-bullets
-  :defer t
   :after org
   :hook (org-mode . org-bullets-mode)
   :config
   (setq org-bullets-bullet-list '("◉" "◎" "⚫" "○" "►" "◇")))
-
-(use-package ox-twbs
-  :defer t)
-
-(use-package htmlize
-  :defer t)
 
 (use-package persistent-scratch
   :config
@@ -1043,7 +1019,8 @@
 
 (use-package avy
   :general
-  ("M-j" 'avy-goto-word-1)
+  (:states 'motion
+   "M-j" 'avy-goto-word-1)
   (:states 'normal
    :prefix ts-jump-leader
    "w" 'avy-goto-word-1
@@ -1130,9 +1107,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(helm-org-rifle deferred helm-swoop yahoo-weather which-key web-mode w3m vi-tilde-fringe use-package try tide spaceline-all-the-icons solaire-mode smartparens shell-pop rjsx-mode rainbow-mode rainbow-delimiters persistent-scratch paradox ox-twbs org-bullets neotree mu4e-alert markdown-mode lua-mode js2-refactor indium htmlize highlight-indent-guides hide-mode-line helm-projectile helm-google helm-descbinds helm-dash helm-ag git-timemachine git-gutter+ general eyebrowse expand-region exec-path-from-shell evil-visualstar evil-surround evil-mu4e evil-magit evil-leader esup eshell-z eshell-git-prompt engine-mode doom-themes dashboard coffee-mode benchmark-init avy))
- '(paradox-github-token t)
- '(safe-local-variable-values '((projectile-project-run-cmd . "yarn start"))))
+   '(yahoo-weather which-key web-mode w3m vi-tilde-fringe use-package try tide spaceline solaire-mode shell-pop rjsx-mode rainbow-mode rainbow-delimiters persistent-scratch paradox org-bullets oceanic-theme neotree mu4e-alert markdown-mode lua-mode js2-refactor indium highlight-indent-guides hide-mode-line helm-swoop helm-projectile helm-org-rifle helm-google helm-descbinds helm-dash helm-ag git-timemachine git-gutter+ general eyebrowse expand-region exec-path-from-shell evil-visualstar evil-surround evil-mu4e evil-magit eshell-z eshell-git-prompt engine-mode coffee-mode avy all-the-icons)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

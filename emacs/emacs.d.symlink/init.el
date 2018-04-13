@@ -384,7 +384,7 @@
   (setq evil-want-integration nil
         evil-vsplit-window-right t
         evil-split-window-below nil
-        evil-move-beyond-eol t
+        evil-move-beyond-eol nil
         evil-move-cursor-back t)
   :config
   (evil-mode t)

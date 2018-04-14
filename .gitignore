@@ -30,3 +30,5 @@ emacs/emacs.d.symlink/.emacs.desktop.lock
 emacs/emacs.d.symlink/persp-confs/
 emacs/emacs.d.symlink/games
 /emacs/emacs.d.symlink/custom.el
+/emacs/emacs.d.symlink/places
+/emacs/emacs.d.symlink/magithub/cache

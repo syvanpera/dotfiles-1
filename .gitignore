@@ -32,3 +32,5 @@ emacs/emacs.d.symlink/games
 /emacs/emacs.d.symlink/custom.el
 /emacs/emacs.d.symlink/places
 /emacs/emacs.d.symlink/magithub/cache
+/emacs/emacs.d.symlink/ts-init.el
+/emacs/emacs.d.symlink/ts-init.html

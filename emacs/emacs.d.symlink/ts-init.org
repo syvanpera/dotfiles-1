@@ -1,0 +1,147 @@
+* Start up
+Show custom startup message but other than that, make Emacs start up quietly.
+#+BEGIN_SRC emacs-lisp
+  (defun display-startup-echo-area-message ()
+    "Startup message."
+    (message "Another Visitor! Stay awhile! Stay FOREVER!!!!!!!!!!!!"))
+
+  (setq inhibit-startup-echo-area-message user-login-name
+        inhibit-default-init t
+        initial-major-mode 'lisp-interaction-mode
+        initial-scratch-message nil
+        mode-line-format nil)
+#+END_SRC
+
+Unclutter the interface.
+#+BEGIN_SRC emacs-lisp
+  ;; (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+  (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+  (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+  (when (fboundp 'blink-cursor-mode) (blink-cursor-mode -1))
+  (when (fboundp 'mouse-wheel-mode) (mouse-wheel-mode 1))
+#+END_SRC
+
+* Personal information
+#+BEGIN_SRC emacs-lisp
+  (setq user-full-name "Tuomo Syvänperä"
+        user-mail-address "tuomo.syvanpera@gmail.com")
+#+END_SRC
+
+* Package management
+Set up Emacs package manager.
+#+BEGIN_SRC emacs-lisp
+  (require 'package)
+
+  (setq package-enable-at-startup nil
+        package-archives
+        '(("melpa"        . "http://melpa.org/packages/")
+          ("melpa-stable" . "http://stable.melpa.org/packages/")
+          ("gnu"          . "http://elpa.gnu.org/packages/")
+          ("org"          . "http://orgmode.org/elpa/")
+          ("marmalade"    . "http://marmalade-repo.org/packages/")))
+  ;; (package-initialize)
+#+END_SRC
+
+Set up 'use-package'.
+#+BEGIN_SRC emacs-lisp
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
+
+  (eval-when-compile
+    (require 'use-package))
+#+END_SRC
+
+We pretty much always want to ensure the packages are downloaded and installed.
+#+BEGIN_SRC emacs-lisp
+  (setq use-package-always-ensure t)
+#+END_SRC
+
+* Load path
+Home of custom elisp code.
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'load-path (expand-file-name "elisp" user-emacs-directory))
+#+END_SRC
+
+3rd party code that's not available on ELPA/MELPA.
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'load-path (expand-file-name "elisp/vendor" user-emacs-directory))
+#+END_SRC
+
+* Custom elisp libraries
+Buffer related defs.
+#+BEGIN_SRC emacs-lisp
+  (require 'ts-buffer)
+#+END_SRC
+
+Org mode related defs.
+#+BEGIN_SRC emacs-lisp
+  (require 'ts-org)
+#+END_SRC
+
+Some redefines for built-in functions.
+#+BEGIN_SRC emacs-lisp
+  (require 'ts-redefs)
+#+END_SRC
+
+Miscellaneous defs.
+#+BEGIN_SRC emacs-lisp
+  (require 'ts-funcs)
+#+END_SRC
+
+* General settings
+** Some 'sensible' defaults
+This includes setting up the backups to a temp directory and inhibiting startup
+messages and some basic keybindings.
+#+BEGIN_SRC emacs-lisp
+  (require 'sensible-defaults)
+  (sensible-defaults/use-all-settings)
+  (sensible-defaults/use-all-keybindings)
+  (sensible-defaults/backup-to-temp-directory)
+#+END_SRC
+
+* Encoding
+#+BEGIN_SRC emacs-lisp
+  (set-language-environment "UTF-8")
+  (set-default-coding-systems 'utf-8)
+#+END_SRC
+
+* OSX specific settings
+#+BEGIN_SRC emacs-lisp
+  (setq mac-command-modifier 'meta
+        mac-option-modifier  'alt
+        mac-redisplay-dont-reset-vscroll t
+        mac-mouse-wheel-smooth-scroll t
+        ns-alternate-modifier 'none)
+#+END_SRC
+
+Don't automatically put stuff in the OS clipboard:
+#+BEGIN_SRC emacs-lisp
+  (setq select-enable-clipboard nil)
+#+END_SRC
+
+* Backup and autosave
+Pretty much disable all autosaves
+#+BEGIN_SRC emacs-lisp
+  (setq make-backup-files nil
+        backup-by-copying t
+        version-control nil
+        delete-old-versions t
+        delete-by-moving-to-trash nil
+        create-lockfiles nil
+        kept-old-versions 1
+        kept-new-versions 1)
+#+END_SRC
+
+* Indentation
+NO TABS! Ever!!!
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default indent-tabs-mode nil)
+#+END_SRC
+
+Indent with 2 spaces by default, we'll set some language specific exceptions later
+#+BEGIN_SRC emacs-lisp
+  (setq-default standard-indent 2
+                tab-width 2)
+#+END_SRC

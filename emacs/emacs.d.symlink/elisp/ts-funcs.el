@@ -132,4 +132,9 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
        'mouse-face (spaceline-all-the-icons--highlight)
        'local-map (make-mode-line-mouse-map 'mouse-1 'mu4e-alert-view-unread-mails)))))
 
+(defun ts/show-git-info ()
+  (interactive)
+  (require 'magit)
+  (message (format "Branch: %s" (magit-get-current-branch))))
+
 (provide 'ts-funcs)

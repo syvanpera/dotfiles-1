@@ -73,6 +73,7 @@
       x-select-enable-clipboard nil
       align-default-spacing 0
       recentf-mode nil
+      custom-file (expand-file-name "custom.el" user-emacs-directory)
       compilation-window-height 30)
 
 (setq inhibit-startup-echo-area-message user-login-name
@@ -107,6 +108,7 @@
       prettify-symbols-unprettify-at-point t
       superword-mode t
       desktop-save-mode t
+      save-place-mode t
       default-frame-alist '((font . "Source Code Pro-12")))
 
 (add-hook 'prog-mode-hook
@@ -173,7 +175,7 @@
 (defvar ts-jump-leader     (concat ts-leader " j"))
 (defvar ts-error-leader    (concat ts-leader " x"))
 (defvar ts-toggle-leader   (concat ts-leader " t"))
-(defvar ts-bookmark-leader (concat ts-leader " k"))
+(defvar ts-bookmark-leader (concat ts-leader " m"))
 
 ;; Generic elisp library packages
 (use-package s)
@@ -262,7 +264,8 @@
    "M-S-<up>"    'enlarge-window
    "M-="         'ts/indent-buffer
    "M-e"         'eval-region
-   "M-E"         'eval-buffer)
+   "M-E"         'eval-buffer
+   "M-r"         'imenu)
 
   ;; Ensure ESC quits in all modes: http://stackoverflow.com/a/10166400/61435
   (general-define-key [escape] 'evil-exit-emacs-state)
@@ -462,7 +465,7 @@
    "M-P"     'helm-M-x
    "M-r"     'helm-recentf
    "M-y"     'helm-show-kill-ring
-   "M-b"     'helm-bookmarks)
+   "M-m"     'helm-bookmarks)
   (:keymaps 'helm-map
    "C-j"     'helm-next-line
    "C-k"     'helm-previous-line
@@ -750,6 +753,7 @@
    "k"   'magit-section-backward)
   (:states 'normal
    :prefix ts-git-leader
+   "i"  'ts/show-git-info
    "c"  'magit-checkout
    "s"  'magit-status
    "l"  'magit-log-current
@@ -761,6 +765,10 @@
 
 (use-package evil-magit
   :after magit)
+
+(use-package magithub
+  :after magit
+  :config (magithub-feature-autoinject t))
 
 (use-package git-timemachine
   :defer t
@@ -1086,6 +1094,7 @@
 
 ;; (load "~/.ercrc.el")
 ;; (use-package erc
+;;   :ensure nil
 ;;   :commands erc
 ;;   :init
 ;;   (setq erc-server "irc.freenode.net"
@@ -1101,17 +1110,6 @@
 ;;   :config
 ;;   (erc-services-mode 1))
 
+(load custom-file)
+
 (provide 'init)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(htmlize yahoo-weather which-key web-mode w3m vi-tilde-fringe use-package try tide spaceline solaire-mode shell-pop rjsx-mode rainbow-mode rainbow-delimiters persistent-scratch paradox org-bullets oceanic-theme neotree mu4e-alert markdown-mode lua-mode js2-refactor indium highlight-indent-guides hide-mode-line helm-swoop helm-projectile helm-org-rifle helm-google helm-descbinds helm-dash helm-ag git-timemachine git-gutter+ general eyebrowse expand-region exec-path-from-shell evil-visualstar evil-surround evil-mu4e evil-magit eshell-z eshell-git-prompt engine-mode coffee-mode avy all-the-icons)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )

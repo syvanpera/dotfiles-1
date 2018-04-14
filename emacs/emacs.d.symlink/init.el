@@ -165,17 +165,18 @@
 
 (defvar ts-leader          ",")
 (defvar ts-local-leader    (concat ts-leader " ,"))
-(defvar ts-buffer-leader   (concat ts-leader " b"))
-(defvar ts-file-leader     (concat ts-leader " f"))
-(defvar ts-help-leader     (concat ts-leader " h"))
-(defvar ts-project-leader  (concat ts-leader " p"))
-(defvar ts-git-leader      (concat ts-leader " g"))
-(defvar ts-window-leader   (concat ts-leader " w"))
-(defvar ts-org-leader      (concat ts-leader " o"))
-(defvar ts-jump-leader     (concat ts-leader " j"))
-(defvar ts-error-leader    (concat ts-leader " x"))
-(defvar ts-toggle-leader   (concat ts-leader " t"))
-(defvar ts-bookmark-leader (concat ts-leader " m"))
+
+(defvar ts-buffer-prefix   (concat ts-leader " b"))
+(defvar ts-file-prefix     (concat ts-leader " f"))
+(defvar ts-help-prefix     (concat ts-leader " h"))
+(defvar ts-project-prefix  (concat ts-leader " p"))
+(defvar ts-git-prefix      (concat ts-leader " g"))
+(defvar ts-window-prefix   (concat ts-leader " w"))
+(defvar ts-org-prefix      (concat ts-leader " o"))
+(defvar ts-jump-prefix     (concat ts-leader " j"))
+(defvar ts-error-prefix    (concat ts-leader " x"))
+(defvar ts-toggle-prefix   (concat ts-leader " t"))
+(defvar ts-bookmark-prefix (concat ts-leader " m"))
 
 ;; Generic elisp library packages
 (use-package s)
@@ -191,30 +192,31 @@
   :config
   (general-create-definer ts-leader-def          :prefix ts-leader)
   (general-create-definer ts-local-leader-def    :prefix ts-local-leader)
-  (general-create-definer ts-buffer-leader-def   :prefix ts-buffer-leader)
-  (general-create-definer ts-file-leader-def     :prefix ts-file-leader)
-  (general-create-definer ts-help-leader-def     :prefix ts-help-leader)
-  (general-create-definer ts-project-leader-def  :prefix ts-project-leader)
-  (general-create-definer ts-git-leader-def      :prefix ts-git-leader)
-  (general-create-definer ts-window-leader-def   :prefix ts-window-leader)
-  (general-create-definer ts-org-leader-def      :prefix ts-org-leader)
-  (general-create-definer ts-jump-leader-def     :prefix ts-jump-leader)
-  (general-create-definer ts-error-leader-def    :prefix ts-error-leader)
-  (general-create-definer ts-toggle-leader-def   :prefix ts-toggle-leader)
-  (general-create-definer ts-bookmark-leader-def :prefix ts-bookmark-leader)
+
+  (general-create-definer ts-buffer-prefix-def   :prefix ts-buffer-prefix)
+  (general-create-definer ts-file-prefix-def     :prefix ts-file-prefix)
+  (general-create-definer ts-help-prefix-def     :prefix ts-help-prefix)
+  (general-create-definer ts-project-prefix-def  :prefix ts-project-prefix)
+  (general-create-definer ts-git-prefix-def      :prefix ts-git-prefix)
+  (general-create-definer ts-window-prefix-def   :prefix ts-window-prefix)
+  (general-create-definer ts-org-prefix-def      :prefix ts-org-prefix)
+  (general-create-definer ts-jump-prefix-def     :prefix ts-jump-prefix)
+  (general-create-definer ts-error-prefix-def    :prefix ts-error-prefix)
+  (general-create-definer ts-toggle-prefix-def   :prefix ts-toggle-prefix)
+  (general-create-definer ts-bookmark-prefix-def :prefix ts-bookmark-prefix)
 
   (ts-local-leader-def    'normal "" '(nil :which-key "mode-local"))
-  (ts-buffer-leader-def   'normal "" '(nil :which-key "buffer"))
-  (ts-file-leader-def     'normal "" '(nil :which-key "file"))
-  (ts-help-leader-def     'normal "" '(nil :which-key "help"))
-  (ts-project-leader-def  'normal "" '(nil :which-key "project"))
-  (ts-git-leader-def      'normal "" '(nil :which-key "git"))
-  (ts-window-leader-def   'normal "" '(nil :which-key "window"))
-  (ts-org-leader-def      'normal "" '(nil :which-key "org"))
-  (ts-jump-leader-def     'normal "" '(nil :which-key "jump"))
-  (ts-error-leader-def    'normal "" '(nil :which-key "error"))
-  (ts-toggle-leader-def   'normal "" '(nil :which-key "toggle"))
-  (ts-bookmark-leader-def 'normal "" '(nil :which-key "bookmarks"))
+  (ts-buffer-prefix-def   'normal "" '(nil :which-key "buffer"))
+  (ts-file-prefix-def     'normal "" '(nil :which-key "file"))
+  (ts-help-prefix-def     'normal "" '(nil :which-key "help"))
+  (ts-project-prefix-def  'normal "" '(nil :which-key "project"))
+  (ts-git-prefix-def      'normal "" '(nil :which-key "git"))
+  (ts-window-prefix-def   'normal "" '(nil :which-key "window"))
+  (ts-org-prefix-def      'normal "" '(nil :which-key "org"))
+  (ts-jump-prefix-def     'normal "" '(nil :which-key "jump"))
+  (ts-error-prefix-def    'normal "" '(nil :which-key "error"))
+  (ts-toggle-prefix-def   'normal "" '(nil :which-key "toggle"))
+  (ts-bookmark-prefix-def 'normal "" '(nil :which-key "bookmarks"))
 
   (ts-leader-def 'normal
     "TAB" 'ts/alternate-buffer
@@ -224,15 +226,15 @@
     "v"   'ts/edit-configuration
     "u"   'ts/load-configuration)
 
-  (ts-toggle-leader-def 'normal
+  (ts-toggle-prefix-def 'normal
     "l"  'display-line-numbers-mode
     "r"  'ts/toggle-relative-line-numbers)
 
-  (ts-error-leader-def 'normal
+  (ts-error-prefix-def 'normal
     "n"  'next-error
     "p"  'previous-error)
 
-  (ts-buffer-leader-def 'normal
+  (ts-buffer-prefix-def 'normal
     "k"  'kill-buffer
     "r"  'rename-buffer
     "e"  '((lambda () (interactive) (ielm)) :which-key "elisp-repl")
@@ -242,14 +244,14 @@
     "m"  '((lambda () (interactive) (switch-to-buffer "*Messages*")) :which-key "messages")
     "w"  '((lambda () (interactive) (switch-to-buffer "*Warnings*")) :which-key "warnings"))
 
-  (ts-help-leader-def 'normal
+  (ts-help-prefix-def 'normal
     "a"  'helm-apropos
     "k"  'describe-key
     "v"  'describe-variable
     "f"  'describe-function
     "w"  'where-is)
 
-  (ts-bookmark-leader-def 'normal
+  (ts-bookmark-prefix-def 'normal
     "s" 'bookmark-set
     "l" 'list-bookmarks
     "j" 'bookmark-jump)
@@ -447,7 +449,7 @@
    :prefix ts-leader
    "e"      'ts/contextual-neotree-toggle)
   (:states 'normal
-   :prefix ts-file-leader
+   :prefix ts-file-prefix
    "e"      'neotree-toggle)
   :init
   (setq neo-smart-open t
@@ -491,19 +493,19 @@
    :prefix ts-leader
    "r"       'ts/contextual-helm-recentf)
   (:states 'normal
-   :prefix ts-buffer-leader
+   :prefix ts-buffer-prefix
    "b"       'helm-buffers-list)
   (:states 'normal
-   :prefix ts-file-leader
+   :prefix ts-file-prefix
    "f"       'helm-find-files
    "o"       'ts/helm-find-org-files
    "r"       'helm-recentf)
   (:states 'normal
-   :prefix ts-project-leader
+   :prefix ts-project-prefix
    "p"       'helm-projectile-switch-project
    "f"       'ts/contextual-helm-find-files)
   (:states 'normal
-   :prefix ts-org-leader
+   :prefix ts-org-prefix
    "h"       'helm-org-agenda-files-headings
    "f"       'ts/helm-find-org-files)
   :init
@@ -521,7 +523,7 @@
   :commands helm-org-rifle
   :general
   (:states 'normal
-   :prefix ts-org-leader
+   :prefix ts-org-prefix
    "s" 'helm-org-rifle-org-directory))
 
 (use-package helm-ag
@@ -583,7 +585,7 @@
 (use-package projectile
   :general
   (:states 'normal
-   :prefix ts-project-leader
+   :prefix ts-project-prefix
    "r" 'projectile-run-project
    "t" 'projectile-test-project
    "s" 'ts/projectile-shell-pop
@@ -752,7 +754,7 @@
    "j"   'magit-section-forward
    "k"   'magit-section-backward)
   (:states 'normal
-   :prefix ts-git-leader
+   :prefix ts-git-prefix
    "i"  'ts/show-git-info
    "c"  'magit-checkout
    "s"  'magit-status
@@ -786,7 +788,7 @@
 (use-package yasnippet
   :general
   (:states 'normal
-   :prefix ts-git-leader
+   :prefix ts-git-prefix
    "n" 'git-gutter+-next-hunk
    "p" 'git-gutter+-previous-hunk
    "v" 'git-gutter+-show-hunk
@@ -831,7 +833,7 @@
    "C-S-K"   'org-shiftcontrolup
    "C-S-J"   'org-shiftcontroldown)
   (:states 'normal
-   :prefix ts-org-leader
+   :prefix ts-org-prefix
    "a"       'ts/org-agenda-show-agenda-and-todo
    "c"       'org-capture
    "i"       'ts/open-org-inbox
@@ -913,7 +915,7 @@
    "q"   'kill-buffer-and-window
    "RET" 'flycheck-error-list-goto-error)
   (:states 'normal
-   :prefix ts-error-leader
+   :prefix ts-error-prefix
    "x" 'flycheck-mode
    "l" 'flycheck-list-errors
    "v" 'flycheck-verify-setup)
@@ -1031,7 +1033,7 @@
   (:states 'motion
    "M-j" 'avy-goto-word-1)
   (:states 'normal
-   :prefix ts-jump-leader
+   :prefix ts-jump-prefix
    "w" 'avy-goto-word-1
    "c" 'avy-goto-char
    "l" 'avy-goto-line)
@@ -1073,7 +1075,7 @@
    "M-8" 'eyebrowse-switch-to-window-config-8
    "M-9" 'eyebrowse-switch-to-window-config-9)
   (:states 'normal
-   :prefix ts-window-leader
+   :prefix ts-window-prefix
    "c"   'eyebrowse-create-window-config
    "d"   'eyebrowse-close-window-config
    "r"   'eyebrowse-rename-window-config

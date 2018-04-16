@@ -1,5 +1,5 @@
 * Start up
-Show custom startup message but other than that, make Emacs start up quietly.
+Show custom startup message. But other than that, make Emacs start up quietly.
 #+BEGIN_SRC emacs-lisp
   (defun display-startup-echo-area-message ()
     "Startup message."
@@ -19,12 +19,6 @@ Unclutter the interface.
   (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
   (when (fboundp 'blink-cursor-mode) (blink-cursor-mode -1))
   (when (fboundp 'mouse-wheel-mode) (mouse-wheel-mode 1))
-#+END_SRC
-
-* Personal information
-#+BEGIN_SRC emacs-lisp
-  (setq user-full-name "Tuomo Syvänperä"
-        user-mail-address "tuomo.syvanpera@gmail.com")
 #+END_SRC
 
 * Package management
@@ -89,15 +83,25 @@ Miscellaneous defs.
   (require 'ts-funcs)
 #+END_SRC
 
+* Personal information
+#+BEGIN_SRC emacs-lisp
+  (setq user-full-name "Tuomo Syvänperä"
+        user-mail-address "tuomo.syvanpera@gmail.com")
+#+END_SRC
+
 * General settings
 ** Some 'sensible' defaults
-This includes setting up the backups to a temp directory and inhibiting startup
-messages and some basic keybindings.
 #+BEGIN_SRC emacs-lisp
   (require 'sensible-defaults)
   (sensible-defaults/use-all-settings)
   (sensible-defaults/use-all-keybindings)
   (sensible-defaults/backup-to-temp-directory)
+#+END_SRC
+
+Warn when opening big files and stop nagging about everything.
+#+BEGIN_SRC emacs-lisp
+  (setq large-file-warning-threshold 100000000
+        warning-minimum-level :emergency)
 #+END_SRC
 
 * Encoding
@@ -121,7 +125,7 @@ Don't automatically put stuff in the OS clipboard:
 #+END_SRC
 
 * Backup and autosave
-Pretty much disable all autosaves
+Pretty much disable all autosaves.
 #+BEGIN_SRC emacs-lisp
   (setq make-backup-files nil
         backup-by-copying t
@@ -144,4 +148,370 @@ Indent with 2 spaces by default, we'll set some language specific exceptions lat
 #+BEGIN_SRC emacs-lisp
   (setq-default standard-indent 2
                 tab-width 2)
+#+END_SRC
+
+* Packages
+** General improvements
+Persist scratch buffers between restarts.
+#+BEGIN_SRC emacs-lisp
+  (use-package persistent-scratch
+    :config
+    (setq persistent-scratch-scratch-buffer-p-function
+          (lambda () (string-prefix-p "*scratch" (buffer-name))))
+    (persistent-scratch-setup-default))
+#+END_SRC
+
+Better(?) package manager.
+#+BEGIN_SRC emacs-lisp
+  (use-package paradox
+    :config
+    (paradox-enable))
+#+END_SRC
+
+"Try before buy" for Emacs packages.
+#+BEGIN_SRC emacs-lisp
+  (use-package try)
+#+END_SRC
+
+** Evil
+Make Emacs not actually suck as an editor.
+#+BEGIN_SRC emacs-lisp
+  (use-package evil
+    :init
+    (setq evil-want-integration nil
+          evil-vsplit-window-right t
+          evil-split-window-below nil
+          evil-move-beyond-eol t
+          evil-move-cursor-back t)
+    :config
+    (evil-mode t)
+    ;; Some commands are just not meant to be repeated
+    (mapc 'evil-declare-not-repeat '(undo-tree-undo undo-tree-redo))
+    (add-to-list 'evil-normal-state-modes 'Custom-mode))
+#+END_SRC
+
+Surround text objects with tags, parentheses, brackets or pretty much anything
+else you can think of.
+#+BEGIN_SRC emacs-lisp
+  (use-package evil-surround
+    :after evil
+    :config
+    (global-evil-surround-mode 1))
+#+END_SRC
+
+Allow searching for visual selection using '*'.
+#+BEGIN_SRC emacs-lisp
+  (use-package evil-visualstar
+    :after evil
+    :config
+    (global-evil-visualstar-mode 1))
+#+END_SRC
+
+** Version control
+The be-all and end-all of Git clients.
+#+BEGIN_SRC emacs-lisp
+  (use-package magit
+    :general
+    (:keymaps 'magit-status-mode-map
+     "C-h" 'evil-window-left
+     "C-j" 'evil-window-down
+     "C-k" 'evil-window-up
+     "C-l" 'evil-window-right
+     "M-j" 'magit-section-forward-sibling
+     "M-k" 'magit-section-backward-sibling
+     "j"   'magit-section-forward
+     "k"   'magit-section-backward)
+    (:states 'normal
+     :prefix ts-git-prefix
+     "i"  'ts/show-git-info
+     "c"  'magit-checkout
+     "s"  'magit-status
+     "l"  'magit-log-current
+     "b"  'magit-blame)
+    :init
+    (setq git-commit-summary-max-length 50)
+    :config
+    (magit-define-popup-switch 'magit-pull-popup ?r "Rebase" "--rebase"))
+#+END_SRC
+
+Make Magit play nice with Evil.
+#+BEGIN_SRC emacs-lisp
+  (use-package evil-magit
+    :after magit)
+#+END_SRC
+
+Use Magit to handle most things github related.
+#+BEGIN_SRC emacs-lisp
+  (use-package magithub
+    :after magit
+    :config (magithub-feature-autoinject t))
+#+END_SRC
+
+Jump around in git history and see what the file looked like at each commit.
+#+BEGIN_SRC emacs-lisp
+  (use-package git-timemachine
+    :defer t
+    :config
+    (eval-after-load 'git-timemachine
+      '(progn
+         (evil-make-overriding-map git-timemachine-mode-map 'normal)
+         ;; force update evil keymaps after git-timemachine-mode loaded
+         (add-hook 'git-timemachine-mode-hook #'evil-normalize-keymaps))))
+#+END_SRC
+
+Show small icons in the fringe for changed/deleted/added lines in the buffer.
+#+BEGIN_SRC emacs-lisp
+  (use-package git-gutter+
+    :config
+    (global-git-gutter+-mode))
+#+END_SRC
+
+** Language support
+*** Elisp
+*** HTML
+*** Javascript
+Javascript IDE. For me, mostly useful for the REPL it provides.
+#+BEGIN_SRC emacs-lisp
+  (use-package indium
+    :defer t
+    :hook (js-mode-hook . indium-interaction-mode))
+#+END_SRC
+
+TypeScript IDE. But supports JS too.
+#+BEGIN_SRC emacs-lisp
+  (defun setup-tide-mode ()
+    (interactive)
+    (tide-setup)
+    (flycheck-mode +1)
+    (setq flycheck-check-syntax-automatically '(save mode-enabled))
+    (eldoc-mode +1)
+    (tide-hl-identifier-mode +1)
+    (company-mode +1))
+
+  (use-package tide
+    :defer t
+    :hook ((js2-mode rjsx-mode) . setup-tide-mode)
+    :general
+    (:states 'motion
+     :keymaps 'tide-mode-map
+     "gd"  'tide-jump-to-definition
+     "C-o" 'tide-jump-back
+     "C-t" 'tide-jump-back
+     "K"   'tide-documentation-at-point)
+    (:states 'motion
+     :keymaps 'tide-references-mode-map
+     "gj"       'tide-find-next-reference
+     "gk"       'tide-find-previous-reference
+     "C-j"      'tide-find-next-reference
+     "C-k"      'tide-find-previous-reference
+     "C-l"      'tide-goto-reference
+     "<return>" 'tide-goto-reference
+     "q"        'quit-window)
+    (:states 'motion
+     :keymaps 'tide-project-errors-mode-map
+     "gj"       'tide-find-next-error
+     "gk"       'tide-find-previous-error
+     "C-j"      'tide-find-next-error
+     "C-k"      'tide-find-previous-error
+     "C-l"      'tide-goto-error
+     "<return>" 'tide-goto-error
+     "q"        'quit-window)
+    :init
+    (setq tide-tsserver-executable "/usr/local/bin/tsserver")
+    :config
+    (flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append)
+    (flycheck-add-next-checker 'javascript-eslint 'javascript-tide 'append))
+#+END_SRC
+
+
+*** Coffeescript
+#+BEGIN_SRC emacs-lisp
+  (use-package coffee-mode
+    :defer t
+    :init
+    (setq coffee-tab-width 2))
+#+END_SRC
+
+Not really Coffee specific, but used to highlight indentation, which makes
+Coffee a bit easier to read.
+#+BEGIN_SRC emacs-lisp
+  (use-package highlight-indent-guides
+    :defer t
+    :hook (coffee-mode . highlight-indent-guides-mode)
+    :config
+    (setq-default highlight-indent-guides-method 'character))
+#+END_SRC
+
+** Org
+#+BEGIN_SRC emacs-lisp
+  (use-package org
+    :defer t
+    :general
+    (:prefix "C-c"
+     "l"       'org-store-link
+     "a"       'org-agenda
+     "c"       'org-capture
+     "C-x C-i" 'org-clock-in
+     "C-x C-o" 'org-clock-out)
+    (:states 'motion
+     :keymaps 'org-mode-map
+     "gh"      'org-shiftleft
+     "gl"      'org-shiftright
+     "gk"      'org-shiftup
+     "gj"      'org-shiftdown)
+    (:states '(motion insert)
+     :keymaps 'org-mode-map
+     "C-h"     'evil-window-left
+     "C-h"     'evil-window-left
+     "C-l"     'evil-window-right
+     "C-k"     'evil-window-up
+     "C-j"     'evil-window-down
+     "M-h"     'org-metaleft
+     "M-l"     'org-metaright
+     "M-k"     'org-metaup
+     "M-j"     'org-metadown
+     "M-H"     'org-shiftmetaleft
+     "M-L"     'org-shiftmetaright
+     "M-K"     'org-shiftmetaup
+     "M-J"     'org-shiftmetadown
+     "C-S-H"   'org-shiftcontrolleft
+     "C-S-L"   'org-shiftcontrolright
+     "C-S-K"   'org-shiftcontrolup
+     "C-S-J"   'org-shiftcontroldown)
+    (:states 'normal
+     :prefix ts-org-prefix
+     "a"       'ts/org-agenda-show-agenda-and-todo
+     "c"       'org-capture
+     "i"       'ts/open-org-inbox
+     "r"       'org-refile
+     "b"       'org-switchb)
+    :config
+    (setq org-directory "~/Google Drive/org"
+          org-default-notes-file (concat org-directory "/inbox.org")
+          org-snippets-file (concat org-directory "/snippets.org")
+          org-agenda-files (quote ("~/Google Drive/org"
+                                   "~/Google Drive/org/work"))
+          org-refile-targets (quote ((nil :maxlevel . 1)
+                                     (org-agenda-files :maxlevel . 1)))
+          org-agenda-custom-commands '((" " "Agenda"
+                                        ((agenda "" nil)
+                                         (tags-todo "REFILE"
+                                                    ((org-agenda-overriding-header "Tasks to Refile")
+                                                     (org-tags-match-list-sublevels nil))))))
+          ;; org-agenda-window-setup 'only-window
+          org-agenda-window-setup 'reorganize-frame
+          org-blank-before-new-entry (quote ((heading) (plain-list-item)))
+          ;; org-refile-use-outline-path 'file
+          ;; org-outline-path-complete-in-steps nil
+          org-refile-allow-creating-parent-nodes 'confirm
+          org-set-startup-visibility 'content
+          org-pretty-entities t
+          org-src-fontify-natively t
+          org-fontify-done-headline t
+          org-src-tab-acts-natively t
+          org-log-done 'time
+          org-treat-S-cursor-todo-selection-as-state-change nil
+          org-startup-indented 'indent
+          org-ellipsis "…"
+          ;; org-ellipsis " ⤵"
+          org-todo-keywords '((sequence "☛ TODO(t)" "|" "✔ DONE(d)")
+                              (sequence "⚑ WAITING(w@)" "|")
+                              (sequence "|" "✘ CANCELED(c@)")))
+    (setq org-capture-templates
+          '(("t" "Task" entry
+             (file+headline org-default-notes-file "Refile")
+             "* ☛ TODO %^{Task}\n"
+             :immediate-finish t :kill-buffer t)
+            ("b" "Bill" entry
+             (file+headline "bills.org" "Bills")
+             "* ☛ TODO %^{Description}\n%a\nDUE DATE: %^{Deadline}t\n"
+             :immediate-finish t :kill-buffer t)
+            ("s" "Snippet" entry
+             (file+headline org-snippets-file "Snippets")
+             "* %^{Title}\t%^g\n#+BEGIN_SRC %^{Language|javascript|emacs-lisp}\n%i%?\n#+END_SRC\n")
+            ("i" "Interrupting task" entry
+             (file+headline org-default-notes-file "Inbox")
+             "* STARTED %^{Task}"
+             :clock-in :clock-resume :kill-buffer t)
+            ("e" "Emacs task" entry
+             (file+headline "emacs.org" "Tasks")
+             "* ☛ TODO %^{Task}\n\n"
+             :immediate-finish t :kill-buffer t))))
+#+END_SRC
+
+Display bullets as UTF-8 symbols.
+#+BEGIN_SRC emacs-lisp
+  (use-package org-bullets
+    :after org
+    :hook (org-mode . org-bullets-mode)
+    :config
+    (setq org-bullets-bullet-list '("◉" "○" "►" "◎" "◇")))
+#+END_SRC
+
+Needed for html export of org files.
+#+BEGIN_SRC emacs-lisp
+  (use-package htmlize)
+#+END_SRC
+** Window management
+For multiple "workspace" support.
+#+BEGIN_SRC emacs-lisp
+  (use-package eyebrowse
+    :general
+    ("M-1" 'eyebrowse-switch-to-window-config-1
+     "M-2" 'eyebrowse-switch-to-window-config-2
+     "M-3" 'eyebrowse-switch-to-window-config-3
+     "M-4" 'eyebrowse-switch-to-window-config-4
+     "M-5" 'eyebrowse-switch-to-window-config-5
+     "M-6" 'eyebrowse-switch-to-window-config-6
+     "M-7" 'eyebrowse-switch-to-window-config-7
+     "M-8" 'eyebrowse-switch-to-window-config-8
+     "M-9" 'eyebrowse-switch-to-window-config-9)
+    (:states 'normal
+     :prefix ts-window-prefix
+     "c"   'eyebrowse-create-window-config
+     "d"   'eyebrowse-close-window-config
+     "r"   'eyebrowse-rename-window-config
+     "n"   'eyebrowse-next-window-config
+     "p"   'eyebrowse-prev-window-config
+     "j"   'eyebrowse-next-window-config
+     "k"   'eyebrowse-prev-window-config
+     "l"   'eyebrowse-next-window-config
+     "h"   'eyebrowse-prev-window-config)
+    :init
+    (setq eyebrowse-new-workspace t
+          eyebrowse-wrap-around t)
+    :config
+    (eyebrowse-mode t))
+#+END_SRC
+** UI stuff
+#+BEGIN_SRC emacs-lisp
+  (use-package solaire-mode
+    :config
+    (add-hook 'after-change-major-mode-hook #'turn-on-solaire-mode)
+    (add-hook 'focus-in-hook #'solaire-mode-reset)
+    (add-hook 'org-capture-mode-hook #'turn-on-solaire-mode)
+    (add-hook 'minibuffer-setup-hook #'solaire-mode-in-minibuffer))
+#+END_SRC
+
+Jump around to char, word or line (like Easymotion for VIM).
+#+BEGIN_SRC emacs-lisp
+  (use-package avy
+    :general
+    (:states 'motion
+     "M-j" 'avy-goto-word-1)
+    (:states 'normal
+     :prefix ts-jump-prefix
+     "w" 'avy-goto-word-1
+     "c" 'avy-goto-char
+     "l" 'avy-goto-line)
+    :init
+    (setq avy-all-windows t))
+#+END_SRC
+
+Shows the tilde character in the fringe after the actual file contents.
+Doesn't really *do* anything as such, but it's something that makes
+an old VIMmer like me feel at home.
+#+BEGIN_SRC emacs-lisp
+  (use-package vi-tilde-fringe
+    :hook ((prog-mode) . vi-tilde-fringe-mode))
 #+END_SRC

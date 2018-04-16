@@ -36,10 +36,6 @@
 
 (setq use-package-always-ensure t)
 
-;; (use-package benchmark-init
-;;   :config
-;;   (add-hook 'after-init-hook 'benchmark-init/deactivate))
-
 (add-to-list 'load-path (expand-file-name "elisp" user-emacs-directory))
 (add-to-list 'load-path (expand-file-name "elisp/vendor" user-emacs-directory))
 
@@ -74,7 +70,8 @@
       align-default-spacing 0
       recentf-mode nil
       custom-file (expand-file-name "custom.el" user-emacs-directory)
-      compilation-window-height 30)
+      compilation-window-height 30
+      scroll-conservatively 100)
 
 (setq inhibit-startup-echo-area-message user-login-name
       ring-bell-function 'ignore)
@@ -113,13 +110,13 @@
 
 (add-hook 'prog-mode-hook
           (lambda () (progn
-                       (setq-local show-trailing-whitespace t)
-                       (hl-line-mode)
-                       (display-line-numbers-mode)
-                       (electric-pair-mode t)
-                       (electric-indent-mode t)
-                       (add-hook 'evil-insert-state-entry-hook 'ts/line-numbers-absolute nil t)
-                       (add-hook 'evil-insert-state-exit-hook 'ts/line-numbers-relative nil t))))
+                  (setq-local show-trailing-whitespace t)
+                  (hl-line-mode)
+                  (display-line-numbers-mode)
+                  (electric-pair-mode t)
+                  (electric-indent-mode t)
+                  (add-hook 'evil-insert-state-entry-hook 'ts/line-numbers-absolute nil t)
+                  (add-hook 'evil-insert-state-exit-hook 'ts/line-numbers-relative nil t))))
 
 (add-hook 'js2-mode-hook 'js2-refactor-mode)
 
@@ -222,6 +219,7 @@
     "TAB" 'ts/alternate-buffer
     "'"   'shell-pop
     "s"   'ts/contextual-shell-pop
+    "S"   'eshell
     "q"   'ts/kill-window-or-buffer
     "v"   'ts/edit-configuration
     "u"   'ts/load-configuration)
@@ -281,7 +279,7 @@
    [escape] 'ts/minibuffer-keyboard-quit)
 
   (general-define-key
-   :states '(motion insert) "C-g" 'ts/evil-keyboard-quit)
+   :states '(normal visual insert) "C-g" 'ts/evil-keyboard-quit)
 
   (general-define-key
    :prefix "C-c"
@@ -289,7 +287,7 @@
    "s" 'ts/contextual-shell-pop)
 
   (general-define-key
-   :states '(insert motion)
+   :states '(insert normal visual)
    "M-s" 'save-buffer
    "M-a" 'mark-whole-buffer
    "M-q" 'evil-quit-all
@@ -303,7 +301,7 @@
    "M-J" 'move-line-down)
 
   (general-define-key
-   :states 'motion
+   :states 'normal
    "C-h" 'evil-window-left
    "C-j" 'evil-window-down
    "C-k" 'evil-window-up
@@ -318,7 +316,7 @@
    "M-RET" 'comment-indent-new-line)
 
   (general-define-key
-   :states 'motion
+   :states '(normal visual)
    "go"  'find-file-at-point
    "gf"  'projectile-find-file-dwim
    "gF"  'projectile-find-file-dwim-other-window
@@ -335,7 +333,7 @@
    "q" 'Custom-buffer-done)
 
   (general-define-key
-   :states 'motion
+   :states '(normal visual)
    :keymaps 'js-mode-map
    "M-K" 'js2r-move-line-up
    "M-J" 'js2r-move-line-down)
@@ -352,28 +350,53 @@
    :keymaps 'Custom-mode-map
    "M-j" 'widget-forward
    "M-k" 'widget-backward)
-
-  ;; (general-define-key
-  ;;  :states 'motion
-  ;;  :keymaps 'eshell-mode-map
-  ;;  "i" 'ts/eshell-evil-input-mode
-  ;;  "q" 'shell-pop)
-
-  ;; (general-define-key
-  ;;  :states 'insert
-  ;;  :keymaps 'eshell-mode-map
-  ;;  "C-a" 'eshell-bol
-  ;;  "C-p" 'eshell-previous-matching-input-from-input
-  ;;  "C-n" 'eshell-next-matching-input-from-input
-  ;;  "C-r" 'helm-eshell-history)
   )
 
+(use-package eshell
+  :ensure nil
+  :init
+  (setq eshell-destroy-buffer-when-process-dies t
+        eshell-save-history-on-exit t)
+  (add-hook 'eshell-mode-hook
+            (lambda ()
+              (general-define-key
+               :states 'insert
+               :keymaps 'eshell-mode-map
+               "C-d" 'ts/eshell-quit-or-delete-char
+               "C-a" 'eshell-bol
+               "C-p" 'eshell-previous-matching-input-from-input
+               "C-n" 'eshell-next-matching-input-from-input
+               "C-r" 'helm-eshell-history)))
+  (add-hook 'eshell-mode-hook
+            (lambda ()
+              (eshell/alias "l" "ls -l"))))
+
+(use-package undo-tree
+  :general
+  (:states 'normal
+   ;;  "u"   'undo-tree-undo
+   ;;  "C-r" 'undo-tree-redo
+   "M-u" 'undo-tree-visualize)
+  (:states 'normal
+   :keymaps 'undo-tree-visualizer-mode-map
+   "j"   'undo-tree-visualize-redo
+   "k"   'undo-tree-visualize-undo
+   "l"   'undo-tree-visualize-switch-branch-right
+   "h"   'undo-tree-visualize-switch-branch-left
+   "C-h" 'evil-window-left
+   "C-j" 'evil-window-down
+   "C-k" 'evil-window-up
+   "C-l" 'evil-window-right)
+  :config
+  (global-undo-tree-mode))
+
 (use-package evil
+  :after undo-tree
   :init
   (setq evil-want-integration nil
         evil-vsplit-window-right t
         evil-split-window-below nil
-        evil-move-beyond-eol t
+        evil-move-beyond-eol nil
         evil-move-cursor-back t)
   :config
   (evil-mode t)
@@ -401,28 +424,10 @@
 
 (use-package all-the-icons)
 
-;; (use-package color-theme-sanityinc-tomorrow
-;;   :config
-;;   (color-theme-sanityinc-tomorrow-eighties)
-;;   (load-theme 'tomorrow-overrides))
-
 (use-package oceanic-theme
   :config
   (load-theme 'oceanic)
   (load-theme 'ts-overrides))
-;; (load-theme 'oceanic-overrides))
-
-;; (use-package doom-themes
-;;   :init
-;;   (setq doom-themes-enable-bold t
-;;         doom-themes-enable-italic t
-;;         doom-vibrant-brighter-modeline t)
-;;   :config
-;;   (load-theme 'doom-vibrant t)
-;;   (doom-themes-visual-bell-config)
-;;   (doom-themes-neotree-config)
-;;   (doom-themes-org-config)
-;;   (load-theme 'doom-overrides))
 
 (use-package neotree
   :defer t
@@ -455,7 +460,9 @@
   (setq neo-smart-open t
         neo-create-file-auto-open t
         neo-vc-integration '(face)
-        neo-theme (if (display-graphic-p) 'icons 'arrow))
+        neo-mode-line-type 'neotree
+        neo-theme 'icons)
+        ;; neo-theme (if (display-graphic-p) 'icons 'nerd))
   :config
   (add-hook 'neo-enter-hook (lambda (type &rest args) (if (equal type 'file) (neotree-hide)))))
 
@@ -467,7 +474,9 @@
    "M-P"     'helm-M-x
    "M-r"     'helm-recentf
    "M-y"     'helm-show-kill-ring
-   "M-m"     'helm-bookmarks)
+   "M-m"     'helm-bookmarks
+   "M-p"     'ts/contextual-helm-find-files
+   "M-b"     'helm-buffers-list)
   (:keymaps 'helm-map
    "C-j"     'helm-next-line
    "C-k"     'helm-previous-line
@@ -556,31 +565,12 @@
 (use-package helm-swoop
   :general
   ("M-i" 'helm-swoop)
-  (:states 'motion
+  (:states '(normal visual)
    "M-i" 'helm-swoop-from-evil-search)
   (:keymaps 'isearch-mode-map
    "M-i" 'helm-swoop-from-isearch)
   :init
   (setq helm-swoop-use-fuzzy-match nil))
-
-(use-package undo-tree
-  :general
-  (:states 'normal
-   ;;  "u"   'undo-tree-undo
-   ;;  "C-r" 'undo-tree-redo
-   "M-u" 'undo-tree-visualize)
-  (:states 'motion
-   :keymaps 'undo-tree-visualizer-mode-map
-   "j"   'undo-tree-visualize-redo
-   "k"   'undo-tree-visualize-undo
-   "l"   'undo-tree-visualize-switch-branch-right
-   "h"   'undo-tree-visualize-switch-branch-left
-   "C-h" 'evil-window-left
-   "C-j" 'evil-window-down
-   "C-k" 'evil-window-up
-   "C-l" 'evil-window-right)
-  :config
-  (global-undo-tree-mode))
 
 (use-package projectile
   :general
@@ -633,7 +623,7 @@
          "flag:unread maildir:/Gmail/INBOX"))
   ;; mu4e-alert-modeline-formatter 'ts/mu4e-alert-modeline-formatter)
   (mu4e-alert-enable-mode-line-display)
-  (mu4e-alert-enable-notifications)
+  ;; (mu4e-alert-enable-notifications)
   ;; (defun gjstein-refresh-mu4e-alert-mode-line ()
   ;;   (interactive)
   ;;   (mu4e~proc-kill)
@@ -669,6 +659,7 @@
   :load-path "site-lisp/spaceline-all-the-icons.el"
   :init
   (setq spaceline-all-the-icons-highlight-file-name t
+        spaceline-all-the-icons-hide-inactive-separators t
         spaceline-all-the-icons-separator-type 'wave
         spaceline-all-the-icons-icon-set-eyebrowse-slot 'square)
   :config
@@ -681,7 +672,6 @@
   (spaceline-toggle-all-the-icons-region-info-on)
   (spaceline-toggle-all-the-icons-sunrise-off)
   (spaceline-toggle-all-the-icons-sunset-off))
-;; (spaceline-all-the-icons-theme 'mu4e-alert-segment))
 
 (use-package company
   :config
@@ -807,13 +797,13 @@
    "c"       'org-capture
    "C-x C-i" 'org-clock-in
    "C-x C-o" 'org-clock-out)
-  (:states 'motion
+  (:states '(normal visual)
    :keymaps 'org-mode-map
    "gh"      'org-shiftleft
    "gl"      'org-shiftright
    "gk"      'org-shiftup
    "gj"      'org-shiftdown)
-  (:states '(motion insert)
+  (:states '(normal visual insert)
    :keymaps 'org-mode-map
    "C-h"     'evil-window-left
    "C-h"     'evil-window-left
@@ -896,7 +886,7 @@
   :after org
   :hook (org-mode . org-bullets-mode)
   :config
-  (setq org-bullets-bullet-list '("◉" "◎" "⚫" "○" "►" "◇")))
+  (setq org-bullets-bullet-list '("◉" "○" "►" "◎" "◇")))
 
 (use-package persistent-scratch
   :config
@@ -988,23 +978,24 @@
 (defun setup-tide-mode ()
   (interactive)
   (tide-setup)
-  (flycheck-mode +1)
+  (flycheck-mode t)
   (setq flycheck-check-syntax-automatically '(save mode-enabled))
-  (eldoc-mode +1)
-  (tide-hl-identifier-mode +1)
-  (company-mode +1))
+  (eldoc-mode 1)
+  (tide-hl-identifier-mode t)
+  (tide-completion-detailed t)
+  (tide-default-mode "JSX"))
 
 (use-package tide
   :defer t
   :hook ((js2-mode rjsx-mode) . setup-tide-mode)
   :general
-  (:states 'motion
+  (:states 'normal
    :keymaps 'tide-mode-map
    "gd"  'tide-jump-to-definition
    "C-o" 'tide-jump-back
    "C-t" 'tide-jump-back
    "K"   'tide-documentation-at-point)
-  (:states 'motion
+  (:states 'normal
    :keymaps 'tide-references-mode-map
    "gj"       'tide-find-next-reference
    "gk"       'tide-find-previous-reference
@@ -1013,7 +1004,7 @@
    "C-l"      'tide-goto-reference
    "<return>" 'tide-goto-reference
    "q"        'quit-window)
-  (:states 'motion
+  (:states 'normal
    :keymaps 'tide-project-errors-mode-map
    "gj"       'tide-find-next-error
    "gk"       'tide-find-previous-error
@@ -1030,7 +1021,7 @@
 
 (use-package avy
   :general
-  (:states 'motion
+  (:states 'normal
    "M-j" 'avy-goto-word-1)
   (:states 'normal
    :prefix ts-jump-prefix
@@ -1040,12 +1031,12 @@
   :init
   (setq avy-all-windows t))
 
-(use-package yahoo-weather
-  :init
-  (setq yahoo-weather-location "Vantaa"
-        yahoo-weather-format "[%(weather) %(temperature)℃]")
-  :config
-  (yahoo-weather-mode t))
+;; (use-package yahoo-weather
+;;   :init
+;;   (setq yahoo-weather-location "Vantaa"
+;;         yahoo-weather-format "[%(weather) %(temperature)℃]")
+;;   :config
+;;   (yahoo-weather-mode t))
 
 (use-package solaire-mode
   :config
@@ -1062,6 +1053,12 @@
 (use-package paradox
   :config
   (paradox-enable))
+
+(use-package persp-mode
+  :init
+  (setq persp-autokill-buffer-on-remove 'kill-weak)
+  :config
+  (add-hook 'after-init-hook (lambda () (persp-mode t))))
 
 (use-package eyebrowse
   :general
@@ -1090,9 +1087,6 @@
         eyebrowse-wrap-around t)
   :config
   (eyebrowse-mode t))
-
-(use-package w3m
-  :defer t)
 
 ;; (load "~/.ercrc.el")
 ;; (use-package erc

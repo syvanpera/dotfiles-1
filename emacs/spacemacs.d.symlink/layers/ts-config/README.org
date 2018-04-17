@@ -1,0 +1,13 @@
+#+TITLE: ts-config layer
+
+* Table of Contents                                       :TOC_4_gh:noexport:
+- [[#description][Description]]
+- [[#install][Install]]
+
+* Description
+This layer adds pretty much all my custom Emacs configurations.
+
+* Install
+To use this configuration layer, add it to your =~/.spacemacs=. You will need to
+add =ts-config= to the existing =dotspacemacs-configuration-layers= list in this
+file.

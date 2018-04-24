@@ -1,0 +1,131 @@
+;;; +bindings.el -*- lexical-binding: t; -*-
+
+(map!
+ ;; --- Global keybindings ---------------------------
+ :gnvime "M-p" #'counsel-find-file
+ :gnvime "M-P" #'execute-extended-command
+ :gnvime "M-e" #'+neotree/find-this-file
+ :gnvime "M-y" #'counsel-yank-pop
+ :gnvime "M-u" #'undo-tree-visualize
+ :gnvime "M-g" #'ts@git-hydra/body
+ :gnvime "M-F" #'helm-projectile-ag
+ :gnvime "M-f" #'helm-swoop
+ :gnvime "C-u" #'universal-argument
+ :gnvime "<C-f5>" '(lambda () (interactive) (bookmark-set "SAVED"))
+ :gnvime "<f5>"   '(lambda () (interactive) (bookmark-jump "SAVED"))
+
+ :i      "M-s" #'save-buffer
+
+ ;; Text-scaling
+ :ne "M-=" (λ! (text-scale-set 0))
+ :ne "M-0" (λ! (text-scale-set 0))
+ :ne "M-+" #'text-scale-increase
+ :ne "M--" #'text-scale-decrease
+ :ne "M-z" #'doom@text-zoom/body
+
+ ;; --- Personal vim-esque bindings ------------------
+ :nm "gf" #'projectile-find-file-dwim
+ :nm "gF" #'projectile-find-file-dwim-other-window
+
+ ;; Org
+ (:prefix "C-c"
+   :gnvime "i"       #'ts/open-org-inbox
+   :gnvime "l"       #'org-store-link
+   :gnvime "a"       #'org-agenda
+   :gnvime "c"       #'org-capture
+   :gnvime "b"       #'org-switchb)
+
+ ;; --- <leader> -------------------------------------
+ (:leader
+   :desc "Pop up shell"           :n "'" #'projectile-run-eshell
+   (:desc "buffer" :prefix "b"
+     :desc "Kill buffer"          :n "d" #'kill-this-buffer
+     :desc "Open messages buffer" :n "m" #'spacemacs/switch-to-messages-buffer
+     :desc "Open scratch buffer"  :n "s" #'spacemacs/switch-to-scratch-buffer)
+   (:desc "git" :prefix "g"
+     :desc "Git status"           :n "s" #'magit-status)
+   (:desc "open" :prefix "o"
+     :desc "Eshell"               :n "s" #'eshell))
+
+ ;; --- <localleader> -------------------------------------
+ (:localleader
+   :desc "Switch to alt buffer"      :nv "TAB" #'spacemacs/alternate-buffer
+   :desc "Close window or workspace" :nv "q"   #'+workspace/close-window-or-workspace
+   :desc "Switch workspace buffer"   :nv "b"   #'persp-switch-to-buffer
+   :desc "Switch buffer"             :nv "B"   #'helm-mini
+   :desc "Browse files"              :nv "f"   #'find-file
+   :desc "Browse files"              :nv "F"   #'projectile-find-file
+   :desc "Toggle Neotree"            :nv "e"   #'neotree-toggle
+   :desc "Open private config"       :n  "v"   #'ts/open-config-file
+   (:desc "git" :prefix "g"
+     :desc "Git status"              :n  "s"   #'magit-status
+     :desc "Git transient state"     :n  "g"   #'ts@git-hydra/body
+     :desc "Stage hunk"              :n  "S"   #'git-gutter:stage-hunk
+     :desc "View hunk"               :nv "v"   #'git-gutter:popup-hunk
+     :desc "Next hunk"               :nv "n"   #'git-gutter:next-hunk
+     :desc "Previous hunk"           :nv "p"   #'git-gutter:previous-hunk
+     :desc "Git revert hunk"         :n  "r"   #'git-gutter:revert-hunk))
+
+ ;; company
+ (:after company
+   (:map company-active-map
+     "C-f"     #'company-next-page
+     "C-b"     #'company-previous-page))
+
+ ;; evil
+ (:after evil
+   (:map evil-window-map ; prefix "C-w"
+     "o" #'doom/window-zoom
+     "z" #'doom/window-enlargen))
+
+ ;; ivy
+ (:after ivy
+   :map ivy-minibuffer-map
+   "C-h" #'ivy-backward-delete-char
+   "C-b" #'ivy-scroll-up-command
+   "C-f" #'ivy-scroll-down-command)
+
+ ;; org
+ (:after org
+   :map org-mode-map
+   :nvime "M-h" #'org-metaleft
+   :nvime "M-l" #'org-metaright
+   :nvime "M-J" #'org-shiftmetadown
+   :nvime "M-K" #'org-shiftmetaup
+   :nvime "M-H" #'org-shiftmetaleft
+   :nvime "M-L" #'org-shiftmetaright
+   :nvime "C-j" #'evil-window-down
+   :nvime "C-k" #'evil-window-up
+   :nvime "ﬁ" #'org-shiftright
+   :nvime "˛" #'org-shiftleft
+   :nvime "ª" #'org-shiftup
+   :nvime "√" #'org-shiftdown)
+
+ ;; helm
+ (:after helm
+   (:map helm-map
+     "C-k"        #'helm-previous-line
+     "C-j"        #'helm-next-line
+     "C-l"        (kbd "RET")
+     "C-b"        #'helm-previous-page
+     "C-f"        #'helm-next-page)
+
+   (:after helm-files
+     (:map helm-find-files-map
+       "C-h" #'helm-find-files-up-one-level
+       "C-l" (kbd "RET")))))
+
+
+;; evil-collection defines some of these and we need to override them. So bind these
+;; after evil-collection
+(after! evil-collection
+  (defun ts/init-eshell-keymap ()
+    "Setup eshell keybindings. This must be done in a hook because eshell-mode
+    redefines its keys every time `eshell-mode' is enabled."
+    (map! :map eshell-mode-map
+          :nvim "C-j" #'evil-window-down
+          :nvim "C-k" #'evil-window-up
+          :nvim "C-h" #'evil-window-left
+          :nvim "C-l" #'evil-window-right))
+
+  (add-hook 'eshell-first-time-mode-hook #'ts/init-eshell-keymap))

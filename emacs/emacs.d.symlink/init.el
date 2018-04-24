@@ -772,10 +772,6 @@
        (add-hook 'git-timemachine-mode-hook #'evil-normalize-keymaps))))
 
 (use-package git-gutter+
-  :config
-  (global-git-gutter+-mode))
-
-(use-package yasnippet
   :general
   (:states 'normal
    :prefix ts-git-prefix
@@ -783,6 +779,10 @@
    "p" 'git-gutter+-previous-hunk
    "v" 'git-gutter+-show-hunk
    "r" 'git-gutter+-revert-hunk)
+  :config
+  (global-git-gutter+-mode))
+
+(use-package yasnippet
   :config
   (yas-global-mode t))
 

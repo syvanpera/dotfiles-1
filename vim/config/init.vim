@@ -31,6 +31,8 @@
   " call dein#add('othree/jspc.vim')
   " call dein#add('zchee/deoplete-jedi')
 
+  call dein#add('elmcast/elm-vim')
+
   call dein#add('neoclide/vim-jsx-improve')
   " call dein#add('pangloss/vim-javascript')
   " call dein#add('mxw/vim-jsx')

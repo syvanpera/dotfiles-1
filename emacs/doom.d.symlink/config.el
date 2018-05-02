@@ -47,6 +47,9 @@
 (after! evil
   (evil-put-command-property 'evil-yank-line :motion 'evil-line))
 
+(after! flycheck
+  (setq flycheck-check-syntax-automatically '(new-line save idle-change mode-enabled)))
+
 (after! ivy
   (setq +ivy-buffer-icons t))
 

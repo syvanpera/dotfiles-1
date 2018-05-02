@@ -2,6 +2,9 @@
 
 (load "~/.emacs-secrets" t)
 
+(setenv "PATH" (concat (expand-file-name "~/.dotfiles/bin") ":" (getenv "PATH")))
+(setq exec-path (append (list (expand-file-name "~/.dotfiles/bin")) exec-path))
+
 (defvar ts-scratch-mode 'lisp-interaction-mode
   "Default major mode of the scratch buffer.")
 

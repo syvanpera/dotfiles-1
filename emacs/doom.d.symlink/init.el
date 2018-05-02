@@ -34,9 +34,9 @@
 
        :completion
        company           ; the ultimate code completion backend
-       helm              ; the *other* search engine for love and life
+      ;helm              ; the *other* search engine for love and life
       ;ido               ; the other *other* search engine...
-      ;ivy               ; a search engine for love and life
+       ivy               ; a search engine for love and life
 
        :ui
        doom              ; what makes DOOM look the way it does
@@ -81,7 +81,7 @@
        data              ; config/data formats
       ;erlang            ; an elegant language for a more civilized age
       ;elixir            ; erlang done right
-      ;elm               ; care for a cup of TEA?
+       elm               ; care for a cup of TEA?
        emacs-lisp        ; drown in parentheses
       ;ess               ; emacs speaks statistics
       ;go                ; the hipster dialect

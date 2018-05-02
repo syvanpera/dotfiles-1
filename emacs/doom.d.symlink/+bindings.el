@@ -2,17 +2,17 @@
 
 (map!
  ;; --- Global keybindings ---------------------------
- :gnvime "M-p" #'counsel-find-file
+ :gnvime "M-p" #'counsel-projectile-find-file
  :gnvime "M-P" #'execute-extended-command
  :gnvime "M-e" #'+neotree/find-this-file
  :gnvime "M-y" #'counsel-yank-pop
  :gnvime "M-u" #'undo-tree-visualize
  :gnvime "M-g" #'ts@git-hydra/body
- :gnvime "M-F" #'helm-projectile-ag
- :gnvime "M-f" #'helm-swoop
+ :gnvime "M-F" #'+ivy/project-search
+ :gnvime "M-f" #'swiper
  :gnvime "C-u" #'universal-argument
- :gnvime "<C-f5>" '(lambda () (interactive) (bookmark-set "SAVED"))
- :gnvime "<f5>"   '(lambda () (interactive) (bookmark-jump "SAVED"))
+ :gnvime "<C-f5>" '(lambda () (interactive) (bookmark-set "QUICKSAVE"))
+ :gnvime "<f5>"   '(lambda () (interactive) (bookmark-jump "QUICKSAVE"))
 
  :i      "M-s" #'save-buffer
 
@@ -37,24 +37,35 @@
 
  ;; --- <leader> -------------------------------------
  (:leader
-   :desc "Pop up shell"           :n "'" #'projectile-run-eshell
+   :desc "Pop up shell"           :n  "'" #'projectile-run-eshell
    (:desc "buffer" :prefix "b"
-     :desc "Kill buffer"          :n "d" #'kill-this-buffer
-     :desc "Open messages buffer" :n "m" #'spacemacs/switch-to-messages-buffer
-     :desc "Open scratch buffer"  :n "s" #'spacemacs/switch-to-scratch-buffer)
+     :desc "Kill buffer"          :n  "d" #'kill-this-buffer
+     :desc "Open messages buffer" :n  "m" #'spacemacs/switch-to-messages-buffer
+     :desc "Open scratch buffer"  :n  "s" #'spacemacs/switch-to-scratch-buffer)
+   (:desc "errors" :prefix "e"
+     :desc "List errors"          :n  "l" #'flycheck-list-errors
+     :desc "Next error"           :n  "n" #'flycheck-next-error
+     :desc "Previous error"       :n  "p" #'flycheck-previous-error)
    (:desc "git" :prefix "g"
-     :desc "Git status"           :n "s" #'magit-status)
+     :desc "Git status"           :n  "s" #'magit-status
+     :desc "Next hunk"            :nv "n" #'git-gutter:next-hunk
+     :desc "Previous hunk"        :nv "p" #'git-gutter:previous-hunk
+     :desc "View hunk"            :nv "v" #'git-gutter:popup-hunk)
    (:desc "open" :prefix "o"
-     :desc "Eshell"               :n "s" #'eshell))
+     :desc "Eshell"               :n  "s" #'eshell)
+   (:desc "file" :prefix "f"
+     :desc "Find file"            :n  "f" #'counsel-find-file)
+   (:desc "project" :prefix "p"
+     :desc "Find file in project" :n  "f" #'counsel-projectile-find-file))
 
  ;; --- <localleader> -------------------------------------
  (:localleader
    :desc "Switch to alt buffer"      :nv "TAB" #'spacemacs/alternate-buffer
-   :desc "Close window or workspace" :nv "q"   #'+workspace/close-window-or-workspace
-   :desc "Switch workspace buffer"   :nv "b"   #'persp-switch-to-buffer
-   :desc "Switch buffer"             :nv "B"   #'helm-mini
-   :desc "Browse files"              :nv "f"   #'find-file
-   :desc "Browse files"              :nv "F"   #'projectile-find-file
+   ;; :desc "Close window or workspace" :nv "q"   #'+workspace/close-window-or-workspace
+   ;; :desc "Switch workspace buffer"   :nv "b"   #'persp-switch-to-buffer
+   ;; :desc "Switch buffer"             :nv "B"   #'helm-mini
+   ;; :desc "Browse files"              :nv "f"   #'find-file
+   ;; :desc "Browse files"              :nv "F"   #'projectile-find-file
    :desc "Toggle Neotree"            :nv "e"   #'neotree-toggle
    :desc "Open private config"       :n  "v"   #'ts/open-config-file
    (:desc "git" :prefix "g"
@@ -102,18 +113,19 @@
    :nvime "√" #'org-shiftdown)
 
  ;; helm
- (:after helm
-   (:map helm-map
-     "C-k"        #'helm-previous-line
-     "C-j"        #'helm-next-line
-     "C-l"        (kbd "RET")
-     "C-b"        #'helm-previous-page
-     "C-f"        #'helm-next-page)
+ ;; (:after helm
+ ;;   (:map helm-map
+ ;;     "C-k"        #'helm-previous-line
+ ;;     "C-j"        #'helm-next-line
+ ;;     "C-l"        (kbd "RET")
+ ;;     "C-b"        #'helm-previous-page
+ ;;     "C-f"        #'helm-next-page)
 
-   (:after helm-files
-     (:map helm-find-files-map
-       "C-h" #'helm-find-files-up-one-level
-       "C-l" (kbd "RET")))))
+ ;;   (:after helm-files
+ ;;     (:map helm-find-files-map
+ ;;       "C-h" #'helm-find-files-up-one-level
+ ;;       "C-l" (kbd "RET"))))
+ )
 
 
 ;; evil-collection defines some of these and we need to override them. So bind these
@@ -126,6 +138,8 @@
           :nvim "C-j" #'evil-window-down
           :nvim "C-k" #'evil-window-up
           :nvim "C-h" #'evil-window-left
-          :nvim "C-l" #'evil-window-right))
+          :nvim "C-l" #'evil-window-right
+          :i    "C-p" #'eshell-previous-matching-input-from-input
+          :i    "C-n" #'eshell-next-matching-input-from-input))
 
   (add-hook 'eshell-first-time-mode-hook #'ts/init-eshell-keymap))

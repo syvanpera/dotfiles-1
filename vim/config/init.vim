@@ -276,6 +276,9 @@
 
   nnoremap <space> za
 
+  tnoremap <Esc> <C-\><C-n>
+  tnoremap <C-v><Esc> <Esc>
+
 " }}}
 
 " Misc ----------------------------------------------------------------------{{{
@@ -291,7 +294,7 @@
   " let g:ale_sign_error = ' '
   " let g:ale_sign_warning = ' '
   let g:ale_sign_warning = ' '
-  let g:ale_sign_error = ' '
+  let g:ale_sign_error = ' '
   let g:ale_javascript_eslint_executable = './node_modules/.bin/eslint'
   let g:EditorConfig_exclude_patterns = ['fugitive://.*']
   let g:doorboy_nomap_quotations = {

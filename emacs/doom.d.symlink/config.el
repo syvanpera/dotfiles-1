@@ -56,12 +56,16 @@
 (after! ivy
   (setq +ivy-buffer-icons t))
 
+(after! company
+  (setq company-idle-delay 0.4
+        company-minimum-prefix-length 3))
+
 (after! tide
   ;; (setq tide-tsserver-executable "/usr/local/bin/tsserver")
   ;; (setq tide-tsserver-process-environment '("TSS_LOG=-level verbose -file /tmp/tss.log"))
   (add-hook 'js-mode-hook
             (lambda ()
-              ;; (eldoc-mode -1)
+              (eldoc-mode -1)
               (tide-hl-identifier-mode +1))))
 
 (after! doom-themes

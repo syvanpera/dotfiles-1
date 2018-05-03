@@ -5,4 +5,3 @@
 ;; (package! indium)
 (package! org-projectile)
 (package! org-gcal)
-(package! fzf :recipe (:fetcher github :repo "syvanpera/fzf.el"))

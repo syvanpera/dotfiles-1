@@ -2,6 +2,10 @@
 
 (load "~/.emacs-secrets" t)
 
+(fringe-mode '(4 . 8))
+
+(add-to-list 'load-path (expand-file-name "elisp" doom-private-dir))
+
 (setenv "PATH" (concat (expand-file-name "~/.dotfiles/bin") ":" (getenv "PATH")))
 (setq exec-path (append (list (expand-file-name "~/.dotfiles/bin")) exec-path))
 
@@ -28,8 +32,7 @@
               web-mode-code-indent-offset 2
               web-mode-indent-style 2)
 
-(setq doom-line-numbers-style 'relative
-      doom-fringe-size '4)
+(setq doom-line-numbers-style 'relative)
 
 (setq +org-dir (expand-file-name "~/Google Drive/org/"))
 
@@ -44,14 +47,41 @@
     (mu4e-compose-signature . "---\nTuomo"))
   t)
 
+(global-prettify-symbols-mode t)
+(setq prettify-symbols-unprettify-at-point t)
+
 (add-hook 'before-save-hook 'whitespace-cleanup)
 (add-hook 'prog-mode-hook (lambda () (setq-local show-trailing-whitespace t)))
+(add-hook 'dired-mode-hook (lambda () (require 'dired-sort)))
+(add-hook 'prog-mode-hook (lambda ()
+                           (push '("|>"  . ?⊳) prettify-symbols-alist)
+                           (push '("<="  . ?≤) prettify-symbols-alist)
+                           (push '(">="  . ?≥) prettify-symbols-alist)
+                           (push '("=="  . ?≡) prettify-symbols-alist)
+                           (push '("===" . ?≣) prettify-symbols-alist)
+                           (push '("/="  . ?≠) prettify-symbols-alist)
+                           (push '("!="  . ?≠) prettify-symbols-alist)
+                           (push '("!==" . ?≢) prettify-symbols-alist)
+                           (push '("->"  . ?→) prettify-symbols-alist)
+                           (push '("<-"  . ?←) prettify-symbols-alist)))
+
+
+(setq dired-listing-switches (concat dired-listing-switches "Gg"))
 
 (after! evil
   (evil-put-command-property 'evil-yank-line :motion 'evil-line))
 
 (after! flycheck
-  (setq flycheck-check-syntax-automatically '(new-line save idle-change mode-enabled)))
+  (setq flycheck-check-syntax-automatically '(new-line save idle-change mode-enabled)
+        flycheck-indication-mode 'right-fringe)
+  (fringe-helper-define 'flycheck-fringe-bitmap-double-arrow 'center
+    "...11.11"
+    "..11.11."
+    ".11.11.."
+    "11.11..."
+    ".11.11.."
+    "..11.11."
+    "...11.11"))
 
 (after! ivy
   (setq +ivy-buffer-icons t))
@@ -59,6 +89,11 @@
 (after! company
   (setq company-idle-delay 0.4
         company-minimum-prefix-length 3))
+
+(after! web-beautify
+  :init
+  (map! (:map* (json-mode-map)
+          :n "gQ" #'web-beautify-js)))
 
 (after! tide
   ;; (setq tide-tsserver-executable "/usr/local/bin/tsserver")
@@ -74,6 +109,7 @@
   (add-hook 'doom-load-theme-hook #'ts-theme-config))
 
 (after! org
+  (require 'ob-elm)
   (setq org-snippets-file (concat org-directory "/snippets.org")
         org-bullets-bullet-list '("■" "○" "◉" "◆" "▶" "▲")
         org-agenda-files (quote ("~/Google Drive/org"
@@ -160,4 +196,3 @@
         org-gcal-client-secret ts-secrets/org-gcal-client-secret
         org-gcal-file-alist '(("tuomo.syvanpera@gmail.com" .  "~/Google Drive/org/gcal.org"))))
 
-(def-package! fzf)

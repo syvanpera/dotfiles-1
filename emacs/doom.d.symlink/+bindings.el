@@ -11,6 +11,10 @@
  :gnvime "M-F" #'+ivy/project-search
  :gnvime "M-f" #'swiper
  :gnvime "C-u" #'universal-argument
+ :gnvime "M-√" #'evil-window-increase-height
+ :gnvime "M-ª" #'evil-window-decrease-height
+ :gnvime "M-ﬁ" #'evil-window-increase-width
+ :gnvime "M-˛" #'evil-window-decrease-width
  :gnvime "<C-f5>" '(lambda () (interactive) (bookmark-set "QUICKSAVE"))
  :gnvime "<f5>"   '(lambda () (interactive) (bookmark-jump "QUICKSAVE"))
 

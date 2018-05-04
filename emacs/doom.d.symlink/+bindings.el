@@ -97,8 +97,8 @@
  (:after ivy
    :map ivy-minibuffer-map
    "C-h" #'ivy-backward-delete-char
-   "C-b" #'ivy-scroll-up-command
-   "C-f" #'ivy-scroll-down-command)
+   "C-f" #'ivy-scroll-up-command
+   "C-b" #'ivy-scroll-down-command)
 
  ;; org
  (:after org

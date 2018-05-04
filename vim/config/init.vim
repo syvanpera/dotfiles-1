@@ -53,6 +53,7 @@
   call dein#add('vim-airline/vim-airline-themes')
   call dein#add('mhartington/oceanic-next')
   call dein#add('chriskempson/base16-vim')
+  call dein#add('arcticicestudio/nord-vim')
   call dein#add('ryanoasis/vim-devicons')
   call dein#add('yggdroot/indentline')
   call dein#add('mhinz/vim-startify')
@@ -136,9 +137,10 @@
 
   set background=dark
   syntax on
-  colorscheme base16-oceanicnext
+  " colorscheme base16-oceanicnext
+  colorscheme nord
 
-  highlight Normal guibg=NONE
+  " highlight Normal guibg=NONE
   highlight CursorLineNr guifg=White gui=NONE
   highlight ALEErrorSign guifg=#ec5f67 guibg=#343d46
   highlight ALEErrorSign guifg=#ec5f67 guibg=#343d46

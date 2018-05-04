@@ -51,20 +51,20 @@
 (setq prettify-symbols-unprettify-at-point t)
 
 (add-hook 'before-save-hook 'whitespace-cleanup)
-(add-hook 'prog-mode-hook (lambda () (setq-local show-trailing-whitespace t)))
 (add-hook 'dired-mode-hook (lambda () (require 'dired-sort)))
 (add-hook 'prog-mode-hook (lambda ()
-                           (push '("|>"  . ?⊳) prettify-symbols-alist)
-                           (push '("<="  . ?≤) prettify-symbols-alist)
-                           (push '(">="  . ?≥) prettify-symbols-alist)
-                           (push '("=="  . ?≡) prettify-symbols-alist)
-                           (push '("===" . ?≣) prettify-symbols-alist)
-                           (push '("/="  . ?≠) prettify-symbols-alist)
-                           (push '("!="  . ?≠) prettify-symbols-alist)
-                           (push '("!==" . ?≢) prettify-symbols-alist)
-                           (push '("->"  . ?→) prettify-symbols-alist)
-                           (push '("<-"  . ?←) prettify-symbols-alist)))
-
+                            (setq-local show-trailing-whitespace t)
+                            (push '("<="  . ?≤) prettify-symbols-alist)
+                            (push '(">="  . ?≥) prettify-symbols-alist)
+                            (push '("=="  . ?≡) prettify-symbols-alist)
+                            (push '("===" . ?≣) prettify-symbols-alist)
+                            (push '("/="  . ?≠) prettify-symbols-alist)
+                            (push '("!="  . ?≠) prettify-symbols-alist)
+                            (push '("!==" . ?≢) prettify-symbols-alist)
+                            (push '("=>"  . ?⇨) prettify-symbols-alist)
+                            (push '("<="  . ?⇦) prettify-symbols-alist)
+                            (push '("->"  . ?→) prettify-symbols-alist)
+                            (push '("<-"  . ?←) prettify-symbols-alist)))
 
 (setq dired-listing-switches (concat dired-listing-switches "Gg"))
 
@@ -102,6 +102,14 @@
             (lambda ()
               (eldoc-mode -1)
               (tide-hl-identifier-mode +1))))
+
+(after! elm-mode
+  (add-hook 'elm-mode-hook (lambda ()
+                             (push '("|>"  . ?⊳) prettify-symbols-alist)
+                             (push '("<|"  . ?⊲) prettify-symbols-alist)
+                             (push '("\\"  . ?λ) prettify-symbols-alist)
+                             (push '(">>"  . ?») prettify-symbols-alist)
+                             (push '("<<"  . ?«) prettify-symbols-alist))))
 
 (after! doom-themes
   (setq doom-neotree-file-icons t)

@@ -11,8 +11,9 @@
       mac-option-modifier  nil)
 
 (setq doom-theme 'doom-city-lights
-      ;; doom-font (font-spec :family "Hasklug Nerd Font" :size 12 :weight 'light)
-      doom-font (font-spec :family "Input Mono Narrow" :size 12 :weight 'light)
+      ;; doom-font (font-spec :family "Input Mono Narrow" :size 12 :weight 'light)
+      ;; doom-font (font-spec :family "Source Code Pro" :size 12 :weight 'regular)
+      doom-font (font-spec :family "Fira Code" :size 12 :weight 'light)
       doom-localleader-key ",")
 
 (doom! :feature

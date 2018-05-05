@@ -43,3 +43,12 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   "Open custom config file"
   (interactive)
   (find-file (concat doom-private-dir "/config.el")))
+
+(defun ts/truncate-eshell-buffers ()
+  "Truncates all eshell buffers"
+  (interactive)
+  (save-current-buffer
+    (dolist (buffer (buffer-list t))
+      (set-buffer buffer)
+      (when (eq major-mode 'eshell-mode)
+        (eshell-truncate-buffer)))))

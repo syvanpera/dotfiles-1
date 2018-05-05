@@ -12,7 +12,7 @@
 (defvar ts-scratch-mode 'lisp-interaction-mode
   "Default major mode of the scratch buffer.")
 
-(with-current-buffer "*scratch*" (emacs-lock-mode 'kill))
+(with-current-buffer "*scratch*"  (emacs-lock-mode 'kill))
 (with-current-buffer "*Messages*" (emacs-lock-mode 'kill))
 
 (load! +funcs)
@@ -67,6 +67,12 @@
                             (push '("<-"  . ?←) prettify-symbols-alist)))
 
 (setq dired-listing-switches (concat dired-listing-switches "Gg"))
+
+(setq eshell-buffer-maximum-lines 12000)
+;; After being idle for 5 seconds, truncate all the eshell-buffers if
+;; needed. If this needs to be canceled, you can run `(cancel-timer
+;; eos/eshell-truncate-timer)'
+(setq ts/eshell-truncate-timer (run-with-idle-timer 5 t #'ts/truncate-eshell-buffers))
 
 (after! evil
   (evil-put-command-property 'evil-yank-line :motion 'evil-line))

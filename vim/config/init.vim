@@ -86,6 +86,8 @@
 
   if (has("termguicolors"))
     set termguicolors
+    set t_8f=^[[38;2;%lu;%lu;%lum
+    set t_8b=^[[48;2;%lu;%lu;%lum
   endif
   " Display extra whitespace
   set list listchars=tab:»·,trail:·,nbsp:·
@@ -142,6 +144,7 @@
 
   " highlight Normal guibg=NONE
   highlight CursorLineNr guifg=White gui=NONE
+  highlight Comment guifg=#5C667A
   highlight ALEErrorSign guifg=#ec5f67 guibg=#343d46
   highlight ALEErrorSign guifg=#ec5f67 guibg=#343d46
 

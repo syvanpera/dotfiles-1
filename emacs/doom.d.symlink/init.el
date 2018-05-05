@@ -10,7 +10,8 @@
       mac-right-command-modifier 'super
       mac-option-modifier  nil)
 
-(setq doom-theme 'doom-city-lights
+(setq doom-nord-region-highlight 'frost
+      doom-theme 'doom-nord
       ;; doom-font (font-spec :family "Input Mono Narrow" :size 12 :weight 'light)
       ;; doom-font (font-spec :family "Source Code Pro" :size 12 :weight 'regular)
       doom-font (font-spec :family "Fira Code" :size 12 :weight 'light)

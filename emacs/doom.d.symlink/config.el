@@ -62,7 +62,7 @@
                             (push '("!="  . ?≠) prettify-symbols-alist)
                             (push '("!==" . ?≢) prettify-symbols-alist)
                             (push '("=>"  . ?⇨) prettify-symbols-alist)
-                            (push '("<="  . ?⇦) prettify-symbols-alist)
+                            ;; (push '("<="  . ?⇦) prettify-symbols-alist)
                             (push '("->"  . ?→) prettify-symbols-alist)
                             (push '("<-"  . ?←) prettify-symbols-alist)))
 

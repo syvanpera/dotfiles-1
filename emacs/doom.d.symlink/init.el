@@ -10,7 +10,8 @@
       mac-right-command-modifier 'super
       mac-option-modifier  nil)
 
-(setq doom-nord-region-highlight 'frost
+(setq ;; doom-nord-region-highlight 'frost
+      doom-nord-comment-brightness 15
       doom-theme 'doom-nord
       ;; doom-font (font-spec :family "Input Mono Narrow" :size 12 :weight 'light)
       ;; doom-font (font-spec :family "Source Code Pro" :size 12 :weight 'regular)

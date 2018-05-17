@@ -15,8 +15,11 @@
  :gnvime "M-ª" #'evil-window-decrease-height
  :gnvime "M-ﬁ" #'evil-window-increase-width
  :gnvime "M-˛" #'evil-window-decrease-width
+ :gnvime "M-r" #'counsel-imenu
+ :gnvime "M-R" #'+eval/buffer
  :gnvime "<C-f5>" '(lambda () (interactive) (bookmark-set "QUICKSAVE"))
  :gnvime "<f5>"   '(lambda () (interactive) (bookmark-jump "QUICKSAVE"))
+ :nv     "C-SPC" nil
 
  :i      "M-s" #'save-buffer
 
@@ -92,6 +95,10 @@
    (:map evil-window-map ; prefix "C-w"
      "o" #'doom/window-zoom
      "z" #'doom/window-enlargen))
+
+ (:after elm-mode
+   (:map elm-mode-map
+     :nvme "M-." 'elm-mode-goto-tag-at-point))
 
  ;; ivy
  (:after ivy

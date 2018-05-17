@@ -19,8 +19,8 @@
 (load! +bindings)
 (load! +hydras)
 
-;; (setq save-interprogram-paste-before-kill t
-;;       x-select-enable-clipboard nil)
+(setq save-interprogram-paste-before-kill t
+      x-select-enable-clipboard nil)
 
 (setq-default indent-tabs-mode nil
               standard-indent 2
@@ -38,6 +38,12 @@
 
 (setq +email-backend 'offlineimap)
 
+;; use display-buffer-alist instead of display-buffer-function if the following line won't work
+;; (setq display-buffer-function 'ts/display-new-buffer)
+
+(setq split-height-threshold nil
+      split-width-threshold 0)
+
 (set! :email "Gmail"
   '((mu4e-sent-folder       . "/Gmail/Sent Mail")
     (mu4e-drafts-folder     . "/Gmail/Drafts")
@@ -49,22 +55,54 @@
 
 (global-prettify-symbols-mode t)
 (setq prettify-symbols-unprettify-at-point t)
+;; (mac-auto-operator-composition-mode t)
 
 (add-hook 'before-save-hook 'whitespace-cleanup)
 (add-hook 'dired-mode-hook (lambda () (require 'dired-sort)))
 (add-hook 'prog-mode-hook (lambda ()
-                            (setq-local show-trailing-whitespace t)
-                            (push '("<="  . ?≤) prettify-symbols-alist)
-                            (push '(">="  . ?≥) prettify-symbols-alist)
-                            (push '("=="  . ?≡) prettify-symbols-alist)
-                            (push '("===" . ?≣) prettify-symbols-alist)
-                            (push '("/="  . ?≠) prettify-symbols-alist)
-                            (push '("!="  . ?≠) prettify-symbols-alist)
-                            (push '("!==" . ?≢) prettify-symbols-alist)
-                            (push '("=>"  . ?⇨) prettify-symbols-alist)
-                            ;; (push '("<="  . ?⇦) prettify-symbols-alist)
-                            (push '("->"  . ?→) prettify-symbols-alist)
-                            (push '("<-"  . ?←) prettify-symbols-alist)))
+                            (setq-local show-trailing-whitespace t)))
+;;                             (push '("<="  . ?≤) prettify-symbols-alist)
+;;                             (push '(">="  . ?≥) prettify-symbols-alist)
+;;                             (push '("=="  . ?≡) prettify-symbols-alist)
+;;                             (push '("===" . ?≣) prettify-symbols-alist)
+;;                             (push '("!="  . ?≠) prettify-symbols-alist)
+;;                             (push '("!==" . ?≢) prettify-symbols-alist)
+;;                             ;; (push '("=>"  . ?⇒) prettify-symbols-alist)
+;;                             ;; (push '("=>"  . ?⇨) prettify-symbols-alist)
+;;                             (push '("=>"  . ?⟹) prettify-symbols-alist)
+;;                             ;; (push '("<="  . ?⇦) prettify-symbols-alist)
+;;                             (push '("->"  . ?→) prettify-symbols-alist)
+;;                             (push '("<-"  . ?←) prettify-symbols-alist)))
+
+(let ((alist '((33 . ".\\(?:\\(?:==\\|!!\\)\\|[!=]\\)")
+               (35 . ".\\(?:###\\|##\\|_(\\|[#(?[_{]\\)")
+               (36 . ".\\(?:>\\)")
+               (37 . ".\\(?:\\(?:%%\\)\\|%\\)")
+               (38 . ".\\(?:\\(?:&&\\)\\|&\\)")
+               (42 . ".\\(?:\\(?:\\*\\*/\\)\\|\\(?:\\*[*/]\\)\\|[*/>]\\)")
+               (43 . ".\\(?:\\(?:\\+\\+\\)\\|[+>]\\)")
+               (45 . ".\\(?:\\(?:-[>-]\\|<<\\|>>\\)\\|[<>}~-]\\)")
+               (46 . ".\\(?:\\(?:\\.[.<]\\)\\|[.=-]\\)")
+               (47 . ".\\(?:\\(?:\\*\\*\\|//\\|==\\)\\|[*/=>]\\)")
+               (48 . ".\\(?:x[a-zA-Z]\\)")
+               (58 . ".\\(?:::\\|[:=]\\)")
+               (59 . ".\\(?:;;\\|;\\)")
+               (60 . ".\\(?:\\(?:!--\\)\\|\\(?:~~\\|->\\|\\$>\\|\\*>\\|\\+>\\|--\\|<[<=-]\\|=[<=>]\\||>\\)\\|[*$+~/<=>|-]\\)")
+               (61 . ".\\(?:\\(?:/=\\|:=\\|<<\\|=[=>]\\|>>\\)\\|[<=>~]\\)")
+               (62 . ".\\(?:\\(?:=>\\|>[=>-]\\)\\|[=>-]\\)")
+               (63 . ".\\(?:\\(\\?\\?\\)\\|[:=?]\\)")
+               (91 . ".\\(?:]\\)")
+               (92 . ".\\(?:\\(?:\\\\\\\\\\)\\|\\\\\\)")
+               (94 . ".\\(?:=\\)")
+               (119 . ".\\(?:ww\\)")
+               (123 . ".\\(?:-\\)")
+               (124 . ".\\(?:\\(?:|[=|]\\)\\|[=>|]\\)")
+               (126 . ".\\(?:~>\\|~~\\|[>=@~-]\\)")
+               )
+             ))
+  (dolist (char-regexp alist)
+    (set-char-table-range composition-function-table (car char-regexp)
+                          `([,(cdr char-regexp) 0 font-shape-gstring]))))
 
 (setq dired-listing-switches (concat dired-listing-switches "Gg"))
 
@@ -106,13 +144,18 @@
   ;; (setq tide-tsserver-process-environment '("TSS_LOG=-level verbose -file /tmp/tss.log"))
   (add-hook 'js-mode-hook
             (lambda ()
+              (setq js--prettify-symbols-alist nil)
               (eldoc-mode -1)
               (tide-hl-identifier-mode +1))))
 
 (after! elm-mode
+  (setq elm-tags-on-save t
+        elm-tags-exclude-elm-stuff nil)
+  (add-hook 'elm-mode-hook #'elm-oracle-setup-completion)
   (add-hook 'elm-mode-hook (lambda ()
-                             (push '("|>"  . ?⊳) prettify-symbols-alist)
-                             (push '("<|"  . ?⊲) prettify-symbols-alist)
+;;                              (push '("/="  . ?≠) prettify-symbols-alist)
+;;                              (push '("|>"  . ?⊳) prettify-symbols-alist)
+;;                              (push '("<|"  . ?⊲) prettify-symbols-alist)
                              (push '("\\"  . ?λ) prettify-symbols-alist)
                              (push '(">>"  . ?») prettify-symbols-alist)
                              (push '("<<"  . ?«) prettify-symbols-alist))))
@@ -180,6 +223,12 @@
            "* ☛ TODO %^{Task}\n\n"
            :immediate-finish t :kill-buffer t))))
 
+(def-package! highlight-indent-guides
+  :config
+  (setq highlight-indent-guides-method 'character)
+  :hook
+  ((elm-mode coffee-mode) . highlight-indent-guides-mode))
+
 (def-package! all-the-icons-ivy
   :after ivy
   :config
@@ -190,6 +239,21 @@
   (setq persistent-scratch-scratch-buffer-p-function
         (lambda () (string-prefix-p "*scratch" (buffer-name))))
   (persistent-scratch-setup-default))
+
+(def-package! golden-ratio
+  :config
+  ;; (golden-ratio-mode 1)
+  (setq golden-ratio-extra-commands
+      (append golden-ratio-extra-commands
+              '(evil-window-left
+                evil-window-right
+                evil-window-up
+                evil-window-down
+                select-window-1
+                select-window-2
+                select-window-3
+                select-window-4
+                select-window-5))))
 
 ;; (def-package! indium
 ;;   :hook (js-mode . indium-interaction-mode))
@@ -209,4 +273,3 @@
   (setq org-gcal-client-id ts-secrets/org-gcal-client-id
         org-gcal-client-secret ts-secrets/org-gcal-client-secret
         org-gcal-file-alist '(("tuomo.syvanpera@gmail.com" .  "~/Google Drive/org/gcal.org"))))
-

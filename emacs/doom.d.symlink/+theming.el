@@ -1,8 +1,25 @@
 ;;; +theming.el -*- lexical-binding: t; -*-
 
+;; (require 'doom-one-theme)
 (require 'doom-city-lights-theme)
+(require 'doom-nord-theme)
 
 (defun ts-theme-config ()
+  (doom-themes-set-faces 'doom-one
+    (line-number :foreground base5 :background bg)
+    (line-number-current-line :foreground blue :background base4)
+    (hl-line :background base4)
+    (solaire-hl-line-face :inherit 'hl-line)
+    (region :background base5 :foreground nil :distant-foreground (doom-darken fg 0.2))
+    (org-level-1 :foreground blue :background base3 :weight 'semi-bold :height 1.2)
+    (org-level-2 :foreground magenta :weight 'normal)
+    (org-level-3 :foreground violet :weight 'normal)
+    (org-level-4 :foreground (doom-lighten blue 0.25) :weight 'normal)
+    (org-level-5 :foreground (doom-lighten magenta 0.25) :weight 'normal)
+    (org-level-6 :foreground (doom-lighten blue 0.5) :weight 'normal)
+    (org-level-7 :foreground (doom-lighten magenta 0.5) :weight 'normal)
+    (org-level-8 :foreground (doom-lighten blue 0.8) :weight 'normal))
+
   (doom-themes-set-faces 'doom-city-lights
     (line-number :foreground base5 :background bg)
     (line-number-current-line :foreground blue :background base4)

@@ -132,7 +132,8 @@
 
 (after! company
   (setq company-idle-delay 0.4
-        company-minimum-prefix-length 3))
+        company-minimum-prefix-length 3)
+  (add-hook 'elm-mode-hook #'elm-oracle-setup-completion))
 
 (after! web-beautify
   :init

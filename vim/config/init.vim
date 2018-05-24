@@ -314,7 +314,7 @@
   autocmd FileType typescript JsPreTmpl html
   " autocmd FileType typescript syn clear foldBraces
   autocmd FileType qf,fzf setlocal nonumber norelativenumber
-  autocmd FileType html,css,scss,javascript,typescript,coffee,jsx :IndentLinesEnable
+  autocmd FileType html,css,scss,javascript,typescript,coffee,jsx,elm :IndentLinesEnable
   " autocmd FileType coffee setlocal suffixesadd=.js,.coffee,.ejs
   " autocmd FileType javascript setlocal suffixesadd=.js,.coffee,.ejs
   " autocmd FileType javascript.jsx setlocal suffixesadd=.js,.coffee,.ejs

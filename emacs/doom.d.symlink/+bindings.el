@@ -8,7 +8,7 @@
  :gnvime "M-y" #'counsel-yank-pop
  :gnvime "M-u" #'undo-tree-visualize
  :gnvime "M-g" #'ts@git-hydra/body
- :gnvime "M-F" #'+ivy/project-search
+ :gnvime "M-F" #'ts/project-search
  :gnvime "M-f" #'swiper
  :gnvime "C-u" #'universal-argument
  :gnvime "M-√" #'evil-window-increase-height
@@ -83,6 +83,12 @@
      :desc "Next hunk"               :nv "n"   #'git-gutter:next-hunk
      :desc "Previous hunk"           :nv "p"   #'git-gutter:previous-hunk
      :desc "Git revert hunk"         :n  "r"   #'git-gutter:revert-hunk))
+
+ ;; company
+ (:after elm-mode
+   (:map elm-mode-map
+     "C-o" #'pop-tag-mark
+     :nvme "gd"  #'elm-mode-goto-tag-at-point))
 
  ;; company
  (:after company

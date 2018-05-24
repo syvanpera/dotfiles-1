@@ -112,6 +112,10 @@
 ;; eos/eshell-truncate-timer)'
 (setq ts/eshell-truncate-timer (run-with-idle-timer 5 t #'ts/truncate-eshell-buffers))
 
+; (after! whitespace
+;   (advice-remove #'company-box--make-frame #'doom*fix-whitespace-mode-in-childframes)
+;   (advice-remove #'posframe--create-posframe #'doom*fix-whitespace-mode-in-childframes))
+
 (after! evil
   (evil-put-command-property 'evil-yank-line :motion 'evil-line))
 
@@ -255,6 +259,11 @@
                 select-window-3
                 select-window-4
                 select-window-5))))
+
+(def-package! ag
+  :config
+  (setq ag-highlight-search t
+        ag-arguments (quote ("-C 2"))))
 
 ;; (def-package! indium
 ;;   :hook (js-mode . indium-interaction-mode))

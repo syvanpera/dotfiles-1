@@ -6,3 +6,4 @@
 jsconfig.json
 .lvimrc
 .agignore
+.editorconfig

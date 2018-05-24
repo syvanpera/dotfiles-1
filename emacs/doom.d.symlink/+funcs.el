@@ -75,3 +75,16 @@ FORCE-OTHER-WINDOW is ignored."
         (let ((new-win (get-lru-window)))
           (set-window-buffer new-win buffer)
           new-win))))
+
+
+(defun ts/project-search (arg)
+  "Performs a project search using the first available search backend from a
+list of: ripgrep, ag, pt, git-grep and grep. If ARG (universal argument),
+preform search from current directory."
+  (interactive "P")
+  (call-interactively
+   (cond ((executable-find "ag") (if arg #'+ivy/ag-from-cwd #'+ivy/ag))
+         ((executable-find "rg") (if arg #'+ivy/rg-from-cwd #'+ivy/rg))
+         ((executable-find "pt") (if arg #'+ivy/pt-from-cwd #'+ivy/pt))
+         (arg #'+ivy/grep-from-cwd)
+         (#'+ivy/grep))))

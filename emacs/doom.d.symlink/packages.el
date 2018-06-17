@@ -8,3 +8,4 @@
 ;; (package! indium)
 (package! org-projectile)
 (package! org-gcal)
+(package! reason-mode)

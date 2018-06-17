@@ -15,9 +15,10 @@
 (with-current-buffer "*scratch*"  (emacs-lock-mode 'kill))
 (with-current-buffer "*Messages*" (emacs-lock-mode 'kill))
 
-(load! +funcs)
-(load! +bindings)
-(load! +hydras)
+(load! "+funcs")
+(load! "+bindings")
+(load! "+hydras")
+(load! "+theming")
 
 (setq save-interprogram-paste-before-kill t
       x-select-enable-clipboard nil)
@@ -30,7 +31,8 @@
               web-mode-markup-indent-offset 2
               web-mode-css-indent-offset 2
               web-mode-code-indent-offset 2
-              web-mode-indent-style 2)
+              web-mode-indent-style 2
+              fill-column 100)
 
 (setq doom-line-numbers-style 'relative)
 
@@ -112,6 +114,9 @@
 ;; eos/eshell-truncate-timer)'
 (setq ts/eshell-truncate-timer (run-with-idle-timer 5 t #'ts/truncate-eshell-buffers))
 
+(setq doom-neotree-file-icons t)
+(add-hook 'doom-load-theme-hook #'ts-theme-config)
+
 ; (after! whitespace
 ;   (advice-remove #'company-box--make-frame #'doom*fix-whitespace-mode-in-childframes)
 ;   (advice-remove #'posframe--create-posframe #'doom*fix-whitespace-mode-in-childframes))
@@ -119,17 +124,17 @@
 (after! evil
   (evil-put-command-property 'evil-yank-line :motion 'evil-line))
 
-(after! flycheck
-  (setq flycheck-check-syntax-automatically '(new-line save idle-change mode-enabled)
-        flycheck-indication-mode 'right-fringe)
-  (fringe-helper-define 'flycheck-fringe-bitmap-double-arrow 'center
-    "...11.11"
-    "..11.11."
-    ".11.11.."
-    "11.11..."
-    ".11.11.."
-    "..11.11."
-    "...11.11"))
+;; (after! flycheck
+;;   (setq flycheck-check-syntax-automatically '(new-line save idle-change mode-enabled)
+;;         flycheck-indication-mode 'right-fringe)
+;;   (fringe-helper-define 'flycheck-fringe-bitmap-double-arrow 'center
+;;     "...11.11"
+;;     "..11.11."
+;;     ".11.11.."
+;;     "11.11..."
+;;     ".11.11.."
+;;     "..11.11."
+;;     "...11.11"))
 
 (after! ivy
   (setq +ivy-buffer-icons t))
@@ -155,7 +160,7 @@
 
 (after! elm-mode
   (setq elm-tags-on-save t
-        elm-tags-exclude-elm-stuff nil)
+        elm-tags-exclude-elm-stuff t)
   (add-hook 'elm-mode-hook #'elm-oracle-setup-completion)
   (add-hook 'elm-mode-hook (lambda ()
 ;;                              (push '("/="  . ?≠) prettify-symbols-alist)
@@ -165,10 +170,8 @@
                              (push '(">>"  . ?») prettify-symbols-alist)
                              (push '("<<"  . ?«) prettify-symbols-alist))))
 
-(after! doom-themes
-  (setq doom-neotree-file-icons t)
-  (load! +theming)
-  (add-hook 'doom-load-theme-hook #'ts-theme-config))
+(after! treemacs
+  (setq treemacs-no-png-images nil))
 
 (after! org
   (require 'ob-elm)
@@ -283,3 +286,35 @@
   (setq org-gcal-client-id ts-secrets/org-gcal-client-id
         org-gcal-client-secret ts-secrets/org-gcal-client-secret
         org-gcal-file-alist '(("tuomo.syvanpera@gmail.com" .  "~/Google Drive/org/gcal.org"))))
+
+;;----------------------------------------------------------------------------
+;; Reason setup
+;;----------------------------------------------------------------------------
+
+(defun shell-cmd (cmd)
+  "Returns the stdout output of a shell command or nil if the command returned
+   an error"
+  (car (ignore-errors (apply 'process-lines (split-string cmd)))))
+
+(def-package! reason-mode
+  :config
+  (setq merlin-ac-setup t)
+  (let* ((refmt-bin (or (shell-cmd "refmt ----where")
+                        (shell-cmd "which refmt")))
+        (merlin-bin (or (shell-cmd "ocamlmerlin ----where")
+                        (shell-cmd "which ocamlmerlin")))
+        (merlin-base-dir (when merlin-bin
+                            (replace-regexp-in-string "bin/ocamlmerlin$" "" merlin-bin))))
+    ;; Add npm merlin.el to the emacs load path and tell emacs where to find ocamlmerlin
+    (when merlin-bin
+      (add-to-list 'load-path (concat merlin-base-dir "share/emacs/site-lisp/"))
+      (setq merlin-command merlin-bin))
+
+    (when refmt-bin
+      (setq refmt-command refmt-bin)))
+
+
+  (add-hook 'reason-mode-hook (lambda ()
+                                (add-hook 'before-save-hook 'refmt-before-save)
+                                (merlin-mode))))
+

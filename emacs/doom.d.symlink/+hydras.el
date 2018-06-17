@@ -1,7 +1,7 @@
 ;;; +hydras.el -*- lexical-binding: t; -*-
 
 (after! hydra
-  (def-hydra! ts@git-hydra (:hint t :color red)
+  (defhydra ts@git-hydra (:hint t :color red)
     "
       Git transient state:
       [_j_/_n_] next  [_s_] stage   [_v_] show

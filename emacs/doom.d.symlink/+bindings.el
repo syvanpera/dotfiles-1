@@ -17,6 +17,8 @@
  :gnvime "M-˛" #'evil-window-decrease-width
  :gnvime "M-r" #'counsel-imenu
  :gnvime "M-R" #'+eval/buffer
+ :gnvime "C-j" #'evil-window-down
+ :gnvime "C-k" #'evil-window-up
  :gnvime "<C-f5>" '(lambda () (interactive) (bookmark-set "QUICKSAVE"))
  :gnvime "<f5>"   '(lambda () (interactive) (bookmark-jump "QUICKSAVE"))
  :nv     "C-SPC" nil
@@ -105,6 +107,13 @@
  (:after elm-mode
    (:map elm-mode-map
      :nvme "M-." 'elm-mode-goto-tag-at-point))
+
+ ;; (:after haskell-mode
+ ;;   :map inf-haskell-map
+ ;;   :nvim "C-j" #'evil-window-down
+ ;;   :nvim "C-k" #'evil-window-up
+ ;;   :nvim "C-h" #'evil-window-left
+ ;;   :nvim "C-l" #'evil-window-right)
 
  ;; ivy
  (:after ivy

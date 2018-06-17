@@ -9,7 +9,7 @@
     (line-number :foreground base5 :background bg)
     (line-number-current-line :foreground blue :background base4)
     (hl-line :background base4)
-    (solaire-hl-line-face :inherit 'hl-line)
+    (solaire-hl-line-face :background base4)
     (region :background base5 :foreground nil :distant-foreground (doom-darken fg 0.2))
     (org-level-1 :foreground blue :background base3 :weight 'semi-bold :height 1.2)
     (org-level-2 :foreground magenta :weight 'normal)

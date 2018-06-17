@@ -22,8 +22,7 @@ type Msg
 
 view : Model -> Html Msg
 view model =
-    div []
-        [ text model ]
+    div [] [ text model ]
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )

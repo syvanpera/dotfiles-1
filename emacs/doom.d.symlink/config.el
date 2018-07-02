@@ -34,6 +34,8 @@
               web-mode-indent-style 2
               fill-column 100)
 
+;; (setq +pretty-code-iosevka-ligatures-enabled-by-default t)
+
 (setq doom-line-numbers-style 'relative)
 
 (setq +org-dir (expand-file-name "~/Google Drive/org/"))
@@ -76,6 +78,7 @@
 ;;                             (push '("->"  . ?→) prettify-symbols-alist)
 ;;                             (push '("<-"  . ?←) prettify-symbols-alist)))
 
+;; Hasklug Font Ligatures
 (let ((alist '((33 . ".\\(?:\\(?:==\\|!!\\)\\|[!=]\\)")
                (35 . ".\\(?:###\\|##\\|_(\\|[#(?[_{]\\)")
                (36 . ".\\(?:>\\)")

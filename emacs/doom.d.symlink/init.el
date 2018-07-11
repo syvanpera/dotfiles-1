@@ -14,9 +14,9 @@
       ;; doom-nord-comment-brightness 15
       ;; doom-theme 'doom-nord
       doom-theme 'doom-one
-      doom-font (font-spec :family "Input Mono Narrow" :size 12 :weight 'light)
+      ;; doom-font (font-spec :family "Input Mono Narrow" :size 12 :weight 'light)
       ;; doom-font (font-spec :family "Source Code Pro" :size 12 :weight 'regular)
-      ;; doom-font (font-spec :family "Iosevka" :size 12 :weight 'light)
+      doom-font (font-spec :family "Iosevka" :size 13 :weight 'light)
       ;; doom-font (font-spec :family "M+ 1m" :size 12 :weight 'regular)
       ;; doom-font (font-spec :family "Fira Code" :size 12 :weight 'light)
       ;; doom-font (font-spec :family "Hasklug Nerd Font" :size 12 :weight 'regular)
@@ -51,7 +51,7 @@
        doom-modeline     ; a snazzy Atom-inspired mode-line
        doom-quit         ; DOOM quit-message prompts when you quit Emacs
        evil-goggles      ; display visual hints when editing in evil
-       fci               ; a `fill-column' indicator
+      ;fci               ; a `fill-column' indicator
        hl-todo           ; highlight TODO/FIXME/NOTE tags
        nav-flash         ; blink the current line after jumping
        neotree           ; a project drawer, like NERDTree for vim

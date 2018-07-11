@@ -34,7 +34,7 @@
               web-mode-indent-style 2
               fill-column 100)
 
-;; (setq +pretty-code-iosevka-ligatures-enabled-by-default t)
+(setq +pretty-code-iosevka-ligatures-enabled-by-default t)
 
 (setq doom-line-numbers-style 'relative)
 
@@ -57,7 +57,7 @@
     (mu4e-compose-signature . "---\nTuomo"))
   t)
 
-(global-prettify-symbols-mode t)
+;; (global-prettify-symbols-mode t)
 (setq prettify-symbols-unprettify-at-point t)
 ;; (mac-auto-operator-composition-mode t)
 
@@ -161,17 +161,24 @@
               (eldoc-mode -1)
               (tide-hl-identifier-mode +1))))
 
+(after! (:any js2-mode web-mode)
+  (set-pretty-symbols! '(js2-mode web-mode)
+    :lambda "foobar() =>"))
+
 (after! elm-mode
   (setq elm-tags-on-save t
         elm-tags-exclude-elm-stuff t)
+  (set-pretty-symbols! 'elm-mode
+    :lambda "\\")
   (add-hook 'elm-mode-hook #'elm-oracle-setup-completion)
-  (add-hook 'elm-mode-hook (lambda ()
-;;                              (push '("/="  . ?≠) prettify-symbols-alist)
-;;                              (push '("|>"  . ?⊳) prettify-symbols-alist)
-;;                              (push '("<|"  . ?⊲) prettify-symbols-alist)
-                             (push '("\\"  . ?λ) prettify-symbols-alist)
-                             (push '(">>"  . ?») prettify-symbols-alist)
-                             (push '("<<"  . ?«) prettify-symbols-alist))))
+  ;; (add-hook 'elm-mode-hook (lambda ()
+                             ;; (push '("/="  . ?≠) prettify-symbols-alist)
+                             ;; (push '("|>"  . ?⊳) prettify-symbols-alist)
+                             ;; (push '("<|"  . ?⊲) prettify-symbols-alist)
+                             ;; (push '("\\"  . ?λ) prettify-symbols-alist)
+                             ;; (push '(">>"  . ?») prettify-symbols-alist)
+                             ;; (push '("<<"  . ?«) prettify-symbols-alist)))
+  )
 
 (after! treemacs
   (setq treemacs-no-png-images nil))

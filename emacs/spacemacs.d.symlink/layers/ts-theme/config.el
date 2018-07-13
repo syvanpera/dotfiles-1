@@ -104,16 +104,20 @@
     (cursor :background "#51afef")
     (ahs-plugin-whole-buffer-face :background "#2257a0" :foreground "#dfdfdf")
     ;; (line-number-current-line :foreground "#fac863" :background "#3d5958" :weight bold)
-    (line-number-current-line :foreground "#fac863" :background "#3d5958" :weight bold)
+    (line-number-current-line :foreground "#fac863" :background "#2d4948" :weight bold)
     (line-number :foreground "#7d9998" :background nil)
-    (highlight :background "#3d5958" :foreground nil)
+    (highlight :background "#2d4948" :foreground nil)
     (highlight-indentation-face :background "#3d5958")
     (highlight-indentation-current-column-face :background "#4d6968")
     ;; (region :background "#99c794" :foreground "#f3f4f6")
     (region :background "#3d5958" :foreground "#f3f4f6")
+    ;; (lazy-highlight :box (:line-width 1 :color "#7cc3f3"))
     (flycheck-fringe-error :foreground "systemRedColor")
     (flycheck-fringe-warning :foreground "DarkGoldenrod2")
     (flycheck-fringe-info :foreground "#99c794")
+    (flycheck-posframe-error-face   :inherit 'flycheck-fringe-error)
+    (flycheck-posframe-warning-face :inherit 'flycheck-fringe-warning)
+    (flycheck-posframe-info-face    :inherit 'flycheck-fringe-info)
     (spacemacs-insert-face :foreground "#4f545a" :background "#99c794" :inherit 'mode-line)
     (spacemacs-visual-face :foreground "#4f545a" :background "gray" :inherit 'mode-line)
     (spacemacs-normal-face :foreground "#4f545a" :background "#fac863" :inherit 'mode-line)
@@ -121,6 +125,7 @@
     (spacemacs-motion-face :foreground "#4f545a" :background "#cc99cc" :inherit 'mode-line)
     (spacemacs-evilified-face :foreground "#4f545a" :background "LightGoldenrod3" :inherit 'mode-line)
     (mode-line :background "#4f545a" :foreground "#cccccc" :box (:line-width 1 :color "#3f444a" :style released-button) :weight normal)
+    (mode-line-inactive :box (:line-width 1 :color "#3f444a" :style released-button) :weight normal)
     (powerline-active2 :background "#4f545a" :foreground "#cccccc" :weight normal)
     (show-paren-match :foreground: nil :background "white")
     (helm-selection :background "#3d5958" :weight bold)
@@ -184,50 +189,3 @@
     ))
 
 (setq theming-modifications (list ts-theme/sanityinc-tomorrow-eighties-theming ts-theme/zenburn ts-theme/doom-one ts-theme/oceanic))
-
-;; let s:base00=['#1b2b34', '235']
-;; let s:base01=['#343d46', '237']
-;; let s:base02=['#4f5b66', '240']
-;; let s:base03=['#65737e', '243']
-;; let s:base04=['#a7adba', '145']
-;; let s:base05=['#c0c5ce', '251']
-;; let s:base06=['#cdd3de', '252']
-;; let s:base07=['#d8dee9', '253']
-;; let s:base08=['#ec5f67', '203']
-;; let s:base09=['#f99157', '209']
-;; let s:base0A=['#fac863', '221']
-;; let s:base0B=['#99c794', '114']
-;; let s:base0C=['#62b3b2', '73']
-;; let s:base0D=['#6699cc', '68']
-;; let s:base0E=['#c594c5', '176']
-;; let s:base0F=['#ab7967', '137']
-;; let s:base10=['#ffffff', '15']
-
-;;; config.el ends here
-
-;; ((bg         '("#282c34" nil       nil            ))
-;;    (bg-alt     '("#21242b" nil       nil            ))
-;;    (base0      '("#1B2229" "black"   "black"        ))
-;;    (base1      '("#1c1f24" "#1e1e1e" "brightblack"  ))
-;;    (base2      '("#202328" "#2e2e2e" "brightblack"  ))
-;;    (base3      '("#23272e" "#262626" "brightblack"  ))
-;;    (base4      '("#3f444a" "#3f3f3f" "brightblack"  ))
-;;    (base5      '("#5B6268" "#525252" "brightblack"  ))
-;;    (base6      '("#73797e" "#6b6b6b" "brightblack"  ))
-;;    (base7      '("#9ca0a4" "#979797" "brightblack"  ))
-;;    (base8      '("#DFDFDF" "#dfdfdf" "white"        ))
-;;    (fg         '("#bbc2cf" "#bfbfbf" "brightwhite"  ))
-;;    (fg-alt     '("#5B6268" "#2d2d2d" "white"        ))
-
-;;    (grey       base4)
-;;    (red        '("#ff6c6b" "#ff6655" "red"          ))
-;;    (orange     '("#da8548" "#dd8844" "brightred"    ))
-;;    (green      '("#98be65" "#99bb66" "green"        ))
-;;    (teal       '("#4db5bd" "#44b9b1" "brightgreen"  ))
-;;    (yellow     '("#ECBE7B" "#ECBE7B" "yellow"       ))
-;;    (blue       '("#51afef" "#51afef" "brightblue"   ))
-;;    (dark-blue  '("#2257A0" "#2257A0" "blue"         ))
-;;    (magenta    '("#c678dd" "#c678dd" "magenta"      ))
-;;    (violet     '("#a9a1e1" "#a9a1e1" "brightmagenta"))
-;;    (cyan       '("#46D9FF" "#46D9FF" "brightcyan"   ))
-;;    (dark-cyan  '("#5699AF" "#5699AF" "cyan"         ))

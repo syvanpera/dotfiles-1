@@ -15,13 +15,13 @@
 
 (defvar ts/not-to-kill-buffer-list '("*scratch*" "*Messages*" "*spacemacs*") "List of buffers that shouldn't be killed.")
 
-(defun ts/line-numbers-absolute ()
-  "Set absolute line numbering."
-  (setq-local display-line-numbers t))
-
-(defun ts/line-numbers-relative ()
-  "Set relative line numbering."
-  (setq-local display-line-numbers 'relative))
+; (defun ts/line-numbers-absolute ()
+;   "Set absolute line numbering."
+;   (setq-local display-line-numbers t))
+;
+; (defun ts/line-numbers-relative ()
+;   "Set relative line numbering."
+;   (setq-local display-line-numbers 'relative))
 
 (defun ts/eshell-quit-or-delete-char (arg)
   (interactive "p")

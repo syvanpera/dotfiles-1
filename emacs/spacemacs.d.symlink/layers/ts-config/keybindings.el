@@ -19,8 +19,8 @@
 ;; Map M-h to C-h before we override C-h with window movement command
 (global-set-key (kbd "M-h") (lookup-key global-map (kbd "C-h")))
 
-;; (global-set-key (kbd "M-e") 'neotree-toggle)
-(global-set-key (kbd "M-e") 'treemacs-projectile)
+(global-set-key (kbd "M-e") 'neotree-toggle)
+;; (global-set-key (kbd "M-e") 'treemacs-projectile)
 (global-set-key (kbd "M-r") 'spacemacs/helm-jump-in-buffer)
 (global-set-key (kbd "M-y") 'helm-show-kill-ring)
 (global-set-key (kbd "M-/") 'iedit-mode)
@@ -36,17 +36,17 @@
 (global-set-key (kbd "M-b") 'helm-mini)
 (global-set-key (kbd "M-p") 'helm-projectile-find-file)
 (global-set-key (kbd "M-f") 'spacemacs/helm-project-do-ag-region-or-symbol)
-(global-set-key (kbd "∫") 'spacemacs/helm-project-do-ag-region-or-symbol)
-(global-set-key (kbd "") 'move-text-line-up)
+(global-set-key (kbd "∫")   'spacemacs/helm-project-do-ag-region-or-symbol)
+(global-set-key (kbd "")    'move-text-line-up)
 
 (define-key evil-motion-state-map (kbd "C-w C-h") 'evil-window-left)
 (define-key evil-motion-state-map (kbd "C-w C-j") 'evil-window-down)
 (define-key evil-motion-state-map (kbd "C-w C-k") 'evil-window-up)
 (define-key evil-motion-state-map (kbd "C-w C-l") 'evil-window-right)
-(define-key evil-motion-state-map (kbd "C-h") 'evil-window-left)
-(define-key evil-motion-state-map (kbd "C-j") 'evil-window-down)
-(define-key evil-motion-state-map (kbd "C-k") 'evil-window-up)
-(define-key evil-motion-state-map (kbd "C-l") 'evil-window-right)
+(define-key evil-motion-state-map (kbd "C-h")     'evil-window-left)
+(define-key evil-motion-state-map (kbd "C-j")     'evil-window-down)
+(define-key evil-motion-state-map (kbd "C-k")     'evil-window-up)
+(define-key evil-motion-state-map (kbd "C-l")     'evil-window-right)
 
 (add-hook 'js-mode-hook
           (lambda ()
@@ -116,9 +116,9 @@
 
 (define-key evil-normal-state-map (kbd "g f") 'helm-projectile-find-file-dwim)
 
-(define-key helm-map (kbd "C-f") 'helm-next-page)
-(define-key helm-map (kbd "C-b") 'helm-previous-page)
-(define-key helm-map (kbd "M-v") 'yank)
+; (define-key helm-map (kbd "C-f") 'helm-next-page)
+; (define-key helm-map (kbd "C-b") 'helm-previous-page)
+; (define-key helm-map (kbd "M-v") 'yank)
 
 (spacemacs/set-leader-keys "bS" 'multi-scratch-new)
 

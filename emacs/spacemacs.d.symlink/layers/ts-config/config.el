@@ -13,6 +13,16 @@
 
 ;;; Code:
 
+(setq user-full-name "Tuomo Syvänperä"
+      user-mail-address "tuomo.syvanpera@gmail.com"
+      mac-command-modifier 'meta
+      mac-right-command-modifier 'super
+      mac-option-modifier nil
+      spaceline-minor-modes-p nil
+      projectile-enable-caching t)
+
+(setq exec-path (append exec-path '("~/.nvm/versions/node/v9.11.2/bin")))
+
 (with-current-buffer "*scratch*"  (emacs-lock-mode 'kill))
 (with-current-buffer "*Messages*" (emacs-lock-mode 'kill))
 
@@ -36,47 +46,28 @@
 (setq evil-want-C-i-jump nil)
 (setq treemacs-no-png-images nil)
 
-(setq mu4e-maildir "~/Mail"
-      mu4e-sent-folder "/Gmail/Sent Mail"
-      mu4e-drafts-folder "/Gmail/Drafts"
-      mu4e-trash-folder "/Gmail/Trash"
-      mu4e-sent-messages-behavior 'delete)
-(setq mu4e-alert-interesting-mail-query
-      (concat
-       "flag:unread maildir:/Houston/INBOX "
-       "OR "
-       "flag:unread maildir:/Gmail/INBOX"))
-
-(global-prettify-symbols-mode t)
-;; (golden-ratio-mode t)
+;; (global-prettify-symbols-mode t)
 
 (add-hook 'evil-visual-state-entry-hook (lambda () (global-hl-line-mode -1)))
 (add-hook 'evil-visual-state-exit-hook (lambda () (global-hl-line-mode +1)))
 
-(add-hook 'prog-mode-hook
-          (lambda ()
-            (push '("<="  . ?≤) prettify-symbols-alist)
-            (push '(">="  . ?≥) prettify-symbols-alist)
-            (push '("=="  . ?≡) prettify-symbols-alist)
-            (push '("===" . ?≣) prettify-symbols-alist)
-            (push '("!="  . ?≠) prettify-symbols-alist)
-            (push '("!==" . ?≢) prettify-symbols-alist)
-            (push '("->"  . ?→) prettify-symbols-alist)
-            (push '("<-"  . ?←) prettify-symbols-alist)
-            (push '("=>"  . ?⇒) prettify-symbols-alist)))
+; (add-hook 'prog-mode-hook
+;           (lambda ()
+;             (push '("<="  . ?≤) prettify-symbols-alist)
+;             (push '(">="  . ?≥) prettify-symbols-alist)
+;             (push '("=="  . ?≡) prettify-symbols-alist)
+;             (push '("===" . ?≣) prettify-symbols-alist)
+;             (push '("!="  . ?≠) prettify-symbols-alist)
+;             (push '("!==" . ?≢) prettify-symbols-alist)
+;             (push '("->"  . ?→) prettify-symbols-alist)
+;             (push '("<-"  . ?←) prettify-symbols-alist)
+;             (push '("=>"  . ?⇒) prettify-symbols-alist)))
 
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 (add-hook 'prog-mode-hook 'rainbow-mode)
 (add-hook 'prog-mode-hook 'electric-pair-mode)
 (add-hook 'prog-mode-hook 'electric-indent-mode)
-(add-hook 'prog-mode-hook
-          (lambda () (progn
-                  (add-hook 'evil-insert-state-entry-hook 'ts/line-numbers-absolute nil t)
-                  (add-hook 'evil-insert-state-exit-hook 'ts/line-numbers-relative nil t))))
 
 (add-hook 'js-mode-hook (lambda () (setq js2-strict-missing-semi-warning nil)))
-
-;; (add-hook 'coffee-mode-hook 'highlight-indentation-mode)
-;; (add-hook 'coffee-mode-hook 'highlight-indentation-current-column-mode)
 
 ;;; config.el ends here

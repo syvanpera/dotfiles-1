@@ -5,10 +5,11 @@ export DOTFILES=$HOME/.dotfiles
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-ZSH_THEME="powerlevel9k/powerlevel9k"
+# ZSH_THEME="powerlevel9k/powerlevel9k"
+ZSH_THEME=""
 
-POWERLEVEL9K_MODE='nerdfont-complete'
-POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=()
+# POWERLEVEL9K_MODE='nerdfont-complete'
+# POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=()
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
@@ -19,6 +20,9 @@ plugins=(
 )
 
 source $ZSH/oh-my-zsh.sh
+
+autoload -U promptinit; promptinit
+prompt pure
 
 # User configuration
 
@@ -34,7 +38,8 @@ export TERM="xterm-256color"
 export EDITOR=nvim
 # export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "\!.git/*"'
 export FZF_DEFAULT_OPTS='--height 40% --reverse --border'
-export PATH="$HOME/.local/bin:$DOTFILES/bin:$PATH"
+export PATH="/usr/local/opt/llvm/bin:$HOME/.local/bin:$DOTFILES/bin:$PATH"
+export LDFLAGS="-L/usr/local/opt/llvm/lib -Wl,-rpath,/usr/local/opt/llvm/lib"
 export RANGER_LOAD_DEFAULT_RC=FALSE
 export NVM_DIR="$HOME/.nvm"
 

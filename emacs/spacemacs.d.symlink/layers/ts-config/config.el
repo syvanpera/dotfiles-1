@@ -13,16 +13,6 @@
 
 ;;; Code:
 
-(setq user-full-name "Tuomo Syvänperä"
-      user-mail-address "tuomo.syvanpera@gmail.com"
-      mac-command-modifier 'meta
-      mac-right-command-modifier 'super
-      mac-option-modifier nil
-      spaceline-minor-modes-p nil
-      projectile-enable-caching t)
-
-(setq exec-path (append exec-path '("~/.nvm/versions/node/v9.11.2/bin")))
-
 (with-current-buffer "*scratch*"  (emacs-lock-mode 'kill))
 (with-current-buffer "*Messages*" (emacs-lock-mode 'kill))
 

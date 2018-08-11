@@ -17,6 +17,8 @@
  :gnvime "M-˛" #'evil-window-decrease-width
  :gnvime "M-r" #'counsel-imenu
  :gnvime "M-R" #'+eval/buffer
+ :gnvime "M-o" #'ff-find-other-file
+ :gnvime "M-O" #'projectile-find-other-file-other-window
  :gnvime "C-j" #'evil-window-down
  :gnvime "C-k" #'evil-window-up
  :gnvime "<C-f5>" '(lambda () (interactive) (bookmark-set "QUICKSAVE"))

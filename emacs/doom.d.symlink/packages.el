@@ -9,3 +9,4 @@
 (package! org-projectile)
 (package! org-gcal)
 (package! reason-mode)
+;; (package! oceanic-theme)

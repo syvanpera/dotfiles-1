@@ -6,8 +6,8 @@
 
 (add-to-list 'load-path (expand-file-name "elisp" doom-private-dir))
 
-(setenv "PATH" (concat (expand-file-name "~/.dotfiles/bin") ":" (getenv "PATH")))
-(setq exec-path (append (list (expand-file-name "~/.dotfiles/bin")) exec-path))
+(setenv "PATH" (concat (expand-file-name "~/.dotfiles/bin") ":" (expand-file-name "~/.nvm/versions/node/v9.11.2/bin") ":" (getenv "PATH")))
+(setq exec-path (append (list (expand-file-name "~/.dotfiles/bin") (expand-file-name "~/.nvm/versions/node/v9.11.2/bin")) exec-path))
 
 (defvar ts-scratch-mode 'lisp-interaction-mode
   "Default major mode of the scratch buffer.")
@@ -60,6 +60,11 @@
 ;; (global-prettify-symbols-mode t)
 (setq prettify-symbols-unprettify-at-point t)
 ;; (mac-auto-operator-composition-mode t)
+
+(add-hook 'c-mode-common-hook (lambda ()
+                                (setq standard-indent 4
+                                      tab-width 4
+                                      c-basic-offset 4)))
 
 (add-hook 'before-save-hook 'whitespace-cleanup)
 (add-hook 'dired-mode-hook (lambda () (require 'dired-sort)))
@@ -328,3 +333,6 @@
                                 (add-hook 'before-save-hook 'refmt-before-save)
                                 (merlin-mode))))
 
+;; (def-package! oceanic-theme
+;;   :config
+;;   (load-theme 'oceanic t))

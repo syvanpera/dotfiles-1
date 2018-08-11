@@ -470,6 +470,16 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
+  (setq user-full-name "Tuomo Syvänperä"
+        user-mail-address "tuomo.syvanpera@gmail.com"
+        mac-command-modifier 'meta
+        mac-right-command-modifier 'super
+        mac-option-modifier nil
+        spaceline-minor-modes-p nil
+        projectile-enable-caching t)
+
+  (setq exec-path (append exec-path '("~/.nvm/versions/node/v9.11.2/bin")))
+
   (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
   (add-to-list 'default-frame-alist '(ns-appearance . dark))
   )

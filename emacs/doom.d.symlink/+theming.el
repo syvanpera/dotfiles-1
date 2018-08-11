@@ -1,6 +1,6 @@
 ;;; +theming.el -*- lexical-binding: t; -*-
 
-;; (require 'doom-one-theme)
+(require 'doom-one-theme)
 (require 'doom-city-lights-theme)
 (require 'doom-nord-theme)
 

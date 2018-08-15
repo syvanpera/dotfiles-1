@@ -48,11 +48,10 @@
 
 # UI ------------------------------------------------------------------------{{{
 
-  source-file ~/.tmux/themes/tinimini.theme
+  #source-file ~/.tmux/themes/tinimini.theme
+  #source-file ~/.tmux/tmux.theme
 
 # }}}
-
-#source-file ~/.tmux/tmux.theme
 
 # Plugins -------------------------------------------------------------------{{{
 

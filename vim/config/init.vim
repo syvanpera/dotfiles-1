@@ -144,7 +144,9 @@
   " colorscheme base16-oceanicnext
   colorscheme nord
 
-  " highlight Normal guibg=NONE
+  highlight Normal guibg=NONE
+  " highlight SignColumn guibg=#3b4252
+  " highlight LineNR guibg=#3b4252
   highlight CursorLineNr guifg=White gui=NONE
   highlight Comment guifg=#5C667A
   highlight ALEErrorSign guifg=#ec5f67 guibg=#343d46

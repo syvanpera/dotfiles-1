@@ -6,8 +6,8 @@
 
 (add-to-list 'load-path (expand-file-name "elisp" doom-private-dir))
 
-(setenv "PATH" (concat (expand-file-name "~/.dotfiles/bin") ":" (expand-file-name "~/.nvm/versions/node/v9.11.2/bin") ":" (getenv "PATH")))
-(setq exec-path (append (list (expand-file-name "~/.dotfiles/bin") (expand-file-name "~/.nvm/versions/node/v9.11.2/bin")) exec-path))
+;; (setenv "PATH" (concat (expand-file-name "~/.dotfiles/bin") ":" (expand-file-name "~/.nvm/versions/node/v10.9.0/bin") ":" (getenv "PATH")))
+;; (setq exec-path (append (list (expand-file-name "~/.dotfiles/bin") (expand-file-name "~/.nvm/versions/node/v10.9.0/bin")) exec-path))
 
 (defvar ts-scratch-mode 'lisp-interaction-mode
   "Default major mode of the scratch buffer.")

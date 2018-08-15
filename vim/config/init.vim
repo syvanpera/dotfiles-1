@@ -81,7 +81,7 @@
 
 " Settings ------------------------------------------------------------------{{{
 
-  language en_US
+  " language en_US
   let mapleader=','
 
   if (has("termguicolors"))
@@ -396,7 +396,7 @@
   let g:airline#extensions#ale#error_symbol=' '
   let g:airline#extensions#ale#warning_symbol=' '
   let g:airline_symbols.branch=''
-  let g:airline_theme='base16_oceanicnext'
+  let g:airline_theme='nord'
 
   nmap <leader>1 <Plug>AirlineSelectTab1
   nmap <leader>2 <Plug>AirlineSelectTab2
@@ -554,14 +554,14 @@ EOF
 
   autocmd CompleteDone * pclose
 
-  call deoplete#custom#set('buffer', 'mark', 'ℬ')
-  call deoplete#custom#set('ternjs', 'mark', '')
-  call deoplete#custom#set('omni', 'mark', '⌾')
-  call deoplete#custom#set('file', 'mark', 'file')
-  call deoplete#custom#set('jedi', 'mark', '')
-  call deoplete#custom#set('typescript', 'mark', '')
-  call deoplete#custom#set('neosnippet', 'mark', '')
-  call deoplete#custom#set('typescript',  'rank', 630)
+  call deoplete#custom#source('buffer', 'mark', 'ℬ')
+  call deoplete#custom#source('ternjs', 'mark', '')
+  call deoplete#custom#source('omni', 'mark', '⌾')
+  call deoplete#custom#source('file', 'mark', 'file')
+  call deoplete#custom#source('jedi', 'mark', '')
+  call deoplete#custom#source('typescript', 'mark', '')
+  call deoplete#custom#source('neosnippet', 'mark', '')
+  call deoplete#custom#source('typescript',  'rank', 630)
   function! Preview_func()
     if &pvw
       setlocal nonumber norelativenumber

@@ -9,4 +9,5 @@
 (package! org-projectile)
 (package! org-gcal)
 (package! reason-mode)
+(package! json-navigator)
 ;; (package! oceanic-theme)

@@ -2,20 +2,24 @@
 
 (map!
  ;; --- Global keybindings ---------------------------
- :gnvime "M-p" #'counsel-projectile-find-file
+ ;; :gnvime "M-p" #'counsel-projectile-find-file
+ :gnvime "M-p" #'helm-projectile-find-file
  :gnvime "M-P" #'execute-extended-command
  :gnvime "M-e" #'+neotree/find-this-file
- :gnvime "M-y" #'counsel-yank-pop
+ ;; :gnvime "M-y" #'counsel-yank-pop
+ :gnvime "M-y" #'helm-show-kill-ring
  :gnvime "M-u" #'undo-tree-visualize
  :gnvime "M-g" #'ts@git-hydra/body
- :gnvime "M-F" #'ts/project-search
+ ;; :gnvime "M-F" #'ts/project-search
+ :gnvime "M-F" #'+helm/project-search
  :gnvime "M-f" #'swiper
  :gnvime "C-u" #'universal-argument
  :gnvime "M-√" #'evil-window-increase-height
  :gnvime "M-ª" #'evil-window-decrease-height
  :gnvime "M-ﬁ" #'evil-window-increase-width
  :gnvime "M-˛" #'evil-window-decrease-width
- :gnvime "M-r" #'counsel-imenu
+ ;; :gnvime "M-r" #'counsel-imenu
+ :gnvime "M-r" #'helm-imenu
  :gnvime "M-R" #'+eval/buffer
  :gnvime "M-o" #'ff-find-other-file
  :gnvime "M-O" #'projectile-find-other-file-other-window
@@ -64,10 +68,14 @@
      :desc "View hunk"            :nv "v" #'git-gutter:popup-hunk)
    (:desc "open" :prefix "o"
      :desc "Eshell"               :n  "s" #'eshell)
+   ;; (:desc "file" :prefix "f"
+   ;;   :desc "Find file"            :n  "f" #'counsel-find-file)
    (:desc "file" :prefix "f"
-     :desc "Find file"            :n  "f" #'counsel-find-file)
+     :desc "Find file"            :n  "f" #'helm-find-files)
+   ;; (:desc "project" :prefix "p"
+   ;;   :desc "Find file in project" :n  "f" #'counsel-projectile-find-file))
    (:desc "project" :prefix "p"
-     :desc "Find file in project" :n  "f" #'counsel-projectile-find-file))
+     :desc "Find file in project" :n  "f" #'helm-projectile-find-file))
 
  ;; --- <localleader> -------------------------------------
  (:localleader

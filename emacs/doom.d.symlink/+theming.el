@@ -75,4 +75,5 @@
     (org-block :background base1)
     (org-block-begin-line :background base2 :foreground comments)
     ;; (org-todo :weight 'bold :foreground red)
+    (helm-source-header :foreground fg :background (doom-lighten base2 0.25))
     ))

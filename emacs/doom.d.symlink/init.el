@@ -17,10 +17,11 @@
       ;; doom-theme 'doom-one
       ;; doom-font (font-spec :family "Input Mono Narrow" :size 12 :weight 'light)
       ;; doom-font (font-spec :family "Source Code Pro" :size 12 :weight 'regular)
-      doom-font (font-spec :family "Iosevka" :size 13 :weight 'light)
+      ;; doom-font (font-spec :family "Iosevka" :size 13 :weight 'light)
+      ;; doom-font (font-spec :family "UbuntuMono Nerd Font Mono" :size 14 :weight 'regular)
       ;; doom-font (font-spec :family "M+ 1m" :size 13 :weight 'light)
       ;; doom-font (font-spec :family "Fira Code" :size 12 :weight 'light)
-      ;; doom-font (font-spec :family "Hasklug Nerd Font" :size 12 :weight 'regular)
+      doom-font (font-spec :family "Hasklug Nerd Font" :size 12 :weight 'light)
       ;; doom-font (font-spec :family "Fixedsys Excelsior" :size 14 :weight 'regular)
       doom-localleader-key ",")
 
@@ -41,11 +42,11 @@
        :completion
        (company          ; the ultimate code completion backend
         +auto)           ; as-you-type code completion
-      ;(helm             ; the *other* search engine for love and life
-      ; +fuzzy)          ; enable fuzzy search backend for helm
+       (helm             ; the *other* search engine for love and life
+        +fuzzy)          ; enable fuzzy search backend for helm
       ;ido               ; the other *other* search engine...
-       (ivy              ; a search engine for love and life
-        +fuzzy)          ; enable fuzzy search backend for ivy
+      ;(ivy              ; a search engine for love and life
+      ; +fuzzy)          ; enable fuzzy search backend for ivy
 
        :ui
        doom              ; what makes DOOM look the way it does

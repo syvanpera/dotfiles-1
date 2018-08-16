@@ -61,6 +61,8 @@
 (setq prettify-symbols-unprettify-at-point t)
 ;; (mac-auto-operator-composition-mode t)
 
+(add-hook 'js2-mode-hook 'js2-imenu-extras-mode)
+
 (add-hook 'c-mode-common-hook (lambda ()
                                 (setq standard-indent 4
                                       tab-width 4
@@ -336,3 +338,5 @@
 ;; (def-package! oceanic-theme
 ;;   :config
 ;;   (load-theme 'oceanic t))
+
+(def-package! json-navigator)

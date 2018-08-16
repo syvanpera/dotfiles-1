@@ -88,3 +88,21 @@ preform search from current directory."
          ((executable-find "pt") (if arg #'+ivy/pt-from-cwd #'+ivy/pt))
          (arg #'+ivy/grep-from-cwd)
          (#'+ivy/grep))))
+
+(defun ts/projectile-find-file-dwim-other-window-h ()
+  (interactive)
+  (with-helm-alive-p
+    (helm-exit-and-execute-action
+     (lambda (candidate)
+       (let ((split-height-threshold 0)
+             (split-width-threshold nil))
+         (helm-find-files-other-window candidate))))))
+
+(defun ts/projectile-find-file-dwim-other-window-v ()
+  (interactive)
+  (with-helm-alive-p
+    (helm-exit-and-execute-action
+     (lambda (candidate)
+       (let ((split-height-threshold nil)
+             (split-width-threshold 0))
+         (helm-find-files-other-window candidate))))))

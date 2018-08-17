@@ -27,7 +27,7 @@
     foreground:                  @nord4;
     selected-normal-foreground:  @nord4;
     normal-foreground:           @foreground;
-    alternate-normal-background: @nord0;
+    alternate-normal-background: @nord1;
     selected-urgent-foreground:  @nord4;
     urgent-foreground:           @foreground;
     alternate-urgent-background: @nord0;
@@ -60,7 +60,7 @@
 
 #mainbox {
     border:  2;
-    padding: 5;
+    padding: 0;
 }
 
 #message {

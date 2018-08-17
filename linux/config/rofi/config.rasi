@@ -1,9 +1,18 @@
 configuration {
-  modi: "drun,run";
+  modi: "drun,run,window";
   width: 500;
   lines:10;
   font: "UbuntuMono Nerd Font 9";
   show-match: true;
+  show-icons: true;
   hide-scrollbar: true;
   theme: "nord";
+  kb-remove-to-eol: "";
+  kb-row-up: "Up,Control+p,Control+k,ISO_Left_Tab";
+  kb-row-down: "Down,Control+n,Control+j";
+  kb-mode-next: "Shift+Right,Control+Tab,Tab,Control+l";
+  kb-mode-previous: "Shift+Left,Control+ISO_Left_Tab,Shift+Tab,Control+h";
+  kb-row-tab: "";
+  kb-remove-char-back: "BackSpace";
+  kb-accept-entry: "Control+m,Return,KP_Enter";
 }

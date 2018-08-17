@@ -1,0 +1,9 @@
+configuration {
+  modi: "drun,run";
+  width: 500;
+  lines:10;
+  font: "UbuntuMono Nerd Font 9";
+  show-match: true;
+  hide-scrollbar: true;
+  theme: "nord";
+}

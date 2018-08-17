@@ -4,7 +4,7 @@
   set-window-option -g mode-keys vi
 
   # Copy-paste integration
-  set-option -g default-command "reattach-to-user-namespace -l zsh"
+  #set-option -g default-command "reattach-to-user-namespace -l zsh"
 
   # 256 color support
   set -g default-terminal "screen-256color"
@@ -50,6 +50,7 @@
 
   #source-file ~/.tmux/themes/tinimini.theme
   #source-file ~/.tmux/tmux.theme
+  source-file ~/.tmux/themes/nord-custom.theme
 
 # }}}
 

@@ -122,7 +122,7 @@
 ;; After being idle for 5 seconds, truncate all the eshell-buffers if
 ;; needed. If this needs to be canceled, you can run `(cancel-timer
 ;; eos/eshell-truncate-timer)'
-(setq ts/eshell-truncate-timer (run-with-idle-timer 5 t #'ts/truncate-eshell-buffers))
+; (setq ts/eshell-truncate-timer (run-with-idle-timer 5 t #'ts/truncate-eshell-buffers))
 
 (setq doom-neotree-file-icons t)
 (add-hook 'doom-load-theme-hook #'ts-theme-config)

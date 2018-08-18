@@ -35,3 +35,7 @@ emacs/emacs.d.symlink/games
 /emacs/emacs.d.symlink/ts-init.el
 /emacs/emacs.d.symlink/ts-init.html
 /emacs/emacs.d.symlink/.tern-port
+
+linux/config/ranger/__pycache__
+linux/config/ranger/plugins/__pycache__
+linux/config/ranger/plugins/__init__.py

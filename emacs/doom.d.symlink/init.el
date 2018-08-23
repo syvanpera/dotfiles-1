@@ -21,7 +21,7 @@
       doom-font (font-spec :family "UbuntuMono Nerd Font" :size 14 :weight 'regular)
       ;; doom-font (font-spec :family "M+ 1m" :size 13 :weight 'light)
       ;; doom-font (font-spec :family "Fira Code" :size 12 :weight 'light)
-      doom-font (font-spec :family "Hasklug Nerd Font" :size 12 :weight 'light)
+      ;; doom-font (font-spec :family "Hasklug Nerd Font" :size 12 :weight 'light)
       ;; doom-font (font-spec :family "Fixedsys Excelsior" :size 14 :weight 'regular)
       doom-localleader-key ",")
 

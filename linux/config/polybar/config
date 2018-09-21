@@ -24,7 +24,7 @@ foreground = ${xrdb:color7:#222}
 foreground-alt = ${xrdb:color2:#555}
 foreground-alt-2 = ${xrdb:color4:#555}
 highlight = ${xrdb:color2:#f00}
-urgent = #f00
+urgent = ${xrdb:color1:#f00}
 
 [settings]
 screenchange-reload = true
@@ -33,10 +33,27 @@ screenchange-reload = true
 margin-top = 3
 margin-bottom = 3
 
+[bar/main-ext]
+inherit = bar/main
+height = 25
+
+font-0 = "xos4 Terminus:pixelsize=12;2"
+font-1 = "FontAwesome:pixelsize=12;2"
+font-2 = "Material Icons:pixelsize=12;2"
+font-4 = "unifont:fontformat=truetype:size=12;2"
+
+[bar/main-int]
+inherit = bar/main
+height = 45
+
+font-0 = "xos4 Terminus:pixelsize=22;2"
+font-1 = "FontAwesome:pixelsize=22;2"
+font-2 = "Material Icons:pixelsize=22;2"
+font-4 = "unifont:fontformat=truetype:size=222;2"
+
 [bar/main]
 monitor = ${env:MONITOR}
 width = 100%
-height = 25
 offset-x = 0%
 offset-y = 0%
 radius = 0.0
@@ -63,22 +80,17 @@ padding-bottom = 2
 module-margin-left = 1
 module-margin-right = 1
 
-font-0 = "xos4 Terminus:pixelsize=12;2"
-font-1 = "FontAwesome:pixelsize=12;2"
-font-2 = "Inconsolata:pixelsize=12;2"
-font-3 = "Noto Sans:size=12;2"
-
-modules-left = powermenu i3
+modules-left = powermenu scratchpad i3
 modules-center = date weather
-modules-right = cpu battery
+modules-right = cpu memory network vpncheck pulseaudio battery
 
-tray-position = 
+tray-position =
 tray-padding = 11
 tray-transparent = false
 tray-offset-y = 0
 tray-offset-x = -0
 tray-maxsize = 18
-tray-detached = true
+tray-detached = false
 tray-background = ${colors.background}
 
 wm-restack = i3
@@ -114,6 +126,17 @@ tray-padding = 0
 tray-scale = 1
 tray-background = ${colors.background}
 
+[module/filesystem]
+type = internal/fs
+interval = 25
+
+mount-0 = /
+mount-1 = /home
+
+label-mounted = "%{F#A3BE8C} %{F-}%mountpoint% %free%"
+label-unmounted = %mountpoint% not mounted
+label-unmounted-foreground = ${colors.foreground-alt}
+
 [module/xwindow]
 type = internal/xwindow
 label = %title:0:30:...%
@@ -124,7 +147,7 @@ type = internal/i3
 format = <label-state><label-mode>
 
 index-sort = true
-enable-click = false
+enable-click = true
 enable-scroll = false
 
 label-mode-padding = 2
@@ -155,13 +178,59 @@ label-visible-padding = 1
 [module/cpu]
 type = internal/cpu
 interval = 2
-format-prefix = " "
+format-prefix = "CPU: "
+; " "
 format-prefix-foreground = ${colors.foreground-alt}
 
 format = <label>
 format-foreground = ${colors.foreground}
 
 label = %percentage%%
+
+[module/temperature]
+type = internal/temperature
+interval = 2
+thermal-zone = 0
+warn-temperature = 65
+
+format = <label>
+format-warn = <label-warn>
+
+label = %{F#A3BE8C}TEMP: %{F-}%temperature-c%
+label-warn = %{F#f00}TEMP: %{F-}%temperature-c%
+format-warn-foreground = ${colors.foreground}
+format-warn-background = ${colors.urgent}
+
+[module/system-cpu-temppercore]
+type = custom/script
+exec = ~/scripts/system-cpu-coretemp.sh
+interval = 10
+
+[module/memory]
+type = internal/memory
+interval = 2
+label = %{F#A3BE8C}MEM: %{F-}%gb_used%/%gb_total%
+
+[module/network]
+type = internal/network
+interface = wlp60s0
+
+interval = 2.0
+
+format-connected = <label-connected>
+format-disconnected-underline = ${colors.urgent}
+
+label-connected = %{F#A3BE8C} %{F-}%essid%
+label-disconnected = "OFFLINE"
+label-connected-foreground = ${colors.foreground}
+label-disconnected-foreground = ${colors.urgent}
+
+ramp-signal-0 = 0
+ramp-signal-1 = 1
+ramp-signal-2 = 2
+ramp-signal-3 = 3
+ramp-signal-4 = 4
+ramp-signal-foreground = ${colors.foreground-alt}
 
 [module/mpd]
 type = internal/mpd
@@ -224,7 +293,7 @@ label = layout = %name%
 
 [module/vpncheck]
 type = custom/script
-exec = sh ~/Scripts/vpncheck.sh
+exec = sh ~/scripts/vpncheck.sh
 format-foreground = ${colors.foreground}
 interval = 5
 
@@ -281,7 +350,7 @@ animation-charging-framerate = 500
 type = internal/date
 interval = 5
 
-date = 
+date =
 date-alt = "It is day %j, week %V, of year %y of the %Cth century;"
 
 time = " %a %b %d    %H:%M "
@@ -331,11 +400,22 @@ menu-3-1-exec = sudo poweroff
 
 [module/weather]
 type = custom/script
-interval = 60
+interval = 10
 
 ;format-background = ${colors.background-alt}
 format = <label>
-format-prefix = "  "
+; format-prefix = ""
 format-suffix = "   "
 format-prefix-foreground = ${colors.foreground}
-exec = python ~/.config/polybar/weather.py
+exec = python ~/scripts/weather.py
+
+[module/scratchpad]
+type = custom/script
+interval = 0
+tail = true
+
+format-prefix = "%{F#A3BE8C}SCRATCHPAD: %{F-}"
+format-prefix-foreground = ${colors.foreground}
+exec = python -u ~/scripts/i3-scratchpad-count.py
+
+; vim:ft=dosini

@@ -6,8 +6,10 @@
 
 (add-to-list 'load-path (expand-file-name "elisp" doom-private-dir))
 
-;; (setenv "PATH" (concat (expand-file-name "~/.dotfiles/bin") ":" (expand-file-name "~/.nvm/versions/node/v10.9.0/bin") ":" (getenv "PATH")))
-;; (setq exec-path (append (list (expand-file-name "~/.dotfiles/bin") (expand-file-name "~/.nvm/versions/node/v10.9.0/bin")) exec-path))
+(setenv "PATH" (concat (expand-file-name "~/.dotfiles/bin") ":" (expand-file-name "~/.cargo/bin") ":" (expand-file-name "~/.nvm/versions/node/v10.9.0/bin") ":" (getenv "PATH")))
+(setq exec-path (append (list (expand-file-name "~/.dotfiles/bin") (expand-file-name "~/.cargo/bin") (expand-file-name "~/.nvm/versions/node/v10.9.0/bin")) exec-path))
+; (setenv "PATH" (concat (expand-file-name "~/.dotfiles/bin") ":" (expand-file-name "~/.cargo/bin") ":" (expand-file-name "~/.nvm/versions/node/v10.9.0/bin") ":" (getenv "PATH")))
+; (setq exec-path (append (list (expand-file-name "~/.dotfiles/bin") (expand-file-name "~/.cargo/bin") (expand-file-name "~/.nvm/versions/node/v10.9.0/bin")) exec-path))
 
 (defvar ts-scratch-mode 'lisp-interaction-mode
   "Default major mode of the scratch buffer.")
@@ -36,9 +38,11 @@
 
 (setq +pretty-code-iosevka-ligatures-enabled-by-default t)
 
-(setq doom-line-numbers-style 'relative)
+(setq doom-line-numbers-style 'relative
+      display-line-numbers 'relative
+      display-line-numbers-type 'relative)
 
-(setq +org-dir (expand-file-name "~/Google Drive/org/"))
+(setq +org-dir (expand-file-name "~/Dropbox/org/"))
 
 (setq +email-backend 'offlineimap)
 
@@ -168,9 +172,9 @@
               (eldoc-mode -1)
               (tide-hl-identifier-mode +1))))
 
-(after! (:any js2-mode web-mode)
-  (set-pretty-symbols! '(js2-mode web-mode)
-    :lambda "foobar() =>"))
+; (after! (:any js2-mode web-mode)
+;   (set-pretty-symbols! '(js2-mode web-mode)
+;     :lambda "foobar() =>"))
 
 (after! elm-mode
   (setq elm-tags-on-save t
@@ -190,12 +194,16 @@
 (after! treemacs
   (setq treemacs-no-png-images nil))
 
+(after! deft
+  (setq deft-directory "~/Dropbox/notes"
+        deft-use-filename-as-title t))
+
 (after! org
   (require 'ob-elm)
   (setq org-snippets-file (concat org-directory "/snippets.org")
         org-bullets-bullet-list '("■" "○" "◉" "◆" "▶" "▲")
-        org-agenda-files (quote ("~/Google Drive/org"
-                                 "~/Google Drive/org/work"))
+        org-agenda-files (quote ("~/Dropbox/org"
+                                 "~/Dropbox/org/work"))
         org-refile-targets (quote ((nil :maxlevel . 1)
                                    (org-agenda-files :maxlevel . 1)))
         org-agenda-custom-commands '((" " "Agenda"
@@ -297,12 +305,12 @@
           org-agenda-files (append org-agenda-files (org-projectile-todo-files)))
     (push (org-projectile-project-todo-entry) org-capture-templates)))
 
-(def-package! org-gcal
-  :after org
-  :config
-  (setq org-gcal-client-id ts-secrets/org-gcal-client-id
-        org-gcal-client-secret ts-secrets/org-gcal-client-secret
-        org-gcal-file-alist '(("tuomo.syvanpera@gmail.com" .  "~/Google Drive/org/gcal.org"))))
+;; (def-package! org-gcal
+;;   :after org
+;;   :config
+;;   (setq org-gcal-client-id ts-secrets/org-gcal-client-id
+;;         org-gcal-client-secret ts-secrets/org-gcal-client-secret
+;;         org-gcal-file-alist '(("tuomo.syvanpera@gmail.com" .  "~/Dropbox/org/gcal.org"))))
 
 ;;----------------------------------------------------------------------------
 ;; Reason setup

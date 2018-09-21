@@ -5,13 +5,15 @@
  ;; :gnvime "M-p" #'counsel-projectile-find-file
  :gnvime "M-p" #'helm-projectile-find-file
  :gnvime "M-P" #'execute-extended-command
- :gnvime "M-e" #'+neotree/find-this-file
+ ;; :gnvime "M-e" #'+neotree/find-this-file
+ :gnvime "M-e" #'+treemacs/find-file
  ;; :gnvime "M-y" #'counsel-yank-pop
  :gnvime "M-y" #'helm-show-kill-ring
  :gnvime "M-u" #'undo-tree-visualize
  :gnvime "M-g" #'ts@git-hydra/body
  ;; :gnvime "M-F" #'ts/project-search
- :gnvime "M-F" #'+helm/project-search
+ :gnvime "M-F" #'ts/project-search-helm
+ ;; :gnvime "M-F" #'+helm/project-search
  :gnvime "M-f" #'swiper
  :gnvime "C-u" #'universal-argument
  :gnvime "M-√" #'evil-window-increase-height
@@ -25,9 +27,19 @@
  :gnvime "M-O" #'projectile-find-other-file-other-window
  :gnvime "C-j" #'evil-window-down
  :gnvime "C-k" #'evil-window-up
+ ;; :gnvime "s-d" #'helm-dash
+ ;; :gnvime "s-D" #'helm-dash-at-point
  :gnvime "<C-f5>" '(lambda () (interactive) (bookmark-set "QUICKSAVE"))
  :gnvime "<f5>"   '(lambda () (interactive) (bookmark-jump "QUICKSAVE"))
  :nv     "C-SPC" nil
+ :gnvime "s-1" #'(lambda () (interactive) (+workspace/switch-to 0))
+ :gnvime "s-2" #'(lambda () (interactive) (+workspace/switch-to 1))
+ :gnvime "s-3" #'(lambda () (interactive) (+workspace/switch-to 2))
+ :gnvime "s-4" #'(lambda () (interactive) (+workspace/switch-to 3))
+ :gnime  "C-h" #'evil-window-left
+ :gnime  "C-j" #'evil-window-down
+ :gnime  "C-k" #'evil-window-up
+ :gnime  "C-l" #'evil-window-right
 
  :i      "M-s" #'save-buffer
 
@@ -85,7 +97,8 @@
    ;; :desc "Switch buffer"             :nv "B"   #'helm-mini
    ;; :desc "Browse files"              :nv "f"   #'find-file
    ;; :desc "Browse files"              :nv "F"   #'projectile-find-file
-   :desc "Toggle Neotree"            :nv "e"   #'neotree-toggle
+   ;; :desc "Toggle Neotree"            :nv "e"   #'neotree-toggle
+   :desc "Toggle Treemacs"           :nv "e"   #'+treemacs/toggle
    :desc "Open private config"       :n  "v"   #'ts/open-config-file
    (:desc "git" :prefix "g"
      :desc "Git status"              :n  "s"   #'magit-status
@@ -131,6 +144,11 @@
    "C-h" #'ivy-backward-delete-char
    "C-f" #'ivy-scroll-up-command
    "C-b" #'ivy-scroll-down-command)
+
+ ;; treemacs
+ (:after treemacs
+   :map treemacs-mode-map
+   :nvime "C-l" #'evil-window-right)
 
  ;; org
  (:after org

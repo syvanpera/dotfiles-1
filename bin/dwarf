@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+st -f "Fira Code:style=Regular:size=8"

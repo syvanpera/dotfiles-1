@@ -55,6 +55,7 @@
   call dein#add('mhartington/oceanic-next')
   call dein#add('chriskempson/base16-vim')
   call dein#add('arcticicestudio/nord-vim')
+  call dein#add('ayu-theme/ayu-vim')
   call dein#add('ryanoasis/vim-devicons')
   call dein#add('yggdroot/indentline')
   call dein#add('mhinz/vim-startify')
@@ -69,6 +70,8 @@
   call dein#add('pelodelfuego/vim-swoop.git')
 
   call dein#add('cespare/vim-toml')
+
+  call dein#add('racer-rust/vim-racer')
 
   if dein#check_install()
     call dein#install()
@@ -87,9 +90,10 @@
 
   if (has("termguicolors"))
     set termguicolors
-    set t_8f=^[[38;2;%lu;%lu;%lum
-    set t_8b=^[[48;2;%lu;%lu;%lum
+  "   set t_8f=^[[38;2;%lu;%lu;%lum
+  "   set t_8b=^[[48;2;%lu;%lu;%lum
   endif
+
   " Display extra whitespace
   set list listchars=tab:»·,trail:·,nbsp:·
   set scrolloff=0
@@ -142,16 +146,16 @@
 
   set background=dark
   syntax on
+  let ayucolor="mirage"
   " colorscheme base16-oceanicnext
-  colorscheme nord
+  " colorscheme nord
+  colorscheme ayu
 
-  highlight Normal guibg=NONE
-  " highlight SignColumn guibg=#3b4252
-  " highlight LineNR guibg=#3b4252
-  highlight CursorLineNr guifg=White gui=NONE
-  highlight Comment guifg=#5C667A
-  highlight ALEErrorSign guifg=#ec5f67 guibg=#343d46
-  highlight ALEErrorSign guifg=#ec5f67 guibg=#343d46
+  " highlight Normal guibg=NONE
+  " highlight CursorLineNr guifg=White gui=NONE
+  " highlight Comment guifg=#6C768A ctermfg=gray
+  " highlight ALEErrorSign guifg=#ec5f67 guibg=#343d46
+  " highlight ALEErrorSign guifg=#ec5f67 guibg=#343d46
 
   let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols={}
   let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['js']=' '
@@ -229,7 +233,7 @@
   nnoremap K :Find <C-R><C-W><CR>
   vnoremap K :Find <C-R><C-W><CR>
 
-  nnoremap <c-s> :w<CR>
+  nnoremap <a-s> :w<CR>
   nnoremap <leader>h :nohl<CR>
   nnoremap <leader>n :set rnu!<CR>
 
@@ -312,9 +316,17 @@
     \ }
   let g:localvimrc_whitelist=['/Users/tinimini/projects/', '/Users/tinimini/work/']
   let g:localvimrc_sandbox=0
-  let g:indentLine_enabled=0
-  " let g:indentLine_char='┆'
-  let g:indentLine_char=''
+
+  " IndentLine {{
+  let g:indentLine_char='┆'
+  let g:indentLine_first_char='┆'
+  " let g:indentLine_char=''
+  " let g:indentLine_first_char=''
+  " let g:indentLine_char = ''
+  " let g:indentLine_first_char = ''
+  let g:indentLine_showFirstIndentLevel = 0
+  let g:indentLine_setColors = 0
+  " }}
 
   autocmd FileType typescript JsPreTmpl html
   " autocmd FileType typescript syn clear foldBraces

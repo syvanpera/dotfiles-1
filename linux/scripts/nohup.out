@@ -1,0 +1,31 @@
+INFO     Starting Mopidy 2.1.0
+INFO     Loading config from builtin defaults
+INFO     Loading config from /home/tinimini/.config/mopidy/mopidy.conf
+INFO     Loading config from command line options
+INFO     Enabled extensions: spotify, mpd, http, stream, m3u, softwaremixer, file, local
+INFO     Disabled extensions: none
+INFO     Starting Mopidy mixer: SoftwareMixer
+INFO     Starting Mopidy audio
+INFO     Starting Mopidy backends: StreamBackend, M3UBackend, FileBackend, LocalBackend, SpotifyBackend
+INFO     No local library metadata cache found at /home/tinimini/.local/share/mopidy/local/library.json.gz. Please run `mopidy local scan` to index your local music library. If you do not have a local music collection, you can disable the local backend to hide this message.
+INFO     Loaded 0 local tracks using json
+INFO     Audio output set to "tee name=t ! queue ! autoaudiosink t. ! queue ! udpsink port=5555"
+INFO     Starting Mopidy core
+INFO     Logged in to Spotify in offline mode
+INFO     Starting Mopidy frontends: MpdFrontend, HttpFrontend
+INFO     MPD server running at [::ffff:127.0.0.1]:6600
+INFO     HTTP server running at [::ffff:127.0.0.1]:6680
+INFO     Starting GLib mainloop
+INFO     New MPD connection from [::ffff:127.0.0.1]:46536
+INFO     Logged in to Spotify in online mode
+INFO     New MPD connection from [::ffff:127.0.0.1]:46540
+INFO     Searching Spotify for: "sommaren"
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/mopidy/internal/log.py", line 176, in emit
+    self.stream.write(message)
+UnicodeEncodeError: 'ascii' codec can't encode character u'\xe4' in position 42: ordinal not in range(128)
+Logged from file search.py, line 37
+WARNING  GStreamer warning: gst-resource-error-quark: Attempting to send a UDP packets larger than maximum size (88200 > 65507) (10)
+INFO     Searching Spotify for: "villihevosia"
+WARNING  GStreamer warning: gst-resource-error-quark: Attempting to send a UDP packets larger than maximum size (88200 > 65507) (10)
+INFO     Searching Spotify for: "pikkuveli"

@@ -55,6 +55,7 @@
     (default :background bg-alt)
     (solaire-default-face :inherit 'default :background bg)
     (hl-line :background base3)
+    (variable-pitch :font "-xos4-terminus-bold-r-normal--12-120-72-72-c-60-iso10646-1")
     ;; (solaire-hl-line-face :inherit 'hl-line)
     ;; (line-number :foreground base5 :background base2)
     ;; (line-number-current-line :foreground blue :background base5)

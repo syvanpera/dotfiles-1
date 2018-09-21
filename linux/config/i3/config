@@ -3,19 +3,28 @@
 
 # Variables -------------------------------------------------------------------------------------{{{
 
+set $terminal ~/scripts/terminal.sh
+
 # Set mod key (Mod1=<Alt>, Mod4=<Super>)
-set $mod Mod4
+set $mod     Mod1
+set $mod-alt Mod4
+
+# movement keys
+set $up    k
+set $down  j
+set $left  h
+set $right l
 
 # Gaps
-set $innergap 5
-set $outergap 0
+set $innergap 2
+set $outergap 2
 
 # Workspace names
 set $ws1 1:
-set $ws2 2:
-set $ws3 3:
-set $ws4 4:
-set $ws5 5
+set $ws2 2:
+set $ws3 3:
+set $ws4 4:
+set $ws5 5:
 set $ws6 6
 set $ws7 7
 set $ws8 8
@@ -26,10 +35,12 @@ set $ws8 8
 # Basic settings --------------------------------------------------------------------------------{{{
 
 # font for window titles
-font pango: xos4 Terminus 12
+font pango: UbuntuMono Nerd Font 10
 
 # use Mouse+$mod to drag floating windows
 floating_modifier $mod
+
+focus_wrapping yes
 
 # set default desktop layout (default is tiling)
 # workspace_layout tabbed <stacking|tabbed>
@@ -44,12 +55,14 @@ hide_edge_borders none
 # do not follow the mouse
 focus_follows_mouse no
 
+workspace_auto_back_and_forth no
+
 # set inner/outer gaps
 for_window [class="^.*"] border pixel 1
 gaps inner $innergap
 gaps outer $outergap
 
-# smart borders (draw borders around container only if it is not the only container on this workspace) 
+# smart borders (draw borders around container only if it is not the only container on this workspace)
 # on|no_gaps (on=always activate and no_gaps=only activate if the gap size to the edge of the screen is 0)
 #smart_borders on
 
@@ -58,9 +71,16 @@ for_window [class="Manjaro-hello"] floating enable
 for_window [class="Manjaro Settings Manager"] floating enable border normal
 for_window [title="About Pale Moon"] floating enable
 for_window [class="Pamac-manager"] floating enable
+for_window [class="Nautilus"] floating enable
 
 # switch to workspace with urgent window automatically
 for_window [urgent=latest] focus
+
+# Assign Workspaces:
+assign [class="Firefox"] $ws2
+assign [class="Thunderbird"] $ws3
+assign [class="Slack"] $ws3
+assign [class="Flowdock"] $ws3
 
 # }}}
 
@@ -92,55 +112,78 @@ client.background       $bg
 ## Navigation/Window control --- {{{
 
 # change focus
-bindsym $mod+h focus left
-bindsym $mod+j focus down
-bindsym $mod+k focus up
-bindsym $mod+l focus right
+bindsym $mod+$left focus left
+bindsym $mod+$down focus down
+bindsym $mod+$right focus right
+bindsym $mod+$up focus up
+
+# select window to focus
+bindsym $mod+Shift+w exec --no-startup-id i3-easyfocus --font "-xos4-terminus-bold-r-normal--24-240-72-72-c-120-iso10646-1"
 
 # move focused window
-bindsym $mod+Shift+h move left
-bindsym $mod+Shift+j move down
-bindsym $mod+Shift+k move up
-bindsym $mod+Shift+l move right
+bindsym $mod+Shift+$left move left
+bindsym $mod+Shift+$down move down
+bindsym $mod+Shift+$up move up
+bindsym $mod+Shift+$right move right
 
 # resize window (you can also use the mouse for that)
 bindsym $mod+r mode "resize"
 mode "resize" {
-  bindsym plus resize grow width 5 px or 5 ppt
-  bindsym minus resize shrink width 5 px or 5 ppt
-  bindsym Shift+plus resize grow height 5 px or 5 ppt
-  bindsym Shift+minus resize shrink height 5 px or 5 ppt
+  bindsym $left        resize shrink width 5 px or 5 ppt
+  bindsym $down        resize grow height 5 px or 5 ppt
+  bindsym $up          resize shrink height 5 px or 5 ppt
+  bindsym $right       resize grow width 5 px or 5 ppt
 
-  # exit resize mode: Enter or Escape
+  bindsym Shift+$left  resize shrink width 20 px or 20 ppt
+  bindsym Shift+$down  resize grow height 20 px or 20 ppt
+  bindsym Shift+$up    resize shrink height 20 px or 20 ppt
+  bindsym Shift+$right resize grow width 20 px or 20 ppt
+
+  bindsym Left         resize shrink width 5 px or 5 ppt
+  bindsym Down         resize grow height 5 px or 5 ppt
+  bindsym Up           resize shrink height 5 px or 5 ppt
+  bindsym Right        resize grow width 5 px or 5 ppt
+
+  bindsym Shift+Left   resize shrink width 20 px or 20 ppt
+  bindsym Shift+Down   resize grow height 20 px or 20 ppt
+  bindsym Shift+Up     resize shrink height 20 px or 20 ppt
+  bindsym Shift+Right  resize grow width 20 px or 20 ppt
+
+  # exit resize mode: Enter or Escape or $mod+r
   bindsym Return mode "default"
   bindsym Escape mode "default"
+  bindsym $mod+r mode "default"
 }
 
 
 # toggle fullscreen mode for the focused container
-bindsym $mod+Shift+f fullscreen toggle
+bindsym $mod-alt+Shift+f fullscreen toggle
 
 # change container layout (stacked/tabbed/toggle split)
-bindsym $mod+s layout stacking; exec --no-startup-id notify-send 'stacking layout'
-bindsym $mod+t layout tabbed; exec --no-startup-id notify-send 'tabbed layout'
-bindsym $mod+e layout toggle split
+bindsym $mod-alt+s layout stacking; exec --no-startup-id notify-send 'stacking layout'
+bindsym $mod-alt+t layout tabbed; exec --no-startup-id notify-send 'tabbed layout'
+bindsym $mod-alt+e layout toggle split; exec --no-startup-id notify-send 'split layout'
 
-# split orientation
-#bindsym $mod+bar split h;exec notify-send 'tile horizontally'
-#bindsym $mod+minus split v;exec notify-send 'tile vertically'
-bindsym $mod+Shift+s split toggle
+# toggle split horizontal/vertical
+bindsym $mod-alt+Shift+s split toggle
+
+# split in horizontal orientation
+bindsym $mod-alt+h split h
+
+# split in vertical orientation
+bindsym $mod-alt+v split v
 
 # toggle tiling/floating
-bindsym $mod+f floating toggle
+bindsym $mod-alt+f floating toggle
 
 # change focus between tiling/floating windows
-bindsym $mod+Ctrl+Space focus mode_toggle
+bindsym $mod+Shift+space focus mode_toggle
 
 # focus the parent container
-bindsym $mod+a focus parent
+bindsym $mod-alt+a focus parent
 
 # kill focused window
-bindsym $mod+Shift+x kill
+bindsym $mod+Shift+q kill
 
 # move the currently focused window to the scratchpad
 bindsym $mod+Shift+minus move scratchpad
@@ -183,33 +226,42 @@ bindsym $mod+Shift+6 move container to workspace $ws6; workspace $ws6
 bindsym $mod+Shift+7 move container to workspace $ws7; workspace $ws7
 bindsym $mod+Shift+8 move container to workspace $ws8; workspace $ws8
 
+# Switch to next/prev workspace
+bindsym $mod+Control+Right workspace next
+bindsym $mod+Control+Left workspace prev
+
 ## }}}
 
 
 ## App launchers --- {{{
 
 # start a terminal
-bindsym $mod+Return exec terminal
-bindsym $mod+b exec browser
+bindsym $mod+Return exec $terminal
 
 # start program launcher
-bindsym $mod+d exec --no-startup-id ~/scripts/rofi.sh run
-bindsym $mod+space exec --no-startup-id ~/scripts/rofi.sh run
-bindsym $mod+w exec --no-startup-id ~/scripts/rofi.sh window
+bindsym $mod+d exec --no-startup-id rofi -show run
+bindsym $mod+space exec --no-startup-id rofi -show drun
+# bindsym $mod+Shift+c exec --no-startup-id rofi -modi "clipboard:greenclip print" -show clipboard -run-command '{cmd}'
+bindsym $mod+Shift+c exec --no-startup-id ~/scripts/rofi-clipboard.sh
+bindsym $mod+Shift+n exec --no-startup-id networkmanager_dmenu
+bindsym $mod+Shift+0 exec --no-startup-id rofi -show calc
+bindsym $mod+Tab exec --no-startup-id rofi -show window
 
-# launch categorized menu
-bindsym $mod+z exec --no-startup-id morc_menu
+# take screenshot
+bindsym $mod-alt+Shift+4 exec --no-startup-id teiler --screenshot
 
 bindsym $mod+o mode "$mode_launcher"
-set $mode_launcher Launch (b)rowser, (e)macs, (r)anger
+set $mode_launcher Launch (b)rowser, (m)ail, (e)macs, (f)iles
 mode "$mode_launcher" {
     bindsym b exec --no-startup-id default_browser; mode "default"
-    bindsym e exec emacs; mode "default"
-    bindsym r exec terminal -name ranger -e ranger; mode "default"
+    bindsym e exec emacsclient -nc; mode "default"
+    bindsym m exec thunderbird; mode "default"
+    bindsym f exec nautilus --new-window; mode "default"
 
     # exit launcher mode: "Enter" or "Escape"
     bindsym Return mode "default"
     bindsym Escape mode "default"
+    bindsym $mod+o mode "default"
 }
 
 
@@ -219,7 +271,7 @@ mode "$mode_launcher" {
 ## i3 stuff --- {{{
 
 # reload the configuration file
-bindsym $mod+Shift+c reload
+ bindsym $mod-alt+Shift+c reload
 
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
@@ -248,25 +300,45 @@ mode "$mode_system" {
 
 # }}}
 
+# TODO Sort these out
+
+bindsym $mod+Shift+d exec --no-startup-id ~/scripts/i3-focus.py
+
+# Lock screen
+bindsym $mod-alt+l exec --no-startup-id betterlockscreen -l
+
+# Pulse Audio controls
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 +5% #increase sound volume
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 0 -5% #decrease sound volume
+bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute 0 toggle # mute sound
+
+# Sreen brightness controls
+bindsym XF86MonBrightnessUp exec xbacklight -inc 5 # increase screen brightness
+bindsym XF86MonBrightnessDown exec xbacklight -dec 5 # decrease screen brightness
 
 # Start-up scripts-------------------------------------------------------------------------------{{{
 
-exec_always --no-startup-id ~/.config/polybar/launch.sh
-exec_always --no-startup-id ff-theme-util
-exec_always --no-startup-id fix_xcursor
+# exec_always --no-startup-id xrandr --dpi 200
+# exec_always export GDK_SCALE=2
+# exec_always export GDK_DPI_SCALE=0.5
 
-#exec --no-startup-id wal -t -R; nohup sh ~/scripts/beautify.sh >/dev/null 2>&1 &
-exec --no-startup-id i3-msg "workspace $ws1; exec urxvt -e bash -c 'neofetch && bash'" 
+exec_always --no-startup-id ~/.config/polybar/launch.sh
+# exec_always --no-startup-id ff-theme-util
+# exec_always --no-startup-id fix_xcursor
+
+# exec --no-startup-id i3-msg "workspace $ws1; exec urxvt -e bash -c 'neofetch && bash'"
 exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
-exec --no-startup-id compton --config ~/.config/compton.conf
-exec --no-startup-id xfce4-power-manager
+exec --no-startup-id feh --bg-fill ~/Pictures/ja5hGvj.jpg
+# exec --no-startup-id compton --config ~/.config/compton.conf
+# exec --no-startup-id xfce4-power-manager
 exec --no-startup-id nm-applet
 exec --no-startup-id pamac-tray
-exec --no-startup-id clipit
-exec --no-startup-id xautolock -time 10 -locker blurlock
-#exec --no-startup-id sleep 2; sh ~/scripts/beautify.sh
+exec --no-startup-id xautolock -time 10 -locker "betterlockscreen -l"
+# Start clipster daemon
+exec --no-startup-id ~/.dotfiles/bin/clipster -d
 
-# custom keymap stuff
+# keymap & touchpad stuff
 exec --no-startup-id sh ~/scripts/keymap.sh
+exec --no-startup-id ~/scripts/touchpad.sh
 
 # }}}

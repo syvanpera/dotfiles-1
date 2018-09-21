@@ -1,22 +1,16 @@
 #!/usr/bin/env sh
 
+DP1_STATUS=$(</sys/class/drm/card0/card0-DP-1/status )
+
 # Terminate already running bar instances
 killall -q polybar
 
 # Wait until the processes have been shut down
 while pgrep -x polybar >/dev/null; do sleep 1; done
 
-#source "${HOME}/.cache/wal/colors.sh"
-#background=$color0
-#background_alt=$color3
-#foreground=$color15
-#foreground_alt=$color2
-#highlight=$color4
-
-if [ "$HOSTNAME" = ecly ]; then
-    MONITOR=DVI-I-1 polybar main &
-    MONITOR=HDMI-0 polybar secondary &
-    MONITOR=DP-0 polybar secondary &
+if [ "connected" == "$DP1_STATUS" ]; then
+    MONITOR=DP1 polybar main-ext &
+    # MONITOR=eDP1 polybar secondary &
 else
-    MONITOR=VGA-1 polybar main &
+    MONITOR=eDP1 polybar main-int &
 fi

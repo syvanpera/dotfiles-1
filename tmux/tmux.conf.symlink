@@ -33,7 +33,7 @@
 
   # set terminal title
   set -g set-titles on
-  set -g set-titles-string '#h ❐ #S ● #I #W'
+  set -g set-titles-string '#h tmux - [#S] [#I #W]'
 
   # status line redraw frequency in seconds
   set -g status-interval 2
